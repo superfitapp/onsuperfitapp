@@ -1,65 +1,84 @@
-import Head from 'next/head'
-import styles from '../styles/Home.module.css'
+import Head from "next/head";
+import Layout from "../components/layout";
+import { Box, Button, HStack, Img, Stack, Text } from "@chakra-ui/react";
+import * as React from "react";
+import {
+  HiBriefcase,
+  HiCheck,
+  HiCurrencyDollar,
+  HiLocationMarker,
+  HiPencil,
+} from "react-icons/hi";
+import { TextWithIcon } from "../partials/TextWithIcon";
+import { VerifiedBadge } from "../partials/VerifiedBadge";
 
 export default function Home() {
   return (
-    <div className={styles.container}>
-      <Head>
-        <title>Create Next App</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-
-      <main className={styles.main}>
-        <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
-
-        <p className={styles.description}>
-          Get started by editing{' '}
-          <code className={styles.code}>pages/index.js</code>
-        </p>
-
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h3>Documentation &rarr;</h3>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h3>Learn &rarr;</h3>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/master/examples"
-            className={styles.card}
-          >
-            <h3>Examples &rarr;</h3>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/import?filter=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h3>Deploy &rarr;</h3>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
-        </div>
-      </main>
-
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <img src="/vercel.svg" alt="Vercel Logo" className={styles.logo} />
-        </a>
-      </footer>
-    </div>
-  )
+    <>
+      {/* <Layout> */}
+        <Box p="8">
+          <Box maxW="7xl" mx="auto">
+            <Stack
+              spacing={{ base: "8", md: "4" }}
+              direction={{ base: "column", lg: "row" }}
+              justify="space-between"
+              align="flex-start"
+            >
+              <Stack
+                direction="row"
+                flex="1"
+                spacing="6"
+                align={{ base: "flex-start", md: "center" }}
+              >
+                <Img
+                  src="https://images.unsplash.com/photo-1580489944761-15a19d654956?ixid=MXwxMjA3fDB8MHxzZWFyY2h8MzU5fHxsYWR5JTIwc21pbGluZ3xlbnwwfHwwfA%3D%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
+                  alt="Melinda Turner"
+                  objectFit="cover"
+                  rounded="lg"
+                  h="16"
+                  w="16"
+                />
+                <Box flex="1">
+                  <HStack mb={{ base: "3", md: "1" }}>
+                    <Text fontSize="xl" fontWeight="bold">
+                      Melinda Turner
+                    </Text>
+                    <VerifiedBadge />
+                  </HStack>
+                  <Stack
+                    direction={{ base: "column", md: "row" }}
+                    spacing={{ base: "3", lg: "6" }}
+                  >
+                    <TextWithIcon icon={<HiBriefcase />}>
+                      UI Designer @ Amazon
+                    </TextWithIcon>
+                    <TextWithIcon icon={<HiLocationMarker />}>
+                      Jumeirah, Dubai
+                    </TextWithIcon>
+                    <TextWithIcon icon={<HiCurrencyDollar />}>
+                      $200k - $900k
+                    </TextWithIcon>
+                  </Stack>
+                </Box>
+              </Stack>
+              <HStack spacing="4">
+                <Button
+                  variant="outline"
+                  leftIcon={<Box as={HiPencil} fontSize="lg" />}
+                >
+                  Edit
+                </Button>
+                <Button
+                  colorScheme="blue"
+                  leftIcon={<Box as={HiCheck} fontSize="lg" />}
+                >
+                  Approve
+                </Button>
+              </HStack>
+            </Stack>
+          </Box>
+        </Box>
+      {/* </Layout> */}
+    </>
+  );
 }
