@@ -8,10 +8,12 @@ import {
   Heading,
 } from "@chakra-ui/react";
 
+import { SimpleGrid } from "@chakra-ui/react";
 import * as React from "react";
 import { BigMedia } from "../partials/BigMedia";
 import { TagBelt } from "../partials/TagBelt";
 import { OwnerWithSocial } from "../partials/OwnerWithSocial";
+import { ScheduledActivity } from "../partials/ScheduledActivity";
 
 export default function Home() {
   return (
@@ -64,6 +66,24 @@ export default function Home() {
               role="Developer Advocate"
             ></OwnerWithSocial>
           </Box>
+        </Box>
+
+        <Box
+          as="section"
+          mx="auto"
+          rounded="lg"
+          maxW={{ base: "xl", md: "4xl" }}
+          px={{ base: "6", md: "0" }}
+          py={{ base: "6", md: "8" }}
+        >
+          <SimpleGrid columns={[1, 1, 3]} spacing="40px">
+            <ScheduledActivity></ScheduledActivity>
+            <ScheduledActivity></ScheduledActivity>
+            <ScheduledActivity></ScheduledActivity>
+            <ScheduledActivity></ScheduledActivity>
+            <ScheduledActivity></ScheduledActivity>
+            <ScheduledActivity></ScheduledActivity>
+          </SimpleGrid>
         </Box>
       </Layout>
     </>
