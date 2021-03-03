@@ -24,7 +24,7 @@ export const ScheduledActivity = () => {
       align={{ base: "center", md: "normal" }}
       direction={{ base: "row", md: "column" }}
       rounded="md"
-      spacing="0"
+      spacing={{ base: "4", md: "0" }}
       flex="1"
     >
       <AspectRatio minWidth="150px" ratio={16 / 9}>

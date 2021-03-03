@@ -1,4 +1,5 @@
-import Layout from "../components/layout";
+import { useEffect } from "react";
+import Layout from "../../components/layout";
 import {
   Box,
   Text,
@@ -10,12 +11,33 @@ import {
 
 import { SimpleGrid } from "@chakra-ui/react";
 import * as React from "react";
-import { BigMedia } from "../partials/BigMedia";
-import { TagBelt } from "../partials/TagBelt";
-import { OwnerWithSocial } from "../partials/OwnerWithSocial";
-import { ScheduledActivity } from "../partials/ScheduledActivity";
+import { BigMedia } from "../../partials/BigMedia";
+import { TagBelt } from "../../partials/TagBelt";
+import { OwnerWithSocial } from "../../partials/OwnerWithSocial";
+import { ScheduledActivity } from "../../partials/ScheduledActivity";
+import { getSchedule, ShowFIRScheduleResponse } from "../../lib/db-public";
+import { PhotoType } from "@superfitapp/superfitjs";
+import {
+  ShowScheduleViewModel,
+  createShowScheduleViewModel,
+} from "../../utils/view-models";
 
-export default function Home() {
+function Schedule(vm?: ShowScheduleViewModel) {
+  const schedule = vm?.data?.schedule;
+  if (!schedule) {
+    return (
+      <Layout>
+        <div>No schedule</div>
+      </Layout>
+    );
+  }
+
+  const scheduleTitle = schedule.title;
+  console.log(scheduleTitle);
+
+  const scheduleAbout = schedule.profile?.about;
+  const schedulePhotoUrl = vm.photoUrl;
+
   return (
     <>
       <Layout>
@@ -32,24 +54,25 @@ export default function Home() {
               columnGap={{ base: "12", lg: "20" }}
               rowGap="10"
             >
-              <BigMedia
-                alt="Getting Started with Chakra"
-                src="https://images.unsplash.com/photo-1537511446984-935f663eb1f4?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
-              />
+              {schedulePhotoUrl && (
+                <BigMedia
+                  alt="Getting Started with Chakra"
+                  src={schedulePhotoUrl}
+                />
+              )}
+
               <Flex direction="column" h="full">
                 <Box flex="1">
-                  <TagBelt type="Video" tags={["react", "css-in-js"]} />
+                  <TagBelt type="Workout" tags={["bodyweight", "at-home"]} />
                   <Heading size="xl" mt="6" mb="4">
-                    Getting Started with Chakra UI
+                    {scheduleTitle}
                   </Heading>
                   <Text
                     fontSize="lg"
                     color={mode("gray.600", "gray.400")}
                     lineHeight="tall"
                   >
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                    do eiusmod tempor incididunt ut labore et dolore magna
-                    aliqua.
+                    {scheduleAbout}
                   </Text>
                 </Box>
               </Flex>
@@ -86,3 +109,40 @@ export default function Home() {
     </>
   );
 }
+
+// This function gets called at build time
+export async function getStaticPaths() {
+  // don't prerender any schedule pages
+  return {
+    paths: [],
+    fallback: true,
+  };
+}
+
+export async function getStaticProps({ params }) {
+  const { scheduleId } = params;
+  if (!scheduleId) {
+    return {
+      props: null,
+      revalidate: 1,
+    };
+  }
+
+  let showSchedule = await getSchedule(scheduleId);
+
+  if (!showSchedule) {
+    return {
+      props: null,
+    };
+  }
+
+  return {
+    props: createShowScheduleViewModel(showSchedule),
+    // Next.js will attempt to re-generate the page:
+    // - When a request comes in
+    // - At most once every second
+    revalidate: 1, // In seconds
+  };
+}
+
+export default Schedule;
