@@ -1,11 +1,6 @@
-import Head from "next/head";
 import Layout from "../components/layout";
 import {
   Box,
-  Button,
-  HStack,
-  Img,
-  Stack,
   Text,
   useColorModeValue as mode,
   Flex,
@@ -14,29 +9,25 @@ import {
 } from "@chakra-ui/react";
 
 import * as React from "react";
-import {
-  HiBriefcase,
-  HiCheck,
-  HiCurrencyDollar,
-  HiLocationMarker,
-  HiPencil,
-} from "react-icons/hi";
-import { TextWithIcon } from "../partials/TextWithIcon";
-import { VerifiedBadge } from "../partials/VerifiedBadge";
 import { BigMedia } from "../partials/BigMedia";
 import { TagBelt } from "../partials/TagBelt";
-import { ContentOwner } from "../partials/ContentOwner";
+import { OwnerWithSocial } from "../partials/OwnerWithSocial";
 
 export default function Home() {
   return (
     <>
       <Layout>
-        <Box as="section" bg={mode("gray.50", "inherit")} py="12">
-          <Box
-            maxW={{ base: "xl", md: "4xl" }}
-            mx="auto"
-            px={{ base: "6", md: "8" }}
-          >
+        <Box
+          as="section"
+          bg={mode("gray.50", "inherit")}
+          my={{ base: "2", md: "8" }}
+          mx="auto"
+          rounded="md"
+          maxW={{ base: "xl", md: "4xl" }}
+          px={{ base: "6", md: "8" }}
+          py={{ base: "6", md: "8" }}
+        >
+          <Box>
             <Grid
               templateColumns={{ base: "1fr", md: "1fr 24rem" }}
               columnGap={{ base: "12", lg: "20" }}
@@ -62,67 +53,16 @@ export default function Home() {
                     aliqua.
                   </Text>
                 </Box>
-
-                <Stack
-                  spacing={{ base: "8", md: "4" }}
-                  direction={{ base: "column", lg: "row" }}
-                  justify="space-between"
-                  align="flex-start"
-                >
-                  <Stack
-                    direction="row"
-                    flex="1"
-                    spacing="6"
-                    align={{ base: "flex-start", md: "center" }}
-                  >
-                    <Img
-                      src="https://images.unsplash.com/photo-1580489944761-15a19d654956?ixid=MXwxMjA3fDB8MHxzZWFyY2h8MzU5fHxsYWR5JTIwc21pbGluZ3xlbnwwfHwwfA%3D%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
-                      alt="Melinda Turner"
-                      objectFit="cover"
-                      rounded="full"
-                      w="12"
-                      h="12"
-                    />
-                    <Box flex="1">
-                      <HStack mb={{ base: "3", md: "1" }}>
-                        <Text fontSize="xl" fontWeight="bold">
-                          Melinda Turner
-                        </Text>
-                        <VerifiedBadge />
-                      </HStack>
-                      <Stack
-                        direction={{ base: "column", md: "row" }}
-                        spacing={{ base: "3", lg: "6" }}
-                      >
-                        <TextWithIcon icon={<HiBriefcase />}>
-                          UI Designer @ Amazon
-                        </TextWithIcon>
-                        <TextWithIcon icon={<HiLocationMarker />}>
-                          Jumeirah, Dubai
-                        </TextWithIcon>
-                        <TextWithIcon icon={<HiCurrencyDollar />}>
-                          $200k - $900k
-                        </TextWithIcon>
-                      </Stack>
-                    </Box>
-                  </Stack>
-                  {/* <HStack spacing="4">
-              <Button
-                variant="outline"
-                leftIcon={<Box as={HiPencil} fontSize="lg" />}
-              >
-                Edit
-              </Button>
-              <Button
-                colorScheme="blue"
-                leftIcon={<Box as={HiCheck} fontSize="lg" />}
-              >
-                Approve
-              </Button>
-            </HStack> */}
-                </Stack>
               </Flex>
             </Grid>
+          </Box>
+          <Box mt="8">
+            <OwnerWithSocial
+              mt="8"
+              name="Mike Hansonn"
+              image="https://images.unsplash.com/photo-1492633423870-43d1cd2775eb?ixid=MXwxMjA3fDB8MHxzZWFyY2h8MXx8bGFkeSUyMHNtaWxpbmd8ZW58MHx8MHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
+              role="Developer Advocate"
+            ></OwnerWithSocial>
           </Box>
         </Box>
       </Layout>

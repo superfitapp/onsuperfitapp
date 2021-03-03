@@ -16,6 +16,7 @@ export const BigMedia = (props: BigMediaProps) => {
       className="group"
       h="400px"
       overflow="hidden"
+      boxShadow="2xl" 
       {...rest}
     >
       <Img
@@ -26,6 +27,7 @@ export const BigMedia = (props: BigMediaProps) => {
         htmlHeight="448"
         src={src}
         alt={alt}
+        rounded="md"
         transition="all 0.2s"
         _groupHover={{ transform: "scale(1.05)" }}
       />
