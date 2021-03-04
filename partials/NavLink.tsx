@@ -9,17 +9,17 @@ import {
 import * as React from "react";
 
 interface DesktopNavLinkProps extends HTMLChakraProps<"a"> {
-  active?: boolean;
+  href: string;
 }
 
 const DesktopNavLink = (props: DesktopNavLinkProps) => {
-  const { active, ...rest } = props;
+  const { href, ...rest } = props;
   return (
     <chakra.a
-      href="#"
-      aria-current={active ? "page" : undefined}
+      href={href}
       fontWeight="semibold"
-      color={mode("gray.500", "gray.100")}
+      fontSize="md"
+      color={mode("gray.400", "gray.100")}
       {...rest}
       _activeLink={{
         color: mode("blue.600", "blue.300"),

@@ -1,18 +1,25 @@
 import {
+  Avatar,
   Box,
   Button,
-  Center,
   Flex,
   HStack,
+  Menu,
+  MenuButton,
+  MenuDivider,
+  MenuGroup,
+  MenuItem,
+  MenuList,
   useColorModeValue as mode,
-  VisuallyHidden,
 } from "@chakra-ui/react";
+import Image from "next/image";
 import * as React from "react";
-import { GuestMobileNav } from "./GuestMobileNav";
 import { NavLink } from "./NavLink";
-import { SuperFitIcon } from "./SuperFitIcon";
+import { useUser } from "@auth0/nextjs-auth0";
 
 export const GuestHeaderNav = () => {
+  const { user, error, isLoading } = useUser();
+
   return (
     <Box
       as="header"
@@ -25,24 +32,54 @@ export const GuestHeaderNav = () => {
     >
       <Box maxW="7xl" mx="auto" py="2" px={{ base: "6", md: "8" }}>
         <Flex as="nav" justify="space-between">
-          <HStack spacing="8">
-            <Box as="a" href="#" rel="home"></Box>
-            {/* <Center marginEnd={6}> */}
-              {/* <SuperFitIcon iconColor="blue.600" /> */}
-            {/* </Center> */}
-            <NavLink.Desktop>Built on SuperFit</NavLink.Desktop>
+          <HStack spacing="4">
+            <Image
+              src="https://superfitapp.com/img/brand.svg"
+              alt="SuperFit Logo Mark"
+              className="avatar-img rounded-circle"
+              height="45"
+              width="45"
+            />
+            <NavLink.Desktop href="https://superfitapp.com">
+              Built on SuperFit
+            </NavLink.Desktop>
           </HStack>
-          <Flex align="center">
+
+          {!user && (
             <HStack spacing="8" display={{ base: "none", md: "flex" }}>
-              <NavLink.Desktop>Log in </NavLink.Desktop>
-              <Button colorScheme="blue" rounded="2xl">
+              <NavLink.Desktop href="/api/auth/login">Log in </NavLink.Desktop>
+              <Button href="/api/auth/login" colorScheme="blue" rounded="2xl">
                 Join
               </Button>
             </HStack>
-            <Box ml="5">
-              <GuestMobileNav />
-            </Box>
-          </Flex>
+          )}
+
+          {user && (
+            <Flex align="center">
+              <Menu placement="bottom-end">
+                <MenuButton
+                  as={Button}
+                  variant="ghost"
+                  leftIcon={
+                    <Avatar size="sm" name="Dan Abrahmov" src={user.picture} />
+                  }
+                >
+                  Profile
+                </MenuButton>
+                <MenuList>
+                  <MenuGroup title="Profile">
+                    <MenuItem>My Account</MenuItem>
+                    <MenuItem>Payments </MenuItem>
+                  </MenuGroup>
+                  <MenuDivider />
+                  <MenuGroup title="Help">
+                    <MenuItem>Docs</MenuItem>
+                    <MenuItem>FAQ</MenuItem>
+                  </MenuGroup>
+                </MenuList>
+              </Menu>
+            </Flex>
+          )}
         </Flex>
       </Box>
     </Box>
