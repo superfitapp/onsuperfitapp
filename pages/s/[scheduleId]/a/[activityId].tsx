@@ -93,11 +93,7 @@ function ScheduleActivity(props: ScheduledActivityProps) {
           >
             <Grid templateColumns={{ base: "1fr", md: "360px 1fr" }} gap="64px">
               <Box>
-                <Heading size="xl" letterSpacing="tight" fontWeight="extrabold">
-                  Build SaaS with ease!
-                </Heading>
-
-                <AspectRatio minHeight="150px" ratio={16 / 9}>
+                <AspectRatio ratio={16 / 9}>
                   <Box position="relative">
                     <VStack
                       rounded="md"
@@ -119,7 +115,13 @@ function ScheduleActivity(props: ScheduledActivityProps) {
                         fontSize="sm"
                         color={mode("gray.600", "gray.400")}
                       >
-                        <Badge variant="subtle" rounded="lg" py="0" px="2" colorScheme="green">
+                        <Badge
+                          variant="subtle"
+                          rounded="lg"
+                          py="0"
+                          px="2"
+                          colorScheme="green"
+                        >
                           Default
                         </Badge>
                         <Link href="#">
@@ -129,7 +131,7 @@ function ScheduleActivity(props: ScheduledActivityProps) {
                             me="2"
                             opacity={0.4}
                           />
-                          3 min read
+                          $50
                         </Link>
                       </Flex>
                     </VStack>
@@ -165,8 +167,22 @@ function ScheduleActivity(props: ScheduledActivityProps) {
                   </Box>
                 </AspectRatio>
 
-                <Text mt="6" mb="8" fontSize="lg" fontWeight="medium">
-                  At volutpat diam ut venenatis tellus. Sit amet consectetur.
+                <Heading
+                  mt="4"
+                  size="lg"
+                  letterSpacing="tight"
+                  fontWeight="bold"
+                >
+                  Build SaaS with ease!
+                </Heading>
+
+                <Text
+                  mb="8"
+                  fontSize="lg"
+                  fontWeight="regular"
+                  color={mode("gray.500", "gray.200")}
+                >
+                  Tuesday, March 4 2020
                 </Text>
                 <Button
                   size="lg"
@@ -179,14 +195,23 @@ function ScheduleActivity(props: ScheduledActivityProps) {
 
                 <Box
                   rounded="lg"
-                  mt={{ base: "16", md: "24", lg: "16" }}
+                  mt={{ base: "8", md: "12", lg: "16" }}
                   as="blockquote"
                   bg={{ lg: mode("white", "gray.700") }}
                   p={{ lg: "8" }}
                 >
-                  {/* {logo} */}
-                  <Text mt="4" fontSize="lg" lineHeight="tall">
-                    Description
+                  <Heading
+                    as="h6"
+                    size="sm"
+                    color={mode("gray.600", "gray.200")}
+                    pb="3"
+                  >
+                    This Thursday
+                  </Heading>
+                  <Text fontSize="md" fontWeight="regular">
+                    Description Workout for today Stationary Half Spin 2x :30
+                    Spin Ball Handling Full Court To Layup Spin to Pull up Spin
+                    to Float
                   </Text>
                   <HStack spacing="4" mt="8">
                     <Img
@@ -198,8 +223,8 @@ function ScheduleActivity(props: ScheduledActivityProps) {
                       src="https://images.unsplash.com/photo-1531078215167-91fcfe45b39e?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=2598&q=80"
                     />
                     <Box>
-                      <Text as="cite" fontStyle="normal" fontWeight="bold">
-                        "Susan Mana"
+                      <Text fontStyle="medium" fontWeight="medium">
+                        Iyoha Agho
                       </Text>
                       <Text color={mode("gray.600", "gray.400")}>
                         "Executive director"

@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  Center,
   Flex,
   HStack,
   useColorModeValue as mode,
@@ -9,6 +10,7 @@ import {
 import * as React from "react";
 import { GuestMobileNav } from "./GuestMobileNav";
 import { NavLink } from "./NavLink";
+import { SuperFitIcon } from "./SuperFitIcon";
 
 export const GuestHeaderNav = () => {
   return (
@@ -25,13 +27,10 @@ export const GuestHeaderNav = () => {
         <Flex as="nav" justify="space-between">
           <HStack spacing="8">
             <Box as="a" href="#" rel="home"></Box>
+            {/* <Center marginEnd={6}> */}
+              {/* <SuperFitIcon iconColor="blue.600" /> */}
+            {/* </Center> */}
             <NavLink.Desktop>Built on SuperFit</NavLink.Desktop>
-            {/* <HStack display={{ base: "none", lg: "flex" }} spacing="8">
-              <NavLink.Desktop active>Product</NavLink.Desktop>
-              <NavLink.Desktop>Pricing</NavLink.Desktop>
-              <NavLink.Desktop>Resources</NavLink.Desktop>
-              <NavLink.Desktop>Help</NavLink.Desktop>
-            </HStack> */}
           </HStack>
           <Flex align="center">
             <HStack spacing="8" display={{ base: "none", md: "flex" }}>
