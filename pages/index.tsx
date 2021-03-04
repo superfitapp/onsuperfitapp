@@ -38,7 +38,7 @@ export default function Home() {
               />
               <Flex direction="column" h="full">
                 <Box flex="1">
-                  <TagBelt type="Video" tags={["react", "css-in-js"]} />
+                  <TagBelt type="Workout" tags={["react", "css-in-js"]} />
                   <Heading size="xl" mt="6" mb="4">
                     Getting Started with Chakra UI
                   </Heading>

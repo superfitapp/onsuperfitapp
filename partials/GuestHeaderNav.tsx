@@ -25,7 +25,7 @@ export const GuestHeaderNav = () => {
         <Flex as="nav" justify="space-between">
           <HStack spacing="8">
             <Box as="a" href="#" rel="home"></Box>
-            <NavLink.Desktop>By Iyoha Agho</NavLink.Desktop>
+            <NavLink.Desktop>Built on SuperFit</NavLink.Desktop>
             {/* <HStack display={{ base: "none", lg: "flex" }} spacing="8">
               <NavLink.Desktop active>Product</NavLink.Desktop>
               <NavLink.Desktop>Pricing</NavLink.Desktop>

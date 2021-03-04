@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import Layout from "../../components/layout";
 import {
   Box,
@@ -33,8 +32,6 @@ function Schedule(vm?: ShowScheduleViewModel) {
   }
 
   const scheduleTitle = schedule.title;
-  console.log(scheduleTitle);
-
   const scheduleAbout = schedule.profile?.about;
   const schedulePhotoUrl = vm.photoUrl;
 
@@ -46,7 +43,8 @@ function Schedule(vm?: ShowScheduleViewModel) {
           bg={mode("gray.50", "inherit")}
           my={{ base: "2", md: "8" }}
           rounded="md"
-          px={{ base: "6", md: "8" }}
+          px={{ base: "4", md: "8" }}
+          py={{ base: "6", md: "8" }}
         >
           <Box>
             <Grid
