@@ -130,7 +130,10 @@ function Schedule(props: ScheduleProps) {
           >
             {activities.map((activity) => {
               return (
-                <ScheduledActivity activity={activity}></ScheduledActivity>
+                <ScheduledActivity
+                  activity={activity}
+                  schedule={schedule}
+                ></ScheduledActivity>
               );
             })}
           </SimpleGrid>

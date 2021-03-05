@@ -1,3 +1,5 @@
+import { PhotoInfo } from "@superfitapp/superfitjs";
+
 export function hexColor(hex: string): string {
   if (!hex.startsWith("#")) {
     return "#" + hex;
@@ -51,4 +53,24 @@ export function getQueryString(field: string, url: string) {
   var reg = new RegExp("[?&]" + field + "=([^&#]*)", "i");
   var string = reg.exec(url);
   return string ? string[1] : null;
+}
+
+export function getThumbnailUrl(photo: PhotoInfo): string | undefined {
+  switch (photo.type) {
+    case "custom":
+      // no thumbnail for custom
+      return photo?.customPhotoUrl;
+    case "unsplash":
+      return photo.unsplashThumbUrl;
+  }
+}
+
+export function getPhotoUrl(photo: PhotoInfo): string | undefined {
+  switch (photo.type) {
+    case "custom":
+      // no thumbnail for custom
+      return photo?.customPhotoUrl;
+    case "unsplash":
+      return photo.unsplashRegularUrl;
+  }
 }

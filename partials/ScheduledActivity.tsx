@@ -11,17 +11,19 @@ import {
   LinkOverlay,
 } from "@chakra-ui/react";
 import { StackProps } from "@chakra-ui/react";
-import { FIRActivity } from "@superfitapp/superfitjs";
+import { FIRActivity, ShowFIRSchedule } from "@superfitapp/superfitjs";
 import { createShowActivityViewModel } from "@/utils/view-models";
 import { ShowFIRActivityResponse } from "@/lib/db-public";
 
 interface ScheduledActivityProps extends StackProps {
   activity: FIRActivity;
+  schedule: ShowFIRSchedule;
 }
 
 export const ScheduledActivity = (props: ScheduledActivityProps) => {
   const x: ShowFIRActivityResponse = {
     activity: props.activity,
+    schedule: props.schedule,
   };
 
   const vm = createShowActivityViewModel(x);

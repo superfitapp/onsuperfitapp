@@ -14,6 +14,7 @@ export interface ShowFIRScheduleResponse {
 
 export interface ShowFIRActivityResponse {
   activity: FIRActivity;
+  schedule: ShowFIRSchedule;
   instructionSet?: FIRInstructionSet;
 }
 
@@ -32,7 +33,7 @@ export async function getSchedule(
   return data;
 }
 
-export async function getActivity(
+export async function getShowActivity(
   activityId: string,
   scheduleId: string
 ): Promise<ShowFIRActivityResponse> {

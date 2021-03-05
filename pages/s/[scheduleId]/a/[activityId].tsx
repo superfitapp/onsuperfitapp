@@ -1,10 +1,10 @@
 import Error from "next/error";
+
 import {
   AiOutlineCoffee,
   AiOutlineSketch,
   AiOutlineWoman,
 } from "react-icons/ai";
-import { BsArrowRight, BsClockFill } from "react-icons/bs";
 
 import Layout from "@/components/layout";
 import {
@@ -27,15 +27,15 @@ import {
   AspectRatio,
   Badge,
   Spacer,
+  LinkBox,
+  LinkOverlay,
 } from "@chakra-ui/react";
 import { BiRightArrowAlt } from "react-icons/bi";
 import { SimpleGrid } from "@chakra-ui/react";
 import * as React from "react";
 import { ListItem } from "@/partials/ListItem";
 import { List } from "@/partials/List";
-import Head from "next/head";
-
-import { getActivity } from "@/lib/db-public";
+import { getShowActivity } from "@/lib/db-public";
 import {
   createShowActivityViewModel,
   ActivityViewModel,
@@ -44,7 +44,32 @@ import { Placeholder } from "@/partials/Placeholder";
 import { Props } from "framer-motion/types/types";
 import { BigMedia } from "@/partials/BigMedia";
 
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+import calendar from "dayjs/plugin/calendar";
+dayjs.extend(relativeTime);
+dayjs.extend(calendar);
+import "dayjs/locale/en"; // import locale
+dayjs.locale("en"); // use locale
+
 function ScheduleActivity(props: ScheduledActivityProps) {
+  var scheduledDateString: string | undefined = null;
+  var scheduledDateRelative: string | undefined = null;
+
+  if (props.vm?.scheduledDateTimestamp) {
+    const scheduledDate = new Date(props.vm.scheduledDateTimestamp);
+
+    scheduledDateString = dayjs(scheduledDate).calendar(null, {
+      sameDay: "[Today at] h:mm A", // The same day ( Today at 2:30 AM )
+      nextDay: "[Tomorrow]", // The next day ( Tomorrow at 2:30 AM )
+      nextWeek: "dddd", // The next week ( Sunday at 2:30 AM )
+      lastDay: "[Yesterday]", // The day before ( Yesterday at 2:30 AM )
+      lastWeek: "[Last] dddd", // Last week ( Last Monday at 2:30 AM )
+      sameElse: "MMMM DD, YYYY", // Everything else ( 7/10/2011 )
+    });
+    scheduledDateRelative = dayjs(scheduledDate).fromNow();
+  }
+
   if (!props.vm) {
     if (props.notFound) {
       return <Error statusCode={404} />;
@@ -97,40 +122,56 @@ function ScheduleActivity(props: ScheduledActivityProps) {
                 <AspectRatio ratio={16 / 9}>
                   <Box>
                     <VStack
-                      minHeight="100px"
+                      // minHeight="100px"
                       rounded="md"
-                      direction="column-reverse"
+                      // direction="column-reverse"
+                      direction="column"
                       align="stretch"
-                      py={{ base: "6", md: "4" }}
+                      py={{ base: "4", md: "4" }}
                       position="relative"
                       justify="flex-end"
+                      // justify="flex"
                       zIndex={1}
                       w="full"
                       h="full"
                       mx="auto"
-                      px={{ base: "8", md: "8" }}
-                      color="white"
+                      px={{ base: "4", md: "4" }}
                     >
-                      <Flex
+                      <HStack
                         align="baseline"
-                        justify="space-between"
+                        // justify="space-between"
+                        justify="flex-end"
                         fontSize="sm"
                         color={mode("gray.100", "gray.800")}
                       >
-                        <Badge
-                          variant="subtle"
+                        <Center
+                          bg="rgba(0,0,0,0.3)"
                           rounded="lg"
-                          py="0"
+                          py="1"
                           px="2"
-                          colorScheme="green"
+                          fontSize="xs"
                         >
-                          Default
-                        </Badge>
-                        <Text fontSize="medium" fontWeight="extrabold">
-                          $50
-                        </Text>
-                      </Flex>
+                          <Text
+                            textTransform="uppercase"
+                            fontSize="sm"
+                            fontWeight="medium"
+                          >
+                            {props.vm.activityType}
+                          </Text>
+                        </Center>
+                        {/* <Center rounded="lg" bg="rgba(0,0,0,0.4)">
+                          <Text
+                            py="1"
+                            px="2"
+                            fontSize="medium"
+                            fontWeight="extrabold"
+                          >
+                            $50
+                          </Text>
+                        </Center> */}
+                      </HStack>
                     </VStack>
+
                     <Flex
                       id="image-wrapper"
                       position="absolute"
@@ -157,23 +198,36 @@ function ScheduleActivity(props: ScheduledActivityProps) {
                   </Box>
                 </AspectRatio>
 
-                <Heading
+                <Flex
                   mt="4"
-                  size="lg"
-                  letterSpacing="tight"
-                  fontWeight="bold"
+                  // bgColor="gray.200"
+                  align="stretch"
+                  justify="space-between"
+                  alignItems="start"
                 >
-                  {activityTitle}
-                </Heading>
+                  <VStack align="stretch" spacing="0">
+                    <Heading size="lg" letterSpacing="tight" fontWeight="bold">
+                      {activityTitle}
+                    </Heading>
 
-                <Text
-                  mb="8"
-                  fontSize="lg"
-                  fontWeight="regular"
-                  color={mode("gray.500", "gray.200")}
-                >
-                  Tuesday, March 4 2020
-                </Text>
+                    {scheduledDateString && (
+                      <Text
+                        mb="8"
+                        fontSize="lg"
+                        fontWeight="regular"
+                        color={mode("gray.500", "gray.200")}
+                      >
+                        {scheduledDateString}
+                      </Text>
+                    )}
+                  </VStack>
+                  <Center rounded="lg" bg="rgba(0,0,0,0.1)">
+                    <Text py="1" px="2" fontSize="lg" fontWeight="extrabold">
+                      $50
+                    </Text>
+                  </Center>
+                </Flex>
+
                 <Button
                   size="lg"
                   colorScheme="blue"
@@ -190,35 +244,54 @@ function ScheduleActivity(props: ScheduledActivityProps) {
                   bg={{ lg: mode("white", "gray.700") }}
                   p={{ lg: "8" }}
                 >
-                  <Heading
-                    as="h6"
-                    size="sm"
-                    color={mode("gray.600", "gray.200")}
-                    pb="3"
-                  >
-                    This Thursday
-                  </Heading>
+                  {scheduledDateRelative && (
+                    <Heading
+                      as="h6"
+                      size="sm"
+                      color={mode("gray.500", "gray.200")}
+                      pb="3"
+                    >
+                      <Text textTransform="capitalize">
+                        {scheduledDateRelative}
+                      </Text>
+                    </Heading>
+                  )}
+
                   <Text fontSize="md" fontWeight="regular">
                     {activityAbout}
                   </Text>
-                  <HStack spacing="4" mt="8">
-                    <Img
-                      alt="{author}"
-                      w="12"
-                      h="12"
-                      rounded="full"
-                      objectFit="cover"
-                      src="https://images.unsplash.com/photo-1531078215167-91fcfe45b39e?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=2598&q=80"
-                    />
-                    <Box>
-                      <Text fontStyle="medium" fontWeight="medium">
-                        Iyoha Agho
-                      </Text>
-                      <Text color={mode("gray.600", "gray.400")}>
-                        "Executive director"
-                      </Text>
-                    </Box>
-                  </HStack>
+
+                  <LinkBox
+                    rounded="xl"
+                    backgroundColor={mode("gray.100", "gray.400")}
+                  >
+                    <HStack px="2" py="2" spacing="4" mt="6">
+                      {props.vm.schedulePhotoUrl && (
+                        <Img
+                          alt="{author}"
+                          w="12"
+                          h="12"
+                          rounded="full"
+                          objectFit="cover"
+                          src={props.vm.schedulePhotoUrl}
+                        />
+                      )}
+
+                      <LinkOverlay href={`/s/${props.vm.scheduleId}`}>
+                        {props.vm.scheduleTitle && (
+                          <Text fontStyle="medium" fontWeight="medium">
+                            {props.vm.scheduleTitle}
+                          </Text>
+                        )}
+
+                        {props.vm.scheduleOwnerDisplayName && (
+                          <Text color={mode("gray.600", "gray.400")}>
+                            From @{props.vm.scheduleOwnerDisplayName}
+                          </Text>
+                        )}
+                      </LinkOverlay>
+                    </HStack>
+                  </LinkBox>
                 </Box>
               </Box>
 
@@ -299,7 +372,7 @@ export async function getStaticProps({ params }) {
   }
 
   try {
-    let showActivity = await getActivity(activityId, scheduleId);
+    let showActivity = await getShowActivity(activityId, scheduleId);
 
     if (!showActivity) {
       return {
