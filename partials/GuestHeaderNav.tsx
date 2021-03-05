@@ -71,8 +71,9 @@ export const GuestHeaderNav = () => {
           )}
 
           {!user && !userLoading && (
-            <HStack spacing="3" display={{ base: "none", md: "flex" }}>
+            <HStack spacing="3" display="flex">
               <Button
+                display={{ base: "none", md: "block" }}
                 onClick={login}
                 variant="ghost"
                 color={mode("gray.500", "gray.200")}
