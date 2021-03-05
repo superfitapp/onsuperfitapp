@@ -14,7 +14,7 @@ export const BigMedia = (props: BigMediaProps) => {
       pos="relative"
       cursor="pointer"
       className="group"
-      h="400px"
+      // h="400px"
       overflow="hidden"
       boxShadow="2xl" 
       {...rest}

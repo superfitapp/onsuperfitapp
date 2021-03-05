@@ -2,7 +2,7 @@ import {
   ShowFIRActivityResponse,
   ShowFIRScheduleResponse,
 } from "../lib/db-public";
-import { getQueryString, hexColor, hexToRGB, isDark } from "@/utils/Helpers";
+import { getQueryString, hexColor, hexToRGB, isDark } from "@/utils/helpers";
 
 export interface ShowScheduleViewModel {
   data: ShowFIRScheduleResponse;
@@ -11,7 +11,7 @@ export interface ShowScheduleViewModel {
 }
 
 export interface ActivityViewModel {
-  // id: string;
+  id?: string;
   thumbnailUrl?: string;
   photoUrl?: string;
   scheduledDateTimestamp: number;
@@ -26,6 +26,7 @@ export interface ActivityViewModel {
   colorGradient: string;
   textColor: string;
   activityType: string;
+  videoThumbnailUrl?: string;
 }
 
 export function createShowScheduleViewModel(
@@ -80,7 +81,19 @@ export function createShowActivityViewModel(
     }
   }
 
+  var videoThumbnailUrl = null;
+  if (data.activity.youtubeLink) {
+    const youtubeId = getQueryString("v", data.activity.youtubeLink);
+    videoThumbnailUrl = `https://img.youtube.com/vi/${youtubeId}/0.jpg`;
+  } else if (
+    data.activity.customVideo &&
+    data.activity.customVideo?.muxPlaybackId
+  ) {
+    videoThumbnailUrl = `https://image.mux.com/${data.activity.customVideo?.muxPlaybackId}/animated.gif?fps=2&width=120`;
+  }
+
   return {
+    id: data.activity.id,
     color: primaryColor,
     colorGradient: hexToRGB(primaryColor, 0.75),
     textColor: isDark(primaryColor) ? "white" : "#303030",
@@ -96,5 +109,6 @@ export function createShowActivityViewModel(
     allDay: data.activity.allDay,
     photoUrl: photoUrl,
     thumbnailUrl: thumbnailUrl,
+    videoThumbnailUrl: videoThumbnailUrl,
   };
 }

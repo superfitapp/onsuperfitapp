@@ -15,10 +15,26 @@ import {
 import Image from "next/image";
 import * as React from "react";
 import { NavLink } from "./NavLink";
+import { useRouter } from "next/router";
 import { useUser } from "@auth0/nextjs-auth0";
 
 export const GuestHeaderNav = () => {
   const { user, error, isLoading } = useUser();
+  const userLoading = isLoading;
+  const router = useRouter();
+
+  const login = async () => {
+    try {
+      if (typeof window !== "undefined") {
+        if (router.asPath != "/") {
+          localStorage.setItem("returnTo", router.asPath);
+        }
+      }
+      router.push("/api/auth/login");
+    } catch (error) {
+      //
+    }
+  };
 
   return (
     <Box
@@ -45,10 +61,26 @@ export const GuestHeaderNav = () => {
             </NavLink.Desktop>
           </HStack>
 
-          {!user && (
-            <HStack spacing="8" display={{ base: "none", md: "flex" }}>
-              <NavLink.Desktop href="/api/auth/login">Log in </NavLink.Desktop>
-              <Button href="/api/auth/login" colorScheme="blue" rounded="2xl">
+          {userLoading && (
+            <Button
+              color={mode("gray.600", "gray.200")}
+              as={Button}
+              variant="ghost"
+              loading={userLoading.toString()}
+            ></Button>
+          )}
+
+          {!user && !userLoading && (
+            <HStack spacing="3" display={{ base: "none", md: "flex" }}>
+              <Button
+                onClick={login}
+                variant="ghost"
+                color={mode("gray.500", "gray.200")}
+                rounded="2xl"
+              >
+                Log in
+              </Button>
+              <Button onClick={login} colorScheme="blue" rounded="2xl">
                 Join
               </Button>
             </HStack>
@@ -58,6 +90,7 @@ export const GuestHeaderNav = () => {
             <Flex align="center">
               <Menu placement="bottom-end">
                 <MenuButton
+                  color={mode("gray.600", "gray.200")}
                   as={Button}
                   variant="ghost"
                   leftIcon={
@@ -69,7 +102,9 @@ export const GuestHeaderNav = () => {
                 <MenuList>
                   <MenuGroup title="Profile">
                     <MenuItem>My Account</MenuItem>
-                    <MenuItem>Payments </MenuItem>
+                    <MenuItem onClick={() => router.push("/api/auth/logout")}>
+                      Logout
+                    </MenuItem>
                   </MenuGroup>
                   <MenuDivider />
                   <MenuGroup title="Help">

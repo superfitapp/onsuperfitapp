@@ -14,8 +14,18 @@ import { BigMedia } from "../partials/BigMedia";
 import { TagBelt } from "../partials/TagBelt";
 import { OwnerWithSocial } from "../partials/OwnerWithSocial";
 import { ScheduledActivity } from "../partials/ScheduledActivity";
+import { useRouter } from "next/router";
 
 export default function Home() {
+  const router = useRouter();
+
+  if (typeof window !== "undefined") {
+    const returnTo = localStorage.getItem("returnTo");
+    if (returnTo && returnTo != "/") {
+      localStorage.setItem("returnTo", "/");
+      router.push(returnTo);
+    }
+  }
   return (
     <>
       <Layout>
@@ -74,12 +84,7 @@ export default function Home() {
           py={{ base: "6", md: "8" }}
         >
           <SimpleGrid columns={[1, 1, 3]} spacing="40px">
-            <ScheduledActivity></ScheduledActivity>
-            <ScheduledActivity></ScheduledActivity>
-            <ScheduledActivity></ScheduledActivity>
-            <ScheduledActivity></ScheduledActivity>
-            <ScheduledActivity></ScheduledActivity>
-            <ScheduledActivity></ScheduledActivity>
+            
           </SimpleGrid>
         </Box>
       </Layout>

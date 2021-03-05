@@ -6,6 +6,8 @@ import {
   Flex,
   Grid,
   Heading,
+  Center,
+  Spinner,
 } from "@chakra-ui/react";
 
 import { SimpleGrid } from "@chakra-ui/react";
@@ -14,26 +16,54 @@ import { BigMedia } from "../../partials/BigMedia";
 import { TagBelt } from "../../partials/TagBelt";
 import { OwnerWithSocial } from "../../partials/OwnerWithSocial";
 import { ScheduledActivity } from "../../partials/ScheduledActivity";
-import { getSchedule, ShowFIRScheduleResponse } from "../../lib/db-public";
-import { PhotoType } from "@superfitapp/superfitjs";
+import { getSchedule } from "../../lib/db-public";
 import {
   ShowScheduleViewModel,
   createShowScheduleViewModel,
 } from "../../utils/view-models";
+import { Props } from "framer-motion/types/types";
+import Error from "next/error";
 
-function Schedule(vm?: ShowScheduleViewModel) {
-  const schedule = vm?.data?.schedule;
+export interface ScheduleProps extends Props {
+  vm?: ShowScheduleViewModel;
+  notFound: boolean;
+}
+
+function Schedule(props: ScheduleProps) {
+  const schedule = props.vm?.data?.schedule;
+
   if (!schedule) {
+    if (props.notFound) {
+      return <Error statusCode={404} />;
+    }
+
     return (
       <Layout>
-        <div>No schedule</div>
+        <Box
+          as="section"
+          my={{ base: "2", md: "8" }}
+          py={{ base: "8", md: "12" }}
+          rounded="md"
+          bg={mode("gray.100", "gray.800")}
+        >
+          <Center>
+            <Spinner
+              thickness="4px"
+              speed="0.65s"
+              emptyColor="gray.200"
+              color="blue.500"
+              size="xl"
+            />
+          </Center>
+        </Box>
       </Layout>
     );
   }
 
   const scheduleTitle = schedule.title;
   const scheduleAbout = schedule.profile?.about;
-  const schedulePhotoUrl = vm.photoUrl;
+  const schedulePhotoUrl = props.vm?.photoUrl;
+  const activities = props.vm?.data?.activities;
 
   return (
     <>
@@ -94,13 +124,15 @@ function Schedule(vm?: ShowScheduleViewModel) {
           px={{ base: "6", md: "0" }}
           py={{ base: "6", md: "8" }}
         >
-          <SimpleGrid columns={[1, 1, 3]} spacing="40px">
-            <ScheduledActivity></ScheduledActivity>
-            <ScheduledActivity></ScheduledActivity>
-            <ScheduledActivity></ScheduledActivity>
-            <ScheduledActivity></ScheduledActivity>
-            <ScheduledActivity></ScheduledActivity>
-            <ScheduledActivity></ScheduledActivity>
+          <SimpleGrid
+            columns={[1, 1, 3]}
+            spacing={{ base: "20px", md: "40px" }}
+          >
+            {activities.map((activity) => {
+              return (
+                <ScheduledActivity activity={activity}></ScheduledActivity>
+              );
+            })}
           </SimpleGrid>
         </Box>
       </Layout>
@@ -121,7 +153,9 @@ export async function getStaticProps({ params }) {
   const { scheduleId } = params;
   if (!scheduleId) {
     return {
-      props: null,
+      props: {
+        notFound: true,
+      },
       revalidate: 1,
     };
   }
@@ -130,12 +164,17 @@ export async function getStaticProps({ params }) {
 
   if (!showSchedule) {
     return {
-      props: null,
+      props: {
+        notFound: true,
+      },
     };
   }
 
   return {
-    props: createShowScheduleViewModel(showSchedule),
+    props: {
+      vm: createShowScheduleViewModel(showSchedule),
+      notFound: false,
+    },
     // Next.js will attempt to re-generate the page:
     // - When a request comes in
     // - At most once every second

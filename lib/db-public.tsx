@@ -9,6 +9,7 @@ import axios from "axios";
 export interface ShowFIRScheduleResponse {
   schedule: ShowFIRSchedule;
   currentUser?: FIRUser;
+  activities: FIRActivity[];
 }
 
 export interface ShowFIRActivityResponse {

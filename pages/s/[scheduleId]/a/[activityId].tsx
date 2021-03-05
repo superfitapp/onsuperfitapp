@@ -26,6 +26,7 @@ import {
   Link,
   AspectRatio,
   Badge,
+  Spacer,
 } from "@chakra-ui/react";
 import { BiRightArrowAlt } from "react-icons/bi";
 import { SimpleGrid } from "@chakra-ui/react";
@@ -35,46 +36,46 @@ import { List } from "@/partials/List";
 import Head from "next/head";
 
 import { getActivity } from "@/lib/db-public";
-import { FaPlayCircle } from "react-icons/fa";
 import {
   createShowActivityViewModel,
   ActivityViewModel,
 } from "@/utils/view-models";
 import { Placeholder } from "@/partials/Placeholder";
 import { Props } from "framer-motion/types/types";
+import { BigMedia } from "@/partials/BigMedia";
 
 function ScheduleActivity(props: ScheduledActivityProps) {
   if (!props.vm) {
     if (props.notFound) {
       return <Error statusCode={404} />;
+    } else {
+      return (
+        <Layout>
+          <Box
+            as="section"
+            my={{ base: "2", md: "8" }}
+            py={{ base: "8", md: "12" }}
+            rounded="md"
+            bg={mode("gray.100", "gray.800")}
+          >
+            <Center>
+              <Spinner
+                thickness="4px"
+                speed="0.65s"
+                emptyColor="gray.200"
+                color="blue.500"
+                size="xl"
+              />
+            </Center>
+          </Box>
+        </Layout>
+      );
     }
-
-    return (
-      <Layout>
-        <Box
-          as="section"
-          my={{ base: "2", md: "8" }}
-          py={{ base: "8", md: "12" }}
-          rounded="md"
-          bg={mode("gray.100", "gray.800")}
-        >
-          <Center>
-            <Spinner
-              thickness="4px"
-              speed="0.65s"
-              emptyColor="gray.200"
-              color="blue.500"
-              size="xl"
-            />
-          </Center>
-        </Box>
-      </Layout>
-    );
   }
 
-  const scheduleTitle = props.vm.title;
-  const scheduleAbout = props.vm.description;
-  const schedulePhotoUrl = props.vm.photoUrl;
+  const activityTitle = props.vm.title;
+  const activityAbout = props.vm.description;
+  const activityPhotoUrl = props.vm.photoUrl;
 
   return (
     <>
@@ -94,26 +95,27 @@ function ScheduleActivity(props: ScheduledActivityProps) {
             <Grid templateColumns={{ base: "1fr", md: "360px 1fr" }} gap="64px">
               <Box>
                 <AspectRatio ratio={16 / 9}>
-                  <Box position="relative">
+                  <Box>
                     <VStack
+                      minHeight="100px"
                       rounded="md"
                       direction="column-reverse"
                       align="stretch"
-                      py="4"
+                      py={{ base: "6", md: "4" }}
                       position="relative"
                       justify="flex-end"
                       zIndex={1}
                       w="full"
                       h="full"
                       mx="auto"
-                      px={{ base: "6", md: "8" }}
+                      px={{ base: "8", md: "8" }}
                       color="white"
                     >
                       <Flex
                         align="baseline"
                         justify="space-between"
                         fontSize="sm"
-                        color={mode("gray.600", "gray.400")}
+                        color={mode("gray.100", "gray.800")}
                       >
                         <Badge
                           variant="subtle"
@@ -124,15 +126,9 @@ function ScheduleActivity(props: ScheduledActivityProps) {
                         >
                           Default
                         </Badge>
-                        <Link href="#">
-                          <Box
-                            as={BsClockFill}
-                            display="inline-block"
-                            me="2"
-                            opacity={0.4}
-                          />
+                        <Text fontSize="medium" fontWeight="extrabold">
                           $50
-                        </Link>
+                        </Text>
                       </Flex>
                     </VStack>
                     <Flex
@@ -148,20 +144,14 @@ function ScheduleActivity(props: ScheduledActivityProps) {
                     >
                       <Box position="relative" w="full" h="full">
                         <Img
-                          src="https://images.unsplash.com/photo-1590650153855-d9e808231d41?ixlib=rb-1.2.1&ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&auto=format&fit=crop&w=2250&q=80"
+                          src={activityPhotoUrl}
                           alt="Main Image"
                           w="full"
                           h="full"
                           objectFit="cover"
                           objectPosition="top bottom"
-                          position="absolute"
                         />
-                        <Box
-                          position="absolute"
-                          w="full"
-                          h="full"
-                          bgGradient="linear(red.100 0%, orange.100 25%, yellow.100 50%)"
-                        />
+                        <Box position="absolute" w="full" h="full" />
                       </Box>
                     </Flex>
                   </Box>
@@ -173,7 +163,7 @@ function ScheduleActivity(props: ScheduledActivityProps) {
                   letterSpacing="tight"
                   fontWeight="bold"
                 >
-                  Build SaaS with ease!
+                  {activityTitle}
                 </Heading>
 
                 <Text
@@ -209,9 +199,7 @@ function ScheduleActivity(props: ScheduledActivityProps) {
                     This Thursday
                   </Heading>
                   <Text fontSize="md" fontWeight="regular">
-                    Description Workout for today Stationary Half Spin 2x :30
-                    Spin Ball Handling Full Court To Layup Spin to Pull up Spin
-                    to Float
+                    {activityAbout}
                   </Text>
                   <HStack spacing="4" mt="8">
                     <Img
@@ -239,15 +227,12 @@ function ScheduleActivity(props: ScheduledActivityProps) {
                 spacing={{ base: "6", md: "8" }}
                 align="stretch"
               >
-                <Center
-                  bg={mode("white", "gray.700")}
-                  shadow="lg"
-                  minH={{ base: "320px", lg: "480px" }}
-                  rounded="lg"
-                >
-                  {/* Replace this with your screenshot */}
-                  <Box as={FaPlayCircle} fontSize="90px" color="gray.300" />
-                </Center>
+                {props.vm.videoThumbnailUrl && (
+                  <BigMedia
+                    alt="Getting Started with Chakra"
+                    src={props.vm.videoThumbnailUrl}
+                  />
+                )}
 
                 <Box>
                   <List spacing="12">
