@@ -20,7 +20,7 @@ import { getSchedule } from "../../lib/db-public";
 import {
   ShowScheduleViewModel,
   createShowScheduleViewModel,
-} from "../../utils/view-models";
+} from "../../utils/ViewModels";
 import { Props } from "framer-motion/types/types";
 import Error from "next/error";
 
@@ -91,28 +91,29 @@ function Schedule(props: ScheduleProps) {
 
               <Flex direction="column" h="full">
                 <Box flex="1">
-                  <TagBelt type="Workout" tags={["bodyweight", "at-home"]} />
-                  <Heading size="xl" mt="6" mb="4">
+                  {/* <TagBelt type="Workout" tags={["bodyweight", "at-home"]} /> */}
+                  <Heading size="xl" mt="4" mb="4">
                     {scheduleTitle}
                   </Heading>
                   <Text
                     fontSize="lg"
-                    color={mode("gray.600", "gray.400")}
+                    color={mode("gray.800", "gray.400")}
                     lineHeight="tall"
                   >
                     {scheduleAbout}
                   </Text>
                 </Box>
+
+                <Box mt="8">
+                  <OwnerWithSocial
+                    mt="8"
+                    name={`Created by ${props.vm.data.schedule.ownerDisplayName}`}
+                    image="https://images.unsplash.com/photo-1492633423870-43d1cd2775eb?ixid=MXwxMjA3fDB8MHxzZWFyY2h8MXx8bGFkeSUyMHNtaWxpbmd8ZW58MHx8MHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
+                    role="Developer Advocate"
+                  ></OwnerWithSocial>
+                </Box>
               </Flex>
             </Grid>
-          </Box>
-          <Box mt="8">
-            <OwnerWithSocial
-              mt="8"
-              name="Mike Hansonn"
-              image="https://images.unsplash.com/photo-1492633423870-43d1cd2775eb?ixid=MXwxMjA3fDB8MHxzZWFyY2h8MXx8bGFkeSUyMHNtaWxpbmd8ZW58MHx8MHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
-              role="Developer Advocate"
-            ></OwnerWithSocial>
           </Box>
         </Box>
 

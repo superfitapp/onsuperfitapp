@@ -22,16 +22,11 @@ import {
   VStack,
   StackDivider,
   Spinner,
-  Stack,
-  Link,
   AspectRatio,
-  Badge,
-  Spacer,
   LinkBox,
   LinkOverlay,
 } from "@chakra-ui/react";
 import { BiRightArrowAlt } from "react-icons/bi";
-import { SimpleGrid } from "@chakra-ui/react";
 import * as React from "react";
 import { ListItem } from "@/partials/ListItem";
 import { List } from "@/partials/List";
@@ -39,7 +34,7 @@ import { getShowActivity } from "@/lib/db-public";
 import {
   createShowActivityViewModel,
   ActivityViewModel,
-} from "@/utils/view-models";
+} from "@/utils/ViewModels";
 import { Placeholder } from "@/partials/Placeholder";
 import { Props } from "framer-motion/types/types";
 import { BigMedia } from "@/partials/BigMedia";
@@ -302,21 +297,37 @@ function ScheduleActivity(props: ScheduledActivityProps) {
               >
                 {props.vm.videoThumbnailUrl && (
                   <BigMedia
-                    alt="Getting Started with Chakra"
+                    alt={`Workout video for ${props.vm?.title}`}
                     src={props.vm.videoThumbnailUrl}
                   />
                 )}
 
                 <Box>
                   <List spacing="12">
-                    <ListItem
-                      title="Have a Coffee Break with Chakra UI"
-                      subTitle="Posted by Mark Chandler"
-                      icon={<Icon as={AiOutlineCoffee} boxSize="6" />}
-                    >
-                      <Placeholder />
-                    </ListItem>
-                    <ListItem
+                    {props.vm?.instructionSetViewModel
+                      ?.orderedInstructionBlocks &&
+                      props.vm.instructionSetViewModel.orderedInstructionBlocks.map(
+                        (block) => {
+                          const length = Object.keys(block.instructions).length;
+                          return (
+                            <ListItem
+                              title=""
+                              subTitle={`${length} Exercise${
+                                length > 1 ? "s" : ""
+                              }`}
+                              icon={<Icon as={AiOutlineCoffee} boxSize="6" />}
+                            >
+                              {console.log(
+                                "block instructions",
+                                block.instructions
+                              )}
+                              <Placeholder />
+                            </ListItem>
+                          );
+                        }
+                      )}
+
+                    {/* <ListItem
                       title="Women in Tech learning Chakra UI"
                       subTitle="Posted by Christian Schröter"
                       icon={<Icon as={AiOutlineWoman} boxSize="6" />}
@@ -329,7 +340,7 @@ function ScheduleActivity(props: ScheduledActivityProps) {
                       icon={<Icon as={AiOutlineSketch} boxSize="6" />}
                     >
                       <Placeholder />
-                    </ListItem>
+                    </ListItem> */}
                   </List>
                 </Box>
               </VStack>

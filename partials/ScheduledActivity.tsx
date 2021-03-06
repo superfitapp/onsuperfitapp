@@ -12,7 +12,7 @@ import {
 } from "@chakra-ui/react";
 import { StackProps } from "@chakra-ui/react";
 import { FIRActivity, ShowFIRSchedule } from "@superfitapp/superfitjs";
-import { createShowActivityViewModel } from "@/utils/view-models";
+import { createShowActivityViewModel } from "@/utils/ViewModels";
 import { ShowFIRActivityResponse } from "@/lib/db-public";
 
 interface ScheduledActivityProps extends StackProps {
