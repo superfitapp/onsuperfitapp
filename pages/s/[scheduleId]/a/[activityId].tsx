@@ -17,17 +17,24 @@ import {
   Spinner,
   AspectRatio,
   Spacer,
+  Accordion,
+  AccordionItem,
+  AccordionPanel,
+  AccordionIcon,
+  AccordionButton,
+  ExpandedIndex,
 } from "@chakra-ui/react";
 import { BiRightArrowAlt, BiRightArrowCircle } from "react-icons/bi";
 import * as React from "react";
 import { ListItem } from "@/partials/ListItem";
 import { List } from "@/partials/List";
 import { getShowActivity } from "@/lib/db-public";
+import ReactPlayer from "react-player";
+
 import {
   createShowActivityViewModel,
   ActivityViewModel,
 } from "@/utils/ViewModels";
-import { Placeholder } from "@/partials/Placeholder";
 import { Props } from "framer-motion/types/types";
 import { BigMedia } from "@/partials/BigMedia";
 
@@ -107,7 +114,7 @@ function ScheduleActivity(props: ScheduledActivityProps) {
             mx="auto"
             px={{ base: "6", md: "8" }}
           >
-            <Grid templateColumns={{ base: "1fr", md: "360px 1fr" }} gap="64px">
+            <Grid templateColumns={{ base: "1fr", md: "360px 1fr" }} gap="48px">
               <Box>
                 <AspectRatio ratio={16 / 9}>
                   <Box>
@@ -142,7 +149,7 @@ function ScheduleActivity(props: ScheduledActivityProps) {
                           fontSize="xs"
                         >
                           <Text
-                            textTransform="uppercase"
+                          textTransform="uppercase" 
                             fontSize="sm"
                             fontWeight="medium"
                           >
@@ -163,10 +170,10 @@ function ScheduleActivity(props: ScheduledActivityProps) {
                       align="center"
                       rounded="lg"
                     >
-                      <Box position="relative" w="full" h="full">
+                      <Box>
                         <Img
                           src={activityPhotoUrl}
-                          alt="Main Image"
+                          alt={`Activity image of ${activityTitle}`}
                           w="full"
                           h="full"
                           objectFit="cover"
@@ -187,7 +194,7 @@ function ScheduleActivity(props: ScheduledActivityProps) {
                 >
                   <VStack align="stretch" spacing="0">
                     <Heading
-                      size="lg"
+                      size="md"
                       letterSpacing="tight"
                       fontWeight="medium"
                     >
@@ -225,8 +232,9 @@ function ScheduleActivity(props: ScheduledActivityProps) {
                   rounded="lg"
                   mt={{ base: "8", md: "12", lg: "16" }}
                   as="blockquote"
-                  bg={{ lg: mode("white", "gray.700") }}
-                  p={{ base: "8", md: "6" }}
+                  bg={{ md: mode("white", "gray.700") }}
+                  py={{ base: "4", md: "8" }}
+                  px={{ base: "0", md: "8" }}
                 >
                   {scheduledDateRelative && (
                     <Heading
@@ -293,130 +301,175 @@ function ScheduleActivity(props: ScheduledActivityProps) {
                 </Box>
               </Box>
 
-              <VStack
-                divider={<StackDivider borderColor="gray.200" />}
-                spacing={{ base: "6", md: "8" }}
-                align="stretch"
-              >
-                {props.vm.videoThumbnailUrl && (
-                  <BigMedia
-                    alt={`Workout video for ${props.vm?.title}`}
-                    src={props.vm.videoThumbnailUrl}
-                  />
-                )}
+              <Accordion allowToggle>
+                <VStack
+                  // divider={<StackDivider borderColor="gray.200" />}
+                  spacing={{ base: "6", md: "8" }}
+                  align="stretch"
+                >
+                  {props.vm.videoThumbnailUrl && (
+                    <BigMedia
+                      alt={`Workout video for ${props.vm?.title}`}
+                      src={props.vm.videoThumbnailUrl}
+                    />
+                  )}
 
-                <Box>
-                  <List spacing="12">
-                    {instructionsBlockMap &&
-                      props.vm.instructionSetViewModel.orderedInstructionBlocks.map(
-                        (block) => {
-                          const length = Object.keys(block.instructions).length;
-                          return (
-                            <>
-                              <ListItem
-                                key={block.uniqueId}
-                                title=""
-                                fontSize="large"
-                                subTitle={`${length} Exercise${
-                                  length > 1 ? "s" : ""
-                                }`}
-                                icon={
-                                  <Center>
-                                    <Box
-                                      fontWeight="bold"
-                                      fontSize="sm"
-                                      as="span"
-                                    >
-                                      {block.repeatCount}x
-                                    </Box>
-                                  </Center>
-                                }
-                              >
-                                <VStack
-                                  divider={
-                                    <StackDivider borderColor="gray.200" />
+                  <Box>
+                    <List spacing="12">
+                      {instructionsBlockMap &&
+                        props.vm.instructionSetViewModel.orderedInstructionBlocks.map(
+                          (block) => {
+                            const length = Object.keys(block.instructions)
+                              .length;
+                            return (
+                              <>
+                                <ListItem
+                                  key={block.uniqueId}
+                                  title=""
+                                  fontSize="large"
+                                  // subTitle={`${length} Exercise${
+                                  //   length > 1 ? "s" : ""
+                                  // }`}
+                                  subTitle=""
+                                  icon={
+                                    <Center>
+                                      <Box
+                                        fontWeight="bold"
+                                        fontSize="sm"
+                                        as="span"
+                                      >
+                                        {block.repeatCount}x
+                                      </Box>
+                                    </Center>
                                   }
-                                  spacing={{ base: "4", md: "2" }}
-                                  align="stretch"
-                                  w="full"
                                 >
-                                  {instructionsBlockMap[block.uniqueId] &&
-                                    instructionsBlockMap[block.uniqueId].map(
-                                      (viewModel) => {
-                                        console.log(viewModel);
+                                  <VStack
+                                    // divider={
+                                    //   <StackDivider borderColor="gray.200" />
+                                    // }
+                                    spacing={{ base: "4", md: "2" }}
+                                    align="stretch"
+                                    w="full"
+                                  >
+                                    {instructionsBlockMap[block.uniqueId] &&
+                                      instructionsBlockMap[block.uniqueId].map(
+                                        (viewModel) => {
+                                          return (
+                                            <AccordionItem>
+                                              {({ isExpanded }) => (
+                                                <>
+                                                  <h2>
+                                                    <AccordionButton
+                                                      px="1"
+                                                      justifyContent="space-between"
+                                                      rounded="xl"
+                                                    >
+                                                      <Flex
+                                                        // flexDirection="row"
+                                                        alignItems="center"
+                                                        align="stretch"
+                                                        w="full"
+                                                        justifyContent="space-around"
 
-                                        return (
-                                          <Flex
-                                            flexDirection="row"
-                                            alignItems="center"
-                                            justifyContent="space-between"
-                                            rounded="xl"
-                                            backgroundColor={{
-                                              base: "gray.100",
-                                              md: "inherit",
-                                            }}
-                                            _hover={{
-                                              bg: mode("gray.200", "gray.200"),
-                                            }}
-                                            px="2"
-                                            py="2"
-                                          >
-                                            <Flex
-                                              direction="column"
-                                              alignItems="stretch"
-                                              me="2"
-                                            >
-                                              {viewModel.instruction.exercise
-                                                .title && (
-                                                <Text
-                                                  fontSize="md"
-                                                  color="gray.800"
-                                                  fontStyle="medium"
-                                                  fontWeight="medium"
-                                                >
-                                                  {
-                                                    viewModel.instruction
-                                                      .exercise.title
-                                                  }
-                                                </Text>
+                                                        // py="1"
+                                                      >
+                                                        <VStack
+                                                          alignItems="flex-start"
+                                                          me="2"
+                                                        >
+                                                          {viewModel.instruction
+                                                            .exercise.title && (
+                                                            <Text
+                                                              textAlign="start"
+                                                              fontSize="md"
+                                                              color="gray.800"
+                                                              fontStyle="medium"
+                                                              fontWeight="medium"
+                                                            >
+                                                              {
+                                                                viewModel
+                                                                  .instruction
+                                                                  .exercise
+                                                                  .title
+                                                              }
+                                                            </Text>
+                                                          )}
+
+                                                          {viewModel.instructionPrompt && (
+                                                            <Text
+                                                              fontSize="large"
+                                                              color="gray.700"
+                                                            >
+                                                              {
+                                                                viewModel.instructionPrompt
+                                                              }
+                                                            </Text>
+                                                          )}
+                                                        </VStack>
+                                                        <Spacer></Spacer>
+
+                                                        {props.vm
+                                                          .schedulePhotoUrl && (
+                                                          <AspectRatio
+                                                            minWidth="100px"
+                                                            display={
+                                                              isExpanded
+                                                                ? "none"
+                                                                : "inherit"
+                                                            }
+                                                            ratio={16 / 9}
+                                                          >
+                                                            <Img
+                                                              alt={`Exercise thumbnail image for ${viewModel.instruction.exercise.title}`}
+                                                              rounded="md"
+                                                              objectFit="cover"
+                                                              src={
+                                                                viewModel.thumbnailUrl
+                                                              }
+                                                            />
+                                                          </AspectRatio>
+                                                        )}
+                                                        <AccordionIcon
+                                                          color="gray.500"
+                                                          ms="1"
+                                                        />
+                                                      </Flex>
+                                                    </AccordionButton>
+                                                  </h2>
+                                                  <AccordionPanel p={0}>
+                                                    <AspectRatio
+                                                      mt="2"
+                                                      w="100%"
+                                                      h="100%"
+                                                    >
+                                                      <ReactPlayer
+                                                        width="100%"
+                                                        height="100%"
+                                                        controls
+                                                        url={
+                                                          viewModel.muxUrl ||
+                                                          viewModel.youtubeUrl
+                                                        }
+                                                        playing={isExpanded}
+                                                      />
+                                                    </AspectRatio>
+                                                  </AccordionPanel>
+                                                </>
                                               )}
-
-                                              {viewModel.instructionPrompt && (
-                                                <Text
-                                                  fontSize="large"
-                                                  color="gray.700"
-                                                >
-                                                  {viewModel.instructionPrompt}
-                                                </Text>
-                                              )}
-                                            </Flex>
-
-                                            {props.vm.schedulePhotoUrl && (
-                                              <AspectRatio
-                                                minWidth="100px"
-                                                ratio={16 / 9}
-                                              >
-                                                <Img
-                                                  alt=""
-                                                  rounded="md"
-                                                  objectFit="cover"
-                                                  src={viewModel.thumbnailUrl}
-                                                />
-                                              </AspectRatio>
-                                            )}
-                                          </Flex>
-                                        );
-                                      }
-                                    )}
-                                </VStack>
-                              </ListItem>
-                            </>
-                          );
-                        }
-                      )}
-                  </List>
-                </Box>
-              </VStack>
+                                            </AccordionItem>
+                                          );
+                                        }
+                                      )}
+                                  </VStack>
+                                </ListItem>
+                              </>
+                            );
+                          }
+                        )}
+                    </List>
+                  </Box>
+                </VStack>
+              </Accordion>
             </Grid>
           </Box>
         </Box>
