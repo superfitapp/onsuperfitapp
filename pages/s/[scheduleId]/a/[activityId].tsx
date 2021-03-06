@@ -1,11 +1,4 @@
 import Error from "next/error";
-
-import {
-  AiOutlineCoffee,
-  AiOutlineSketch,
-  AiOutlineWoman,
-} from "react-icons/ai";
-
 import Layout from "@/components/layout";
 import {
   Box,
@@ -23,10 +16,9 @@ import {
   StackDivider,
   Spinner,
   AspectRatio,
-  LinkBox,
-  LinkOverlay,
+  Spacer,
 } from "@chakra-ui/react";
-import { BiRightArrowAlt } from "react-icons/bi";
+import { BiRightArrowAlt, BiRightArrowCircle } from "react-icons/bi";
 import * as React from "react";
 import { ListItem } from "@/partials/ListItem";
 import { List } from "@/partials/List";
@@ -64,6 +56,9 @@ function ScheduleActivity(props: ScheduledActivityProps) {
     });
     scheduledDateRelative = dayjs(scheduledDate).fromNow();
   }
+
+  let instructionsBlockMap =
+    props?.vm?.instructionSetViewModel?.instructionsBlockMap;
 
   if (!props.vm) {
     if (props.notFound) {
@@ -154,16 +149,6 @@ function ScheduleActivity(props: ScheduledActivityProps) {
                             {props.vm.activityType}
                           </Text>
                         </Center>
-                        {/* <Center rounded="lg" bg="rgba(0,0,0,0.4)">
-                          <Text
-                            py="1"
-                            px="2"
-                            fontSize="medium"
-                            fontWeight="extrabold"
-                          >
-                            $50
-                          </Text>
-                        </Center> */}
                       </HStack>
                     </VStack>
 
@@ -201,7 +186,11 @@ function ScheduleActivity(props: ScheduledActivityProps) {
                   alignItems="start"
                 >
                   <VStack align="stretch" spacing="0">
-                    <Heading size="lg" letterSpacing="tight" fontWeight="bold">
+                    <Heading
+                      size="lg"
+                      letterSpacing="tight"
+                      fontWeight="medium"
+                    >
                       {activityTitle}
                     </Heading>
 
@@ -216,8 +205,8 @@ function ScheduleActivity(props: ScheduledActivityProps) {
                       </Text>
                     )}
                   </VStack>
-                  <Center rounded="lg" bg="rgba(0,0,0,0.1)">
-                    <Text py="1" px="2" fontSize="lg" fontWeight="extrabold">
+                  <Center rounded="lg" bg="rgba(0,0,0,0.05)">
+                    <Text py="1" px="2" fontSize="lg" fontWeight="medium">
                       $50
                     </Text>
                   </Center>
@@ -237,7 +226,7 @@ function ScheduleActivity(props: ScheduledActivityProps) {
                   mt={{ base: "8", md: "12", lg: "16" }}
                   as="blockquote"
                   bg={{ lg: mode("white", "gray.700") }}
-                  p={{ lg: "8" }}
+                  p={{ base: "8", md: "6" }}
                 >
                   {scheduledDateRelative && (
                     <Heading
@@ -256,37 +245,51 @@ function ScheduleActivity(props: ScheduledActivityProps) {
                     {activityAbout}
                   </Text>
 
-                  <LinkBox
+                  <HStack
                     rounded="xl"
-                    backgroundColor={mode("gray.100", "gray.400")}
+                    as="a"
+                    href={`/s/${props.vm.scheduleId}`}
+                    backgroundColor={{ base: "gray.100", md: "inherit" }}
+                    _hover={{ bg: mode("gray.200", "gray.200") }}
+                    px="2"
+                    py="2"
+                    spacing="4"
+                    mt="6"
                   >
-                    <HStack px="2" py="2" spacing="4" mt="6">
-                      {props.vm.schedulePhotoUrl && (
-                        <Img
-                          alt="{author}"
-                          w="12"
-                          h="12"
-                          rounded="full"
-                          objectFit="cover"
-                          src={props.vm.schedulePhotoUrl}
-                        />
+                    {props.vm.schedulePhotoUrl && (
+                      <Img
+                        alt="{author}"
+                        w="12"
+                        h="12"
+                        rounded="full"
+                        objectFit="cover"
+                        src={props.vm.schedulePhotoUrl}
+                      />
+                    )}
+
+                    <Flex
+                      as="button"
+                      direction="column"
+                      alignItems="flex-start"
+                    >
+                      {props.vm.scheduleTitle && (
+                        <Text fontStyle="medium" fontWeight="medium">
+                          {props.vm.scheduleTitle}
+                        </Text>
                       )}
 
-                      <LinkOverlay href={`/s/${props.vm.scheduleId}`}>
-                        {props.vm.scheduleTitle && (
-                          <Text fontStyle="medium" fontWeight="medium">
-                            {props.vm.scheduleTitle}
-                          </Text>
-                        )}
+                      {props.vm.scheduleOwnerDisplayName && (
+                        <Text color={mode("gray.600", "gray.400")}>
+                          From @{props.vm.scheduleOwnerDisplayName}
+                        </Text>
+                      )}
+                    </Flex>
+                    <Spacer></Spacer>
 
-                        {props.vm.scheduleOwnerDisplayName && (
-                          <Text color={mode("gray.600", "gray.400")}>
-                            From @{props.vm.scheduleOwnerDisplayName}
-                          </Text>
-                        )}
-                      </LinkOverlay>
-                    </HStack>
-                  </LinkBox>
+                    <Center color="gray.500">
+                      <BiRightArrowCircle />
+                    </Center>
+                  </HStack>
                 </Box>
               </Box>
 
@@ -304,43 +307,113 @@ function ScheduleActivity(props: ScheduledActivityProps) {
 
                 <Box>
                   <List spacing="12">
-                    {props.vm?.instructionSetViewModel
-                      ?.orderedInstructionBlocks &&
+                    {instructionsBlockMap &&
                       props.vm.instructionSetViewModel.orderedInstructionBlocks.map(
                         (block) => {
                           const length = Object.keys(block.instructions).length;
                           return (
-                            <ListItem
-                              title=""
-                              subTitle={`${length} Exercise${
-                                length > 1 ? "s" : ""
-                              }`}
-                              icon={<Icon as={AiOutlineCoffee} boxSize="6" />}
-                            >
-                              {console.log(
-                                "block instructions",
-                                block.instructions
-                              )}
-                              <Placeholder />
-                            </ListItem>
+                            <>
+                              <ListItem
+                                key={block.uniqueId}
+                                title=""
+                                fontSize="large"
+                                subTitle={`${length} Exercise${
+                                  length > 1 ? "s" : ""
+                                }`}
+                                icon={
+                                  <Center>
+                                    <Box
+                                      fontWeight="bold"
+                                      fontSize="sm"
+                                      as="span"
+                                    >
+                                      {block.repeatCount}x
+                                    </Box>
+                                  </Center>
+                                }
+                              >
+                                <VStack
+                                  divider={
+                                    <StackDivider borderColor="gray.200" />
+                                  }
+                                  spacing={{ base: "4", md: "2" }}
+                                  align="stretch"
+                                  w="full"
+                                >
+                                  {instructionsBlockMap[block.uniqueId] &&
+                                    instructionsBlockMap[block.uniqueId].map(
+                                      (viewModel) => {
+                                        console.log(viewModel);
+
+                                        return (
+                                          <Flex
+                                            flexDirection="row"
+                                            alignItems="center"
+                                            justifyContent="space-between"
+                                            rounded="xl"
+                                            backgroundColor={{
+                                              base: "gray.100",
+                                              md: "inherit",
+                                            }}
+                                            _hover={{
+                                              bg: mode("gray.200", "gray.200"),
+                                            }}
+                                            px="2"
+                                            py="2"
+                                          >
+                                            <Flex
+                                              direction="column"
+                                              alignItems="stretch"
+                                              me="2"
+                                            >
+                                              {viewModel.instruction.exercise
+                                                .title && (
+                                                <Text
+                                                  fontSize="md"
+                                                  color="gray.800"
+                                                  fontStyle="medium"
+                                                  fontWeight="medium"
+                                                >
+                                                  {
+                                                    viewModel.instruction
+                                                      .exercise.title
+                                                  }
+                                                </Text>
+                                              )}
+
+                                              {viewModel.instructionPrompt && (
+                                                <Text
+                                                  fontSize="large"
+                                                  color="gray.700"
+                                                >
+                                                  {viewModel.instructionPrompt}
+                                                </Text>
+                                              )}
+                                            </Flex>
+
+                                            {props.vm.schedulePhotoUrl && (
+                                              <AspectRatio
+                                                minWidth="100px"
+                                                ratio={16 / 9}
+                                              >
+                                                <Img
+                                                  alt=""
+                                                  rounded="md"
+                                                  objectFit="cover"
+                                                  src={viewModel.thumbnailUrl}
+                                                />
+                                              </AspectRatio>
+                                            )}
+                                          </Flex>
+                                        );
+                                      }
+                                    )}
+                                </VStack>
+                              </ListItem>
+                            </>
                           );
                         }
                       )}
-
-                    {/* <ListItem
-                      title="Women in Tech learning Chakra UI"
-                      subTitle="Posted by Christian Schröter"
-                      icon={<Icon as={AiOutlineWoman} boxSize="6" />}
-                    >
-                      <Placeholder />
-                    </ListItem>
-                    <ListItem
-                      title="Using Chakra UI in Sketch"
-                      subTitle="Posted by Segun Adebayo"
-                      icon={<Icon as={AiOutlineSketch} boxSize="6" />}
-                    >
-                      <Placeholder />
-                    </ListItem> */}
                   </List>
                 </Box>
               </VStack>

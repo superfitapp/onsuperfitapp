@@ -13,6 +13,7 @@
     "@emotion/react": "^11.1.5",
     "@emotion/styled": "^11.1.5",
     "@superfitapp/superfitjs": "github:superfitapp/superfit-shared-js#v2.8.0",
+    "@types/video.js": "^7.3.15",
     "axios": "^0.21.1",
     "dayjs": "^1.10.4",
     "firebase": "^8.2.9",
@@ -21,7 +22,8 @@
     "next": "10.0.5",
     "react": "17.0.1",
     "react-dom": "17.0.1",
-    "react-icons": "^4.2.0"
+    "react-icons": "^4.2.0",
+    "typing": "^0.1.9"
   },
   "devDependencies": {
     "@types/node": "^14.14.31",
