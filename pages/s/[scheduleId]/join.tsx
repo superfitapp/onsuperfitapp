@@ -1,8 +1,10 @@
-import Layout from "../../../components/schedule-layout";
+import Layout from "@/components/schedule-layout";
+import { StringOrNumber } from "@chakra-ui/utils";
+import { Fade, useBreakpointValue } from "@chakra-ui/react";
+
 import {
   HiBriefcase,
   HiChevronDoubleRight,
-  HiChevronRight,
   HiCursorClick,
   HiPlus,
 } from "react-icons/hi";
@@ -26,7 +28,7 @@ import {
 } from "../../../utils/ViewModels";
 import { Props } from "framer-motion/types/types";
 import Error from "next/error";
-import { Placeholder } from "@/partials/Placeholder";
+
 import { ButtonRadioGroup } from "@/partials/ButtonRadioGroup";
 import { ArrowDirection, ScheduleRow } from "@/partials/ScheduleRow";
 
@@ -49,47 +51,56 @@ function JoinSchedule(props: ScheduleProps, notFound: boolean) {
   const scheduleId = props.vm.scheduleId;
   const scheduleOwnerDisplayName = props.vm.data.schedule.ownerDisplayName;
 
+  const [currentOption, setCurrentOption] = React.useState<
+    StringOrNumber | undefined
+  >(null);
+
   return (
     <>
       <Layout scheduleId={null}>
         <Box as="section" py="12">
-          {/* <Box maxW={{ base: "xl", md: "7xl" }} mx="auto"> */}
           <Box
             rounded={{ lg: "lg" }}
             bg={mode("white", "gray.700")}
-            // maxW="3xl"
-            mx="auto"
             shadow={{ base: "none", md: "lg" }}
             overflow="hidden"
           >
-            <Flex align="center" justify="space-between" px="6" py="4">
-              <ScheduleRow
-                schedulePhotoUrl={schedulePhotoUrl}
-                scheduleOwnerDisplayName={scheduleOwnerDisplayName}
-                scheduleId={scheduleId}
-                scheduleTitle={scheduleTitle}
-                arrowDirection={ArrowDirection.back}
-              ></ScheduleRow>
+            <Box
+              position={{ base: "fixed", sm: "relative" }}
+              width="full"
+              maxWidth="full"
+              bgColor={mode("white", "white")}
+              px="0"
+              marginX="auto"
+              top="0"
+            >
+              <Flex align="center" justify="space-between" px="6" py="4">
+                <ScheduleRow
+                  schedulePhotoUrl={schedulePhotoUrl}
+                  scheduleOwnerDisplayName={scheduleOwnerDisplayName}
+                  scheduleId={scheduleId}
+                  scheduleTitle={scheduleTitle}
+                  arrowDirection={ArrowDirection.back}
+                  hideTitleOnSmall={true}
+                ></ScheduleRow>
 
-              <Text hidden as="h3" fontWeight="semibold" fontSize="lg">
-                <Text as="span" fontWeight="light">
-                  {" "}
-                </Text>
-                {scheduleTitle}
-              </Text>
-              <Button
-                colorScheme="blue"
-                minW="20"
-                rightIcon={<HiChevronDoubleRight />}
-              >
-                Sign Up
-              </Button>
-            </Flex>
-            <Divider />
+                <Button
+                  colorScheme="blue"
+                  minW="20"
+                  // rightIcon={<HiChevronDoubleRight />}
+                >
+                  Select
+                </Button>
+              </Flex>
+              <Divider />
+            </Box>
 
             <Stack spacing="6" py="5" px="8" divider={<StackDivider />}>
               <Box minW="full" mx="auto">
                 <ButtonRadioGroup
+                  onChange={(value) => {
+                    setCurrentOption(value);
+                  }}
                   defaultValue="analytics"
                   options={[
                     {
@@ -102,25 +113,43 @@ function JoinSchedule(props: ScheduleProps, notFound: boolean) {
                       label: "Premium Yearly",
                       description: "$20/year",
                       icon: <HiBriefcase />,
-                      value: "analytics",
+                      value: "analytiarstcs",
                     },
-                    
+
                     {
                       label: "Basic Member",
-                      description:
-                        "Free",
+                      description: "Free",
                       icon: <HiCursorClick />,
                       value: "intranet",
                     },
                   ]}
                 />
               </Box>
-
-              {/* <Placeholder></Placeholder> */}
             </Stack>
           </Box>
         </Box>
-        {/* </Box> */}
+
+        <Fade hidden in={currentOption != undefined}>
+          <Box
+            position="fixed"
+            insetX="0"
+            insetY="0"
+            w="full"
+            h="50px"
+            marginX="0"
+            overflow="hidden"
+            align="center"
+            rounded="lg"
+            p="40px"
+            color="white"
+            mt="4"
+            bg="teal.500"
+            // rounded="md"
+            shadow="md"
+          >
+            Fade
+          </Box>
+        </Fade>
       </Layout>
     </>
   );

@@ -17,8 +17,16 @@ import {
 } from "@superfitapp/superfitjs";
 import InstructionBuilder from "./InstructionBuilder";
 
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+import calendar from "dayjs/plugin/calendar";
+dayjs.extend(relativeTime);
+dayjs.extend(calendar);
+import "dayjs/locale/en"; // import locale
+dayjs.locale("en"); // use locale
+
 export interface ShowScheduleViewModel {
-  scheduleId: string
+  scheduleId: string;
   data: ShowFIRScheduleResponse;
   thumbnailUrl?: string;
   photoUrl?: string;
@@ -46,8 +54,10 @@ export interface ActivityViewModel {
   scheduleTitle: string;
   schedulePhotoUrl?: string;
   scheduleOwnerDisplayName: string;
-
   instructionSetViewModel?: InstructionSetViewModel;
+
+  scheduledDateRelative?: string;
+  scheduledDateString?: string;
 }
 
 export function createShowScheduleViewModel(
@@ -117,6 +127,25 @@ export function createShowActivityViewModel(
     }
   }
 
+  const scheduledDateTimestamp =
+    data.activity.scheduledDate?._seconds * 1000 || null;
+  let scheduledDateString: string | undefined = null;
+  let scheduledDateRelative: string | undefined = null;
+
+  if (scheduledDateTimestamp) {
+    const scheduledDate = new Date(scheduledDateTimestamp);
+
+    scheduledDateString = dayjs(scheduledDate).calendar(null, {
+      sameDay: "[Today at] h:mm A", // The same day ( Today at 2:30 AM )
+      nextDay: "[Tomorrow]", // The next day ( Tomorrow at 2:30 AM )
+      nextWeek: "dddd", // The next week ( Sunday at 2:30 AM )
+      lastDay: "[Yesterday]", // The day before ( Yesterday at 2:30 AM )
+      lastWeek: "[Last] dddd", // Last week ( Last Monday at 2:30 AM )
+      sameElse: "MMMM DD, YYYY", // Everything else ( 7/10/2011 )
+    });
+    scheduledDateRelative = dayjs(scheduledDate).fromNow();
+  }
+
   return {
     id: data.activity.id || null,
     scheduleId: data.activity.scheduleInfo.id,
@@ -125,8 +154,9 @@ export function createShowActivityViewModel(
     textColor: isDark(primaryColor) ? "white" : "#303030",
     activityType: data.activity.type,
     title: data.activity.title,
-    scheduledDateTimestamp:
-      data.activity.scheduledDate?._seconds * 1000 || null,
+    scheduledDateTimestamp: scheduledDateTimestamp,
+    scheduledDateRelative: scheduledDateRelative,
+    scheduledDateString: scheduledDateString,
     customVideoUrl: data.activity?.customVideo?.masterUrl || null,
     description: data.activity.description,
     customMuxUrl: data.activity.customVideo?.muxPlaybackId

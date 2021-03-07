@@ -45,19 +45,13 @@ export const ScheduledActivity = (props: ScheduledActivityProps) => {
         <Box>
           {/* Tags */}
           <Flex align="baseline" mt={2}>
-            <Badge colorScheme="pink">Plus</Badge>
-            <Text
-              ml={2}
-              textTransform="uppercase"
-              fontSize="sm"
-              fontWeight="bold"
-              color="pink.800"
-            >
-              Verified &bull; Cape Town
+            {/* <Badge colorScheme="pink">Plus</Badge> */}
+            <Text fontSize="sm" fontWeight="bold" color="gray.500">
+              {vm.scheduledDateRelative || ""}
             </Text>
           </Flex>
           <LinkOverlay href={path}>
-            <Text mt={2} fontSize="lg" fontWeight="regular" lineHeight="short">
+            <Text mt={1} fontSize="lg" fontWeight="regular" lineHeight="short">
               {vm.title}
             </Text>
           </LinkOverlay>

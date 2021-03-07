@@ -35,32 +35,11 @@ import {
 } from "@/utils/ViewModels";
 import { Props } from "framer-motion/types/types";
 import { BigMedia } from "@/partials/BigMedia";
-
-import dayjs from "dayjs";
-import relativeTime from "dayjs/plugin/relativeTime";
-import calendar from "dayjs/plugin/calendar";
-dayjs.extend(relativeTime);
-dayjs.extend(calendar);
-import "dayjs/locale/en"; // import locale
-dayjs.locale("en"); // use locale
+import { ArrowDirection, ScheduleRow } from "@/partials/ScheduleRow";
 
 function ScheduleActivity(props: ScheduledActivityProps) {
-  var scheduledDateString: string | undefined = null;
-  var scheduledDateRelative: string | undefined = null;
-
-  if (props.vm?.scheduledDateTimestamp) {
-    const scheduledDate = new Date(props.vm?.scheduledDateTimestamp);
-
-    scheduledDateString = dayjs(scheduledDate).calendar(null, {
-      sameDay: "[Today at] h:mm A", // The same day ( Today at 2:30 AM )
-      nextDay: "[Tomorrow]", // The next day ( Tomorrow at 2:30 AM )
-      nextWeek: "dddd", // The next week ( Sunday at 2:30 AM )
-      lastDay: "[Yesterday]", // The day before ( Yesterday at 2:30 AM )
-      lastWeek: "[Last] dddd", // Last week ( Last Monday at 2:30 AM )
-      sameElse: "MMMM DD, YYYY", // Everything else ( 7/10/2011 )
-    });
-    scheduledDateRelative = dayjs(scheduledDate).fromNow();
-  }
+  var scheduledDateString = props.vm?.scheduledDateString;
+  var scheduledDateRelative = props.vm?.scheduledDateRelative;
 
   let instructionsBlockMap =
     props?.vm?.instructionSetViewModel?.instructionsBlockMap;
@@ -118,13 +97,11 @@ function ScheduleActivity(props: ScheduledActivityProps) {
                   <Box>
                     <VStack
                       rounded="md"
-                      // direction="column-reverse"
                       direction="column"
                       align="stretch"
                       py={{ base: "4", md: "4" }}
                       position="relative"
                       justify="flex-end"
-                      // justify="flex"
                       zIndex={1}
                       w="full"
                       h="full"
@@ -199,7 +176,6 @@ function ScheduleActivity(props: ScheduledActivityProps) {
 
                     {scheduledDateString && (
                       <Text
-                        mb="8"
                         fontSize="lg"
                         fontWeight="regular"
                         color={mode("gray.500", "gray.200")}
@@ -215,6 +191,16 @@ function ScheduleActivity(props: ScheduledActivityProps) {
                   </Center>
                 </Flex>
 
+                <ScheduleRow
+                  mb={{ base: "4", md: "12" }}
+                  mt={{ base: "1", md: "2" }}
+                  schedulePhotoUrl={props.vm.schedulePhotoUrl}
+                  scheduleOwnerDisplayName={props.vm.scheduleOwnerDisplayName}
+                  scheduleId={props.vm.scheduleId}
+                  scheduleTitle={props.vm.scheduleTitle}
+                  arrowDirection={ArrowDirection.forward}
+                ></ScheduleRow>
+
                 <Button
                   size="lg"
                   colorScheme="blue"
@@ -229,8 +215,8 @@ function ScheduleActivity(props: ScheduledActivityProps) {
                   mt={{ base: "8", md: "12", lg: "16" }}
                   as="blockquote"
                   bg={{ md: mode("white", "gray.700") }}
-                  py={{ base: "4", md: "8" }}
-                  px={{ base: "0", md: "8" }}
+                  py={{ base: "4", md: "6" }}
+                  px={{ base: "0", md: "6" }}
                 >
                   {scheduledDateRelative && (
                     <Heading
@@ -245,55 +231,15 @@ function ScheduleActivity(props: ScheduledActivityProps) {
                     </Heading>
                   )}
 
-                  <Text fontSize="md" fontWeight="regular">
+                  <Text
+                    as="p"
+                    whiteSpace="pre-line"
+                    orientation="vertical"
+                    fontSize="md"
+                    fontWeight="regular"
+                  >
                     {activityAbout}
                   </Text>
-
-                  <HStack
-                    rounded="xl"
-                    as="a"
-                    href={`/s/${props.vm?.scheduleId}`}
-                    backgroundColor={{ base: "gray.100", md: "inherit" }}
-                    _hover={{ bg: mode("gray.200", "gray.200") }}
-                    px="2"
-                    py="2"
-                    spacing="4"
-                    mt="6"
-                  >
-                    {props.vm?.schedulePhotoUrl && (
-                      <Img
-                        alt="{author}"
-                        w="12"
-                        h="12"
-                        rounded="full"
-                        objectFit="cover"
-                        src={props.vm?.schedulePhotoUrl}
-                      />
-                    )}
-
-                    <Flex
-                      as="button"
-                      direction="column"
-                      alignItems="flex-start"
-                    >
-                      {props.vm?.scheduleTitle && (
-                        <Text fontStyle="medium" fontWeight="medium">
-                          {props.vm?.scheduleTitle}
-                        </Text>
-                      )}
-
-                      {props.vm?.scheduleOwnerDisplayName && (
-                        <Text color={mode("gray.600", "gray.400")}>
-                          From @{props.vm?.scheduleOwnerDisplayName}
-                        </Text>
-                      )}
-                    </Flex>
-                    <Spacer></Spacer>
-
-                    <Center color="gray.500">
-                      <BiRightArrowCircle />
-                    </Center>
-                  </HStack>
                 </Box>
               </Box>
 

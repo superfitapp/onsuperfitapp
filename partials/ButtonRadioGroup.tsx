@@ -19,7 +19,7 @@ export const ButtonRadioGroup = (props: ButtonRadioGroupProps) => {
       justify="center"
       align="stretch"
       direction={{ base: "column", md: "row" }}
-      spacing="8"
+      spacing="2"
       {...getRootProps()}
     >
       {options.map((option) => (
