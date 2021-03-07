@@ -13,8 +13,7 @@ interface TagBeltProps {
   tags: string[];
 }
 
-export const TagBelt = (props: TagBeltProps) => {
-  const { type, tags } = props;
+export const TagBelt = ({ type, tags }: TagBeltProps) => {
   return (
     <Stack
       spacing={{ base: "4", md: "6" }}

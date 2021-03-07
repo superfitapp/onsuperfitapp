@@ -18,6 +18,7 @@ import {
 import InstructionBuilder from "./InstructionBuilder";
 
 export interface ShowScheduleViewModel {
+  scheduleId: string
   data: ShowFIRScheduleResponse;
   thumbnailUrl?: string;
   photoUrl?: string;
@@ -50,9 +51,11 @@ export interface ActivityViewModel {
 }
 
 export function createShowScheduleViewModel(
+  scheduleId: string,
   data: ShowFIRScheduleResponse
 ): ShowScheduleViewModel {
   var vm: ShowScheduleViewModel = {
+    scheduleId: scheduleId,
     data: data,
   };
 

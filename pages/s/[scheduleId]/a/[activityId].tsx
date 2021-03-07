@@ -1,5 +1,5 @@
 import Error from "next/error";
-import Layout from "@/components/layout";
+import Layout from "@/components/schedule-layout";
 import {
   Box,
   Text,
@@ -11,9 +11,7 @@ import {
   HStack,
   Button,
   Center,
-  Icon,
   VStack,
-  StackDivider,
   Spinner,
   AspectRatio,
   Spacer,
@@ -51,7 +49,7 @@ function ScheduleActivity(props: ScheduledActivityProps) {
   var scheduledDateRelative: string | undefined = null;
 
   if (props.vm?.scheduledDateTimestamp) {
-    const scheduledDate = new Date(props.vm.scheduledDateTimestamp);
+    const scheduledDate = new Date(props.vm?.scheduledDateTimestamp);
 
     scheduledDateString = dayjs(scheduledDate).calendar(null, {
       sameDay: "[Today at] h:mm A", // The same day ( Today at 2:30 AM )
@@ -72,7 +70,7 @@ function ScheduleActivity(props: ScheduledActivityProps) {
       return <Error statusCode={404} />;
     } else {
       return (
-        <Layout>
+        <Layout scheduleId={props.vm?.scheduleId}>
           <Box
             as="section"
             my={{ base: "2", md: "8" }}
@@ -101,7 +99,7 @@ function ScheduleActivity(props: ScheduledActivityProps) {
 
   return (
     <>
-      <Layout>
+      <Layout scheduleId={props.vm?.scheduleId}>
         <Box
           as="section"
           my={{ base: "2", md: "8" }}
@@ -119,7 +117,6 @@ function ScheduleActivity(props: ScheduledActivityProps) {
                 <AspectRatio ratio={16 / 9}>
                   <Box>
                     <VStack
-                      // minHeight="100px"
                       rounded="md"
                       // direction="column-reverse"
                       direction="column"
@@ -149,7 +146,7 @@ function ScheduleActivity(props: ScheduledActivityProps) {
                           fontSize="xs"
                         >
                           <Text
-                          textTransform="uppercase" 
+                            textTransform="uppercase"
                             fontSize="sm"
                             fontWeight="medium"
                           >
@@ -187,7 +184,6 @@ function ScheduleActivity(props: ScheduledActivityProps) {
 
                 <Flex
                   mt="4"
-                  // bgColor="gray.200"
                   align="stretch"
                   justify="space-between"
                   alignItems="start"
@@ -256,7 +252,7 @@ function ScheduleActivity(props: ScheduledActivityProps) {
                   <HStack
                     rounded="xl"
                     as="a"
-                    href={`/s/${props.vm.scheduleId}`}
+                    href={`/s/${props.vm?.scheduleId}`}
                     backgroundColor={{ base: "gray.100", md: "inherit" }}
                     _hover={{ bg: mode("gray.200", "gray.200") }}
                     px="2"
@@ -264,14 +260,14 @@ function ScheduleActivity(props: ScheduledActivityProps) {
                     spacing="4"
                     mt="6"
                   >
-                    {props.vm.schedulePhotoUrl && (
+                    {props.vm?.schedulePhotoUrl && (
                       <Img
                         alt="{author}"
                         w="12"
                         h="12"
                         rounded="full"
                         objectFit="cover"
-                        src={props.vm.schedulePhotoUrl}
+                        src={props.vm?.schedulePhotoUrl}
                       />
                     )}
 
@@ -280,15 +276,15 @@ function ScheduleActivity(props: ScheduledActivityProps) {
                       direction="column"
                       alignItems="flex-start"
                     >
-                      {props.vm.scheduleTitle && (
+                      {props.vm?.scheduleTitle && (
                         <Text fontStyle="medium" fontWeight="medium">
-                          {props.vm.scheduleTitle}
+                          {props.vm?.scheduleTitle}
                         </Text>
                       )}
 
-                      {props.vm.scheduleOwnerDisplayName && (
+                      {props.vm?.scheduleOwnerDisplayName && (
                         <Text color={mode("gray.600", "gray.400")}>
-                          From @{props.vm.scheduleOwnerDisplayName}
+                          From @{props.vm?.scheduleOwnerDisplayName}
                         </Text>
                       )}
                     </Flex>

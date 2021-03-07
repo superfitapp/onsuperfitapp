@@ -21,14 +21,15 @@ export interface ShowFIRActivityResponse {
 export async function getSchedule(
   id: string
 ): Promise<ShowFIRScheduleResponse> {
-  const { data } = await axios.get<ShowFIRScheduleResponse>(
+  const { data } = await axios
+  .get<ShowFIRScheduleResponse>(
     `${process.env.NEXT_PUBLIC_SUPERFIT_API_BASE_URL}/show_schedule`,
     {
       params: {
         scheduleId: id,
       },
     }
-  );
+  )
 
   return data;
 }

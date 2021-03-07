@@ -54,7 +54,6 @@ export const OwnerWithSocial = (props: OwnerWithSocialProps) => {
             color={useColorModeValue("gray.800", "gray.400")}
             spacing="3"
             alignItems={{ base: "flex-start", md: "center" }}
-            
           >
             <Text
               fontSize="md"

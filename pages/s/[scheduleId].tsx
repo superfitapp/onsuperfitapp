@@ -1,4 +1,4 @@
-import Layout from "../../components/layout";
+import ScheduleLayout from "../../components/schedule-layout";
 import {
   Box,
   Text,
@@ -36,9 +36,9 @@ function Schedule(props: ScheduleProps) {
     if (props.notFound) {
       return <Error statusCode={404} />;
     }
-
+    
     return (
-      <Layout>
+      <ScheduleLayout scheduleId={props.vm?.scheduleId}>
         <Box
           as="section"
           my={{ base: "2", md: "8" }}
@@ -56,7 +56,7 @@ function Schedule(props: ScheduleProps) {
             />
           </Center>
         </Box>
-      </Layout>
+      </ScheduleLayout>
     );
   }
 
@@ -67,7 +67,7 @@ function Schedule(props: ScheduleProps) {
 
   return (
     <>
-      <Layout>
+      <ScheduleLayout scheduleId={props.vm?.scheduleId}>
         <Box
           as="section"
           bg={mode("gray.50", "inherit")}
@@ -139,7 +139,7 @@ function Schedule(props: ScheduleProps) {
             })}
           </SimpleGrid>
         </Box>
-      </Layout>
+      </ScheduleLayout>
     </>
   );
 }
@@ -165,7 +165,7 @@ export async function getStaticProps({ params }) {
   }
 
   let showSchedule = await getSchedule(scheduleId);
-
+  showSchedule;
   if (!showSchedule) {
     return {
       props: {
@@ -176,7 +176,7 @@ export async function getStaticProps({ params }) {
 
   return {
     props: {
-      vm: createShowScheduleViewModel(showSchedule),
+      vm: createShowScheduleViewModel(scheduleId, showSchedule),
       notFound: false,
     },
     // Next.js will attempt to re-generate the page:

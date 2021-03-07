@@ -18,7 +18,11 @@ import { NavLink } from "./NavLink";
 import { useRouter } from "next/router";
 import { useUser } from "@auth0/nextjs-auth0";
 
-export const GuestHeaderNav = () => {
+interface GuestHeaderNavProps {
+  scheduleId?: string;
+}
+
+export const GuestHeaderNav = ({ scheduleId }: GuestHeaderNavProps) => {
   const { user, error, isLoading } = useUser();
   const userLoading = isLoading;
   const router = useRouter();
@@ -81,9 +85,17 @@ export const GuestHeaderNav = () => {
               >
                 Log in
               </Button>
-              <Button onClick={login} colorScheme="blue" rounded="2xl">
-                Join
-              </Button>
+              {scheduleId && (
+                <Button
+                  onClick={() => {
+                    router.push(`/s/${scheduleId}/join`);
+                  }}
+                  colorScheme="blue"
+                  rounded="2xl"
+                >
+                  Join
+                </Button>
+              )}
             </HStack>
           )}
 
