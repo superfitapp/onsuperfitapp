@@ -24,7 +24,7 @@ interface GuestHeaderNavProps {
 
 export const GuestHeaderNav = ({ scheduleId }: GuestHeaderNavProps) => {
   const { user, error, isLoading } = useUser();
-  const userLoading = isLoading;
+  // const userLoading = isLoading;
   const router = useRouter();
 
   const login = async () => {
@@ -65,16 +65,16 @@ export const GuestHeaderNav = ({ scheduleId }: GuestHeaderNavProps) => {
             </NavLink.Desktop>
           </HStack>
 
-          {userLoading && (
+          {isLoading && (
             <Button
               color={mode("gray.600", "gray.200")}
               as={Button}
               variant="ghost"
-              loading={userLoading.toString()}
+              loading={isLoading.toString()}
             ></Button>
           )}
 
-          {!user && !userLoading && (
+          {!user && !isLoading && (
             <HStack spacing="3" display="flex">
               <Button
                 display={{ base: "none", md: "block" }}

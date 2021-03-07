@@ -1,6 +1,10 @@
 import { Box } from "@chakra-ui/react";
 import { GuestHeaderNav } from "../partials/GuestHeaderNav";
 import { ChakraProvider } from "@chakra-ui/react";
+import { useUser } from "@auth0/nextjs-auth0";
+import fetcher from "@/utils/fetcher";
+import firebase from "@/lib/firebase";
+import { useEffect } from "react";
 
 interface ScheduleLayoutProps {
   scheduleId?: string;

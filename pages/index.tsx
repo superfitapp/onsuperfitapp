@@ -83,9 +83,7 @@ export default function Home() {
           px={{ base: "6", md: "0" }}
           py={{ base: "6", md: "8" }}
         >
-          <SimpleGrid columns={[1, 1, 3]} spacing="40px">
-            
-          </SimpleGrid>
+          <SimpleGrid columns={[1, 1, 3]} spacing="40px"></SimpleGrid>
         </Box>
       </Layout>
     </>
