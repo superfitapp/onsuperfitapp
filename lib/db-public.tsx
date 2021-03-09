@@ -3,6 +3,7 @@ import {
   FIRUser,
   FIRActivity,
   FIRInstructionSet,
+  FIRScheduleMember,
 } from "@superfitapp/superfitjs";
 import axios from "axios";
 import { fetchShowSchedule } from "./show-schedule";
@@ -11,6 +12,7 @@ export interface ShowFIRScheduleResponse {
   schedule: ShowFIRSchedule;
   currentUser?: FIRUser;
   activities: FIRActivity[];
+  scheduleMember?: FIRScheduleMember;
 }
 
 export interface ShowFIRActivityResponse {
@@ -23,9 +25,9 @@ export async function getSchedule(
   id: string
 ): Promise<{ schedule: ShowFIRScheduleResponse }> {
   const schedule = await fetchShowSchedule(id);
-  
-  let string = JSON.stringify(schedule)
-  let data = JSON.parse(string)
+
+  let string = JSON.stringify(schedule);
+  let data = JSON.parse(string);
 
   return { schedule: data };
 }

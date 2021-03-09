@@ -14,6 +14,8 @@ import {
   FIRInstructionSet,
   Instruction,
   InstructionBlock,
+  StripePrice,
+  WebLink,
 } from "@superfitapp/superfitjs";
 import InstructionBuilder from "./InstructionBuilder";
 
@@ -30,6 +32,25 @@ export interface ShowScheduleViewModel {
   data: ShowFIRScheduleResponse;
   thumbnailUrl?: string;
   photoUrl?: string;
+  primaryColor: string;
+  primaryColorLightRGBA: string;
+  secondaryColor: string;
+  secondaryColorLightRGBA: string;
+  onPrimaryTextColor: string;
+  socialIconsColor: string;
+  introText?: string;
+  backgroundColor: string;
+  // textColor: string;
+  linksBackgroundColor: string;
+  // linksTextColor: string;
+  // linksBorderRadius: string;
+  // linksBorder: string;
+  links: WebLink[];
+  joinSchedulePaidCta?: string;
+  joinScheduleFreeCta?: string;
+  canSignUp: boolean;
+  userIsScheduleMember: boolean;
+  userIsPaidMember: boolean;
 }
 
 export interface ActivityViewModel {
@@ -64,8 +85,68 @@ export function createShowScheduleViewModel(
   scheduleId: string,
   data: ShowFIRScheduleResponse
 ): ShowScheduleViewModel {
+  const primaryColor = data.schedule.color || "#303030";
+  const secondaryColor = data.schedule.profile.secondaryColor || null;
+  const secondaryColorLightRGBA = hexToRGB(secondaryColor, 0.15) || null;
+  const anyoneCanSignup = data.schedule.signupType == "anyoneCanSignUp";
 
-  var vm: ShowScheduleViewModel = {
+  const currentPrice: StripePrice | undefined =
+    data.schedule.stripeCurrentOneTimePrice ||
+    data.schedule.stripeCurrentMonthlyPrice ||
+    data.schedule.stripeCurrentYearlyPrice;
+
+  const joinSchedulePaidCta =
+    anyoneCanSignup && data.schedule.enableSubscription && currentPrice
+      ? currentPrice.priceDisplayName || "Become a Paid Member"
+      : null;
+  const joinScheduleFreeCta =
+    anyoneCanSignup &&
+    !data.schedule.payToJoin &&
+    data.schedule.enableSubscription &&
+    currentPrice
+      ? joinSchedulePaidCta
+        ? "Start for Free"
+        : "Join for Free"
+      : null;
+
+  let userIsPaidMember = false;
+
+  if (
+    data.currentUser?.billingInfo?.connectProducts &&
+    data.currentUser?.billingInfo?.connectProducts[
+      data.schedule.stripeProductId
+    ]
+  ) {
+    userIsPaidMember = true;
+  }
+
+  var links: WebLink[] = [];
+  for (var key in data.schedule.profile?.links) {
+    const link = data.schedule.profile?.links[key];
+    links.push(link);
+  }
+
+  let vm: ShowScheduleViewModel = {
+    primaryColor: hexColor(primaryColor),
+    secondaryColor: secondaryColor,
+    primaryColorLightRGBA: hexToRGB(primaryColor, 0.15),
+    secondaryColorLightRGBA: secondaryColorLightRGBA,
+    onPrimaryTextColor: isDark(primaryColor) ? "white" : "#303030",
+    socialIconsColor: isDark(primaryColor)
+      ? hexToRGB(primaryColor, 0.15)
+      : hexToRGB(primaryColor, 0.75),
+    introText: data.schedule.profile.about || null,
+    backgroundColor: data.schedule.profile.backgroundColor || null,
+    linksBackgroundColor: data.schedule.profile.linksBackgroundColor || null,
+    // linksTextColor: data.schedule.profile.linksTextColor || null,
+    // linksBorder: `${data.schedule.profile.linksBorderWidth}px solid ${data.schedule.profile.linksBorderColor}`,
+    // linksBorderRadius: `${config.linksBorderRadius}px`,
+    links: links.sort((x, y) => x.order - y.order),
+    joinSchedulePaidCta: joinSchedulePaidCta,
+    joinScheduleFreeCta: joinScheduleFreeCta,
+    canSignUp: joinSchedulePaidCta != null || joinScheduleFreeCta != null,
+    userIsScheduleMember: false,
+    userIsPaidMember: userIsPaidMember,
     scheduleId: scheduleId,
     data: data,
   };

@@ -15,6 +15,17 @@ module.exports = {
     // number of pages that should be kept simultaneously without being disposed
     pagesBufferLength: 5,
   },
+  headers: [
+    {
+      source: "/api/show/*",
+      headers: [
+        {
+          key: "Cache-Control",
+          value: "public, max-age=60, stale-while-revalidate",
+        },
+      ],
+    },
+  ],
   images: {
     domains: ["blog.superfitapp.com", "images.unsplash.com", "superfitapp.com"],
   },

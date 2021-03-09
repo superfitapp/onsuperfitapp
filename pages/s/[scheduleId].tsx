@@ -19,7 +19,7 @@ import { ScheduledActivity } from "../../partials/ScheduledActivity";
 import { getSchedule, ShowFIRScheduleResponse } from "../../lib/db-public";
 import { createShowScheduleViewModel } from "../../utils/ViewModels";
 import { Props } from "framer-motion/types/types";
-import { getSession, useUser } from "@auth0/nextjs-auth0";
+import { useUser } from "@auth0/nextjs-auth0";
 import useSWR from "swr";
 import fetcher from "@/utils/fetcher";
 import { FIRActivity } from "@superfitapp/superfitjs";
@@ -97,26 +97,22 @@ function Schedule(props: ScheduleProps, notFound: boolean) {
   var schedulePhotoUrl: string = null;
   var ownerDisplayName: string = null;
 
-  try {
-    const { data } = useSWR<ShowFIRScheduleResponse>(
-      user
-        ? `/api/schedule/${props.scheduleId}`
-        : `/api/show/schedule/${props.scheduleId}`,
-      fetcher,
-      {
-        initialData: props.data,
-        revalidateOnMount: user != undefined,
-      }
-    );
-
-    if (data) {
-      const vm = createShowScheduleViewModel(props.scheduleId, data);
-      activities = vm?.data?.activities;
-      schedulePhotoUrl = vm?.photoUrl;
-      ownerDisplayName = vm.data?.schedule?.ownerDisplayName;
+  const { data } = useSWR<ShowFIRScheduleResponse>(
+    user
+      ? `/api/schedule/${props.scheduleId}`
+      : `/api/show/schedule/${props.scheduleId}`,
+    fetcher,
+    {
+      initialData: props.data,
+      revalidateOnMount: user != undefined,
     }
-  } catch (error) {
-    console.log(error);
+  );
+
+  if (data) {
+    const vm = createShowScheduleViewModel(props.scheduleId, data);
+    activities = vm?.data?.activities;
+    schedulePhotoUrl = vm?.photoUrl;
+    ownerDisplayName = vm.data?.schedule?.ownerDisplayName;
   }
 
   return (

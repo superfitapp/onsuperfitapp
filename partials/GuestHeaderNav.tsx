@@ -24,7 +24,6 @@ interface GuestHeaderNavProps {
 
 export const GuestHeaderNav = ({ scheduleId }: GuestHeaderNavProps) => {
   const { user, error, isLoading } = useUser();
-  // const userLoading = isLoading;
   const router = useRouter();
 
   const login = async () => {
