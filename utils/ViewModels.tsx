@@ -64,14 +64,17 @@ export function createShowScheduleViewModel(
   scheduleId: string,
   data: ShowFIRScheduleResponse
 ): ShowScheduleViewModel {
+
   var vm: ShowScheduleViewModel = {
     scheduleId: scheduleId,
     data: data,
   };
 
   const photo = data?.schedule?.photo;
-  vm.thumbnailUrl = getThumbnailUrl(photo);
-  vm.photoUrl = getPhotoUrl(photo);
+  if (photo) {
+    vm.thumbnailUrl = getThumbnailUrl(photo);
+    vm.photoUrl = getPhotoUrl(photo);
+  }
 
   return vm;
 }

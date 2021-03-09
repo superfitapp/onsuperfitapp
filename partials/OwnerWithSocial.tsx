@@ -66,7 +66,7 @@ export const OwnerWithSocial = (props: OwnerWithSocialProps) => {
             <HStack mt="0" spacing="2">
               <Link
                 isExternal
-                useColorModeValue={useColorModeValue("blue.600", "blue.300")}
+                color={useColorModeValue("blue.600", "blue.300")}
                 href=""
               >
                 <VisuallyHidden>{`${name}'s Twitter page`}</VisuallyHidden>
@@ -76,7 +76,7 @@ export const OwnerWithSocial = (props: OwnerWithSocialProps) => {
               </Link>
               <Link
                 isExternal
-                useColorModeValue={useColorModeValue("blue.600", "blue.300")}
+                color={useColorModeValue("blue.600", "blue.300")}
                 href=""
               >
                 <VisuallyHidden>{`${name}'s Twitter page`}</VisuallyHidden>
@@ -86,7 +86,7 @@ export const OwnerWithSocial = (props: OwnerWithSocialProps) => {
               </Link>
               <Link
                 isExternal
-                useColorModeValue={useColorModeValue("blue.600", "blue.300")}
+                color={useColorModeValue("blue.600", "blue.300")}
                 href=""
               >
                 <VisuallyHidden>{`${name}'s Twitter page`}</VisuallyHidden>

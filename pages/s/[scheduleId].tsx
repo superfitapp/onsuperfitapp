@@ -9,6 +9,7 @@ import {
   Center,
   Spinner,
 } from "@chakra-ui/react";
+import Error from "next/error";
 
 import { SimpleGrid } from "@chakra-ui/react";
 import * as React from "react";
@@ -22,9 +23,7 @@ import {
   createShowScheduleViewModel,
 } from "../../utils/ViewModels";
 import { Props } from "framer-motion/types/types";
-import Error from "next/error";
 import { getSession, useUser } from "@auth0/nextjs-auth0";
-import { useFetchUser } from "@/lib/firUser";
 import useSWR from "swr";
 import fetcher from "@/utils/fetcher";
 import { lookup } from "node:dns";
@@ -63,7 +62,9 @@ export async function getStaticProps({ params }) {
 }
 
 function Schedule(props: ScheduleProps, notFound: boolean) {
-  if (!props.scheduleId) {
+  const schedule = props.data?.schedule;
+
+  if (!props.scheduleId || !schedule) {
     if (notFound == true) {
       return <Error statusCode={404} />;
     }
@@ -92,26 +93,29 @@ function Schedule(props: ScheduleProps, notFound: boolean) {
   }
 
   const { user } = useUser();
-  const { data } = useSWR(
-    user
-      ? `/api/show/schedule/${props.scheduleId}`
-      : `/api/schedule/${props.scheduleId}`,
-    fetcher,
-    {
-      initialData: props.data,
-    }
-  );
-
   var vm: ShowScheduleViewModel | undefined;
-  if (data) {
-    vm = createShowScheduleViewModel(props.scheduleId, data);
+
+  try {
+    const { data } = useSWR<ShowFIRScheduleResponse>(
+      user
+        ? `/api/schedule/${props.scheduleId}`
+        : `/api/show/schedule/${props.scheduleId}`,
+      fetcher,
+      {
+        initialData: props.data,
+      }
+    );
+
+    if (data) {
+      vm = createShowScheduleViewModel(props.scheduleId, data);
+    }
+  } catch (error) {
+    console.log(error);
   }
 
-  const schedule = vm?.data?.schedule;
   var activities = vm?.data?.activities;
   var scheduleTitle = schedule?.title;
-
-  const scheduleAbout = schedule.profile?.about;
+  const scheduleAbout = schedule?.profile?.about;
   const schedulePhotoUrl = vm?.photoUrl;
 
   return (
@@ -156,7 +160,7 @@ function Schedule(props: ScheduleProps, notFound: boolean) {
                 <Box mt="8">
                   <OwnerWithSocial
                     mt="8"
-                    name={`Created by ${vm?.data.schedule.ownerDisplayName}`}
+                    name={`Created by ${vm?.data.schedule?.ownerDisplayName}`}
                     image="https://images.unsplash.com/photo-1492633423870-43d1cd2775eb?ixid=MXwxMjA3fDB8MHxzZWFyY2h8MXx8bGFkeSUyMHNtaWxpbmd8ZW58MHx8MHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
                     role="Developer Advocate"
                   ></OwnerWithSocial>
@@ -181,6 +185,7 @@ function Schedule(props: ScheduleProps, notFound: boolean) {
             {activities.map((activity) => {
               return (
                 <ScheduledActivity
+                  key={activity.id}
                   activity={activity}
                   schedule={schedule}
                 ></ScheduledActivity>

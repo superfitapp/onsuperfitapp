@@ -1,9 +1,8 @@
 const fetcher = async (url: string, accessToken?: string) => {
-  const res = await fetch(url, {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}${url}`, {
     method: "GET",
     headers: new Headers({
       "Content-Type": "application/json",
-      Authorization: `Bearer ${accessToken}`,
     }),
     credentials: "same-origin",
   });
