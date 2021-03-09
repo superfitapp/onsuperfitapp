@@ -100,7 +100,7 @@ export const GuestHeaderNav = ({ scheduleId }: GuestHeaderNavProps) => {
           )}
 
           {user && (
-            <Flex align="center">
+            <Flex align="center" zIndex={99}>
               <Menu placement="bottom-end">
                 <MenuButton
                   color={mode("gray.600", "gray.200")}

@@ -244,11 +244,7 @@ function ScheduleActivity(props: ScheduledActivityProps) {
               </Box>
 
               <Accordion allowToggle>
-                <VStack
-                  // divider={<StackDivider borderColor="gray.200" />}
-                  spacing={{ base: "6", md: "8" }}
-                  align="stretch"
-                >
+                <VStack spacing={{ base: "6", md: "8" }} align="stretch">
                   {props.vm.videoThumbnailUrl && (
                     <BigMedia
                       alt={`Workout video for ${props.vm?.title}`}
@@ -286,9 +282,6 @@ function ScheduleActivity(props: ScheduledActivityProps) {
                                   }
                                 >
                                   <VStack
-                                    // divider={
-                                    //   <StackDivider borderColor="gray.200" />
-                                    // }
                                     spacing={{ base: "4", md: "2" }}
                                     align="stretch"
                                     w="full"
@@ -307,13 +300,10 @@ function ScheduleActivity(props: ScheduledActivityProps) {
                                                       rounded="xl"
                                                     >
                                                       <Flex
-                                                        // flexDirection="row"
                                                         alignItems="center"
                                                         align="stretch"
                                                         w="full"
                                                         justifyContent="space-around"
-
-                                                        // py="1"
                                                       >
                                                         <VStack
                                                           alignItems="flex-start"
@@ -350,52 +340,56 @@ function ScheduleActivity(props: ScheduledActivityProps) {
                                                         </VStack>
                                                         <Spacer></Spacer>
 
-                                                        {props.vm
-                                                          .schedulePhotoUrl && (
-                                                          <AspectRatio
-                                                            minWidth="100px"
-                                                            display={
-                                                              isExpanded
-                                                                ? "none"
-                                                                : "inherit"
-                                                            }
-                                                            ratio={16 / 9}
-                                                          >
-                                                            <Img
-                                                              alt={`Exercise thumbnail image for ${viewModel.instruction.exercise.title}`}
-                                                              rounded="md"
-                                                              objectFit="cover"
-                                                              src={
-                                                                viewModel.thumbnailUrl
+                                                        {viewModel.thumbnailUrl && (
+                                                          <>
+                                                            <AspectRatio
+                                                              minWidth="100px"
+                                                              display={
+                                                                isExpanded
+                                                                  ? "none"
+                                                                  : "inherit"
                                                               }
+                                                              ratio={16 / 9}
+                                                            >
+                                                              <Img
+                                                                alt={`Exercise thumbnail image for ${viewModel.instruction.exercise.title}`}
+                                                                rounded="md"
+                                                                objectFit="cover"
+                                                                src={
+                                                                  viewModel.thumbnailUrl
+                                                                }
+                                                              />
+                                                            </AspectRatio>
+                                                            <AccordionIcon
+                                                              color="gray.500"
+                                                              ms="1"
                                                             />
-                                                          </AspectRatio>
+                                                          </>
                                                         )}
-                                                        <AccordionIcon
-                                                          color="gray.500"
-                                                          ms="1"
-                                                        />
                                                       </Flex>
                                                     </AccordionButton>
                                                   </h2>
-                                                  <AccordionPanel p={0}>
-                                                    <AspectRatio
-                                                      mt="2"
-                                                      w="100%"
-                                                      h="100%"
-                                                    >
-                                                      <ReactPlayer
-                                                        width="100%"
-                                                        height="100%"
-                                                        controls
-                                                        url={
-                                                          viewModel.muxUrl ||
-                                                          viewModel.youtubeUrl
-                                                        }
-                                                        playing={isExpanded}
-                                                      />
-                                                    </AspectRatio>
-                                                  </AccordionPanel>
+
+                                                  {viewModel.thumbnailUrl && (
+                                                    <AccordionPanel p={0}>
+                                                      <AspectRatio
+                                                        mt="2"
+                                                        w="100%"
+                                                        h="100%"
+                                                      >
+                                                        <ReactPlayer
+                                                          width="100%"
+                                                          height="100%"
+                                                          controls
+                                                          url={
+                                                            viewModel.muxUrl ||
+                                                            viewModel.youtubeUrl
+                                                          }
+                                                          playing={isExpanded}
+                                                        />
+                                                      </AspectRatio>
+                                                    </AccordionPanel>
+                                                  )}
                                                 </>
                                               )}
                                             </AccordionItem>

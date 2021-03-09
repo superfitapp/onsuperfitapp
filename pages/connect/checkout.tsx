@@ -8,7 +8,7 @@ import {
   Heading,
 } from "@chakra-ui/react";
 
-import { withPageAuthRequired, getAccessToken } from "@auth0/nextjs-auth0";
+import { withPageAuthRequired } from "@auth0/nextjs-auth0";
 import * as React from "react";
 import { useRouter } from "next/router";
 import { useFetchUser } from "@/lib/firUser";
@@ -17,7 +17,7 @@ export default function ConnectCheckout() {
   const router = useRouter();
 
   const { user, loading } = useFetchUser({ required: true });
-
+  
   if (typeof window !== "undefined") {
     const returnTo = localStorage.getItem("returnTo");
     if (returnTo && returnTo != "/") {
@@ -43,6 +43,6 @@ export default function ConnectCheckout() {
 
 export const getServerSideProps = withPageAuthRequired({
   async getServerSideProps(ctx) {
-    return { props: { customProp: "bar" } };
+    return { props: { foo: "bar" } };
   },
 });

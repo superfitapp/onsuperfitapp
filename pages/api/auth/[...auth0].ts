@@ -11,8 +11,6 @@ const afterCallback = async (req, res, session: Session, state) => {
         .signInWithCustomToken(firToken);
     }
   } catch (error) {
-    console.log(error);
-
     // don't throw attempt for firebase token
   }
 
@@ -24,8 +22,6 @@ export default handleAuth({
     try {
       await handleCallback(req, res, { afterCallback });
     } catch (error) {
-      console.log(error);
-
       res.status(error.status || 500).end(error.message);
     }
   },

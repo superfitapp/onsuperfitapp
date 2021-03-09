@@ -16,29 +16,60 @@ import { BigMedia } from "../../partials/BigMedia";
 import { TagBelt } from "../../partials/TagBelt";
 import { OwnerWithSocial } from "../../partials/OwnerWithSocial";
 import { ScheduledActivity } from "../../partials/ScheduledActivity";
-import { getSchedule } from "../../lib/db-public";
+import { getSchedule, ShowFIRScheduleResponse } from "../../lib/db-public";
 import {
   ShowScheduleViewModel,
   createShowScheduleViewModel,
 } from "../../utils/ViewModels";
 import { Props } from "framer-motion/types/types";
 import Error from "next/error";
+import { getSession, useUser } from "@auth0/nextjs-auth0";
+import { useFetchUser } from "@/lib/firUser";
+import useSWR from "swr";
+import fetcher from "@/utils/fetcher";
+import { lookup } from "node:dns";
 
 export interface ScheduleProps extends Props {
-  vm?: ShowScheduleViewModel;
-  notFound: boolean;
+  scheduleId: string;
+  data: ShowFIRScheduleResponse;
 }
 
-function Schedule(props: ScheduleProps) {
-  const schedule = props.vm?.data?.schedule;
+export async function getStaticProps({ params }) {
+  const { scheduleId } = params;
+  if (!scheduleId) {
+    return {
+      notFound: true,
+      revalidate: 1,
+    };
+  }
 
-  if (!schedule) {
-    if (props.notFound) {
+  let scheduleData = await getSchedule(scheduleId);
+  if (!scheduleData) {
+    return {
+      notFound: true,
+    };
+  }
+
+  return {
+    props: {
+      scheduleId: scheduleId,
+      data: scheduleData,
+    },
+    // Next.js will attempt to re-generate the page:
+    // - When a request comes in
+    // - At most once every second
+    revalidate: 1, // In seconds
+  };
+}
+
+function Schedule(props: ScheduleProps, notFound: boolean) {
+  if (!props.scheduleId) {
+    if (notFound == true) {
       return <Error statusCode={404} />;
     }
-    
+
     return (
-      <ScheduleLayout scheduleId={props.vm?.scheduleId}>
+      <ScheduleLayout scheduleId={vm?.scheduleId}>
         <Box
           as="section"
           my={{ base: "2", md: "8" }}
@@ -60,14 +91,32 @@ function Schedule(props: ScheduleProps) {
     );
   }
 
-  const scheduleTitle = schedule.title;
+  const { user } = useUser();
+  const { data } = useSWR(
+    user
+      ? `/api/show/schedule/${props.scheduleId}`
+      : `/api/schedule/${props.scheduleId}`,
+    fetcher,
+    {
+      initialData: props.data,
+    }
+  );
+
+  var vm: ShowScheduleViewModel | undefined;
+  if (data) {
+    vm = createShowScheduleViewModel(props.scheduleId, data);
+  }
+
+  const schedule = vm?.data?.schedule;
+  var activities = vm?.data?.activities;
+  var scheduleTitle = schedule?.title;
+
   const scheduleAbout = schedule.profile?.about;
-  const schedulePhotoUrl = props.vm?.photoUrl;
-  const activities = props.vm?.data?.activities;
+  const schedulePhotoUrl = vm?.photoUrl;
 
   return (
     <>
-      <ScheduleLayout scheduleId={props.vm?.scheduleId}>
+      <ScheduleLayout scheduleId={vm?.scheduleId}>
         <Box
           as="section"
           bg={mode("gray.50", "inherit")}
@@ -107,7 +156,7 @@ function Schedule(props: ScheduleProps) {
                 <Box mt="8">
                   <OwnerWithSocial
                     mt="8"
-                    name={`Created by ${props.vm.data.schedule.ownerDisplayName}`}
+                    name={`Created by ${vm?.data.schedule.ownerDisplayName}`}
                     image="https://images.unsplash.com/photo-1492633423870-43d1cd2775eb?ixid=MXwxMjA3fDB8MHxzZWFyY2h8MXx8bGFkeSUyMHNtaWxpbmd8ZW58MHx8MHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
                     role="Developer Advocate"
                   ></OwnerWithSocial>
@@ -150,39 +199,6 @@ export async function getStaticPaths() {
   return {
     paths: [],
     fallback: true,
-  };
-}
-
-export async function getStaticProps({ params }) {
-  const { scheduleId } = params;
-  if (!scheduleId) {
-    return {
-      props: {
-        notFound: true,
-      },
-      revalidate: 1,
-    };
-  }
-
-  let showSchedule = await getSchedule(scheduleId);
-  showSchedule;
-  if (!showSchedule) {
-    return {
-      props: {
-        notFound: true,
-      },
-    };
-  }
-
-  return {
-    props: {
-      vm: createShowScheduleViewModel(scheduleId, showSchedule),
-      notFound: false,
-    },
-    // Next.js will attempt to re-generate the page:
-    // - When a request comes in
-    // - At most once every second
-    revalidate: 1, // In seconds
   };
 }
 
