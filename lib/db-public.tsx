@@ -4,9 +4,11 @@ import {
   FIRActivity,
   FIRInstructionSet,
   FIRScheduleMember,
+  VisibilityStatus,
 } from "@superfitapp/superfitjs";
 import axios from "axios";
-import { fetchShowSchedule } from "./show-schedule";
+import { fetchShowActivity } from "./activity";
+import { fetchShowSchedule } from "./schedule";
 
 export interface ShowFIRScheduleResponse {
   schedule: ShowFIRSchedule;
@@ -16,35 +18,33 @@ export interface ShowFIRScheduleResponse {
 }
 
 export interface ShowFIRActivityResponse {
-  activity: FIRActivity;
+  activityVisibility?: string;
+  activity?: FIRActivity;
   schedule: ShowFIRSchedule;
+  scheduleMember?: FIRScheduleMember;
   instructionSet?: FIRInstructionSet;
 }
 
 export async function getSchedule(
   id: string
-): Promise<{ schedule: ShowFIRScheduleResponse }> {
+): Promise<ShowFIRScheduleResponse> {
   const schedule = await fetchShowSchedule(id);
-
   let string = JSON.stringify(schedule);
   let data = JSON.parse(string);
 
-  return { schedule: data };
+  return data;
 }
 
 export async function getShowActivity(
   activityId: string,
   scheduleId: string
 ): Promise<ShowFIRActivityResponse> {
-  const { data } = await axios.get<ShowFIRActivityResponse>(
-    `${process.env.NEXT_PUBLIC_SUPERFIT_API_BASE_URL}/show_activity`,
-    {
-      params: {
-        activityId: activityId,
-        scheduleId: scheduleId,
-      },
-    }
-  );
+  const activity = await fetchShowActivity(scheduleId, activityId);
+  // we only do this stringify/parse dance because
+  // fetching FIR documents ƒrom getStaticProps does not
+  // return clean json
+  let string = JSON.stringify(activity);
+  let data = JSON.parse(string);
 
   return data;
 }

@@ -26,30 +26,38 @@ import { BiRightArrowAlt, BiRightArrowCircle } from "react-icons/bi";
 import * as React from "react";
 import { ListItem } from "@/partials/ListItem";
 import { List } from "@/partials/List";
-import { getShowActivity } from "@/lib/db-public";
+import {
+  getShowActivity,
+  ShowFIRActivityResponse,
+  ShowFIRScheduleResponse,
+} from "@/lib/db-public";
 import ReactPlayer from "react-player";
 
 import {
   createShowActivityViewModel,
   ActivityViewModel,
+  ShowScheduleViewModel,
+  createShowScheduleViewModel,
 } from "@/utils/ViewModels";
 import { Props } from "framer-motion/types/types";
 import { BigMedia } from "@/partials/BigMedia";
 import { ArrowDirection, ScheduleRow } from "@/partials/ScheduleRow";
+import {
+  FIRActivity,
+  FIRScheduleMember,
+  ShowFIRSchedule,
+} from "@superfitapp/superfitjs";
+import useSWR from "swr";
+import fetcher from "@/utils/fetcher";
+import { useUser } from "@auth0/nextjs-auth0";
 
-function ScheduleActivity(props: ScheduledActivityProps) {
-  var scheduledDateString = props.vm?.scheduledDateString;
-  var scheduledDateRelative = props.vm?.scheduledDateRelative;
-
-  let instructionsBlockMap =
-    props?.vm?.instructionSetViewModel?.instructionsBlockMap;
-
-  if (!props.vm) {
-    if (props.notFound) {
+function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
+  if (!props.data) {
+    if (notFound == true) {
       return <Error statusCode={404} />;
     } else {
       return (
-        <Layout scheduleId={props.vm?.scheduleId}>
+        <Layout scheduleId={props.scheduleId}>
           <Box
             as="section"
             my={{ base: "2", md: "8" }}
@@ -71,14 +79,43 @@ function ScheduleActivity(props: ScheduledActivityProps) {
       );
     }
   }
+  const { user } = useUser();
+  var activityViewModel: ActivityViewModel = null;
+  var scheduleViewModel: ShowScheduleViewModel = null;
 
-  const activityTitle = props.vm.title;
-  const activityAbout = props.vm.description;
-  const activityPhotoUrl = props.vm.photoUrl;
+  const { data } = useSWR<ShowFIRActivityResponse>(
+    user
+      ? `/api/schedule/${props.scheduleId}/activity/${props.activityId}`
+      : `/api/show/schedule/${props.scheduleId}/activity/${props.activityId}`,
+    fetcher,
+    {
+      initialData: props.data,
+      revalidateOnMount: user != undefined,
+    }
+  );
+
+  if (data) {
+    activityViewModel = createShowActivityViewModel(data);
+    scheduleViewModel = createShowScheduleViewModel(
+      props.scheduleId,
+      data.schedule,
+      data.scheduleMember
+    );
+  }
+
+  var scheduledDateString = activityViewModel?.scheduledDateString || null;
+  var scheduledDateRelative = activityViewModel?.scheduledDateRelative || null;
+
+  let instructionsBlockMap =
+    props?.vm?.instructionSetViewModel?.instructionsBlockMap || null;
+
+  const activityTitle = activityViewModel?.title || null;
+  const activityAbout = activityViewModel?.description || null;
+  const activityPhotoUrl = activityViewModel?.photoUrl || null;
 
   return (
     <>
-      <Layout scheduleId={props.vm?.scheduleId}>
+      <Layout scheduleId={activityViewModel?.scheduleId}>
         <Box
           as="section"
           my={{ base: "2", md: "8" }}
@@ -127,7 +164,7 @@ function ScheduleActivity(props: ScheduledActivityProps) {
                             fontSize="sm"
                             fontWeight="medium"
                           >
-                            {props.vm.activityType}
+                            {activityViewModel?.activityType}
                           </Text>
                         </Center>
                       </HStack>
@@ -194,10 +231,12 @@ function ScheduleActivity(props: ScheduledActivityProps) {
                 <ScheduleRow
                   mb={{ base: "4", md: "12" }}
                   mt={{ base: "1", md: "2" }}
-                  schedulePhotoUrl={props.vm.schedulePhotoUrl}
-                  scheduleOwnerDisplayName={props.vm.scheduleOwnerDisplayName}
-                  scheduleId={props.vm.scheduleId}
-                  scheduleTitle={props.vm.scheduleTitle}
+                  schedulePhotoUrl={activityViewModel?.schedulePhotoUrl}
+                  scheduleOwnerDisplayName={
+                    activityViewModel?.scheduleOwnerDisplayName
+                  }
+                  scheduleId={activityViewModel?.scheduleId}
+                  scheduleTitle={activityViewModel?.scheduleTitle}
                   arrowDirection={ArrowDirection.forward}
                 ></ScheduleRow>
 
@@ -245,17 +284,17 @@ function ScheduleActivity(props: ScheduledActivityProps) {
 
               <Accordion allowToggle>
                 <VStack spacing={{ base: "6", md: "8" }} align="stretch">
-                  {props.vm.videoThumbnailUrl && (
+                  {activityViewModel?.videoThumbnailUrl && (
                     <BigMedia
-                      alt={`Workout video for ${props.vm?.title}`}
-                      src={props.vm.videoThumbnailUrl}
+                      alt={`Workout video for ${activityViewModel?.title}`}
+                      src={activityViewModel?.videoThumbnailUrl}
                     />
                   )}
 
                   <Box>
                     <List spacing="12">
                       {instructionsBlockMap &&
-                        props.vm.instructionSetViewModel.orderedInstructionBlocks.map(
+                        activityViewModel?.instructionSetViewModel.orderedInstructionBlocks.map(
                           (block) => {
                             const length = Object.keys(block.instructions)
                               .length;
@@ -417,8 +456,9 @@ function ScheduleActivity(props: ScheduledActivityProps) {
 export default ScheduleActivity;
 
 export interface ScheduledActivityProps extends Props {
-  vm?: ActivityViewModel;
-  notFound?: boolean;
+  scheduleId: string;
+  activityId: string;
+  data: ShowFIRActivityResponse;
 }
 
 // This function gets called at build time
@@ -445,22 +485,27 @@ export async function getStaticProps({ params }) {
   }
 
   try {
-    let showActivity = await getShowActivity(activityId, scheduleId);
+    var props: ScheduledActivityProps = null;
 
-    if (!showActivity) {
+    let data = await getShowActivity(activityId, scheduleId);
+
+    if (!data) {
       return {
-        props: {
-          vm: false,
-          notFound: true,
-        },
+        props: props,
+        notFound: true,
         revalidate: 0,
       };
     }
 
+    props = {
+      scheduleId: scheduleId,
+      activityId: activityId,
+      data: data,
+    };
+
     return {
-      props: {
-        vm: createShowActivityViewModel(showActivity),
-      },
+      props: props,
+      notFound: false,
       // Next.js will attempt to re-generate the page:
       // - When a request comes in
       // - At most once every second
@@ -470,8 +515,8 @@ export async function getStaticProps({ params }) {
     return {
       props: {
         vm: false,
-        notFound: true,
       },
+      notFound: true,
       revalidate: false,
     };
   }

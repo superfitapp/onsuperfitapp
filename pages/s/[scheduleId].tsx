@@ -27,10 +27,12 @@ import { FIRActivity } from "@superfitapp/superfitjs";
 export interface ScheduleProps extends Props {
   scheduleId: string;
   data: ShowFIRScheduleResponse;
+  activities: FIRActivity[];
 }
 
 export async function getStaticProps({ params }) {
   const { scheduleId } = params;
+  var props: ScheduleProps | undefined = null;
 
   if (!scheduleId) {
     return {
@@ -39,19 +41,22 @@ export async function getStaticProps({ params }) {
     };
   }
 
-  let { schedule } = await getSchedule(scheduleId);
+  let data = await getSchedule(scheduleId);
 
-  if (!schedule) {
+  if (!data) {
     return {
       notFound: true,
     };
   }
 
+  props = {
+    scheduleId: scheduleId,
+    data: data,
+    activities: data.activities,
+  };
+
   return {
-    props: {
-      scheduleId: scheduleId,
-      data: schedule,
-    },
+    props: props,
     // Next.js will attempt to re-generate the page:
     // - When a request comes in
     // - At most once every second
@@ -91,7 +96,7 @@ function Schedule(props: ScheduleProps, notFound: boolean) {
   }
 
   const { user } = useUser();
-  var activities: FIRActivity[] = null;
+  var activities: FIRActivity[] = props.activities || [];
   var scheduleTitle = schedule?.title;
   const scheduleAbout = schedule?.profile?.about;
   var schedulePhotoUrl: string = null;
@@ -109,10 +114,13 @@ function Schedule(props: ScheduleProps, notFound: boolean) {
   );
 
   if (data) {
-    const vm = createShowScheduleViewModel(props.scheduleId, data);
-    activities = vm?.data?.activities;
+    const vm = createShowScheduleViewModel(
+      props.scheduleId,
+      data.schedule,
+      data.scheduleMember
+    );
     schedulePhotoUrl = vm?.photoUrl;
-    ownerDisplayName = vm.data?.schedule?.ownerDisplayName;
+    ownerDisplayName = data.schedule?.ownerDisplayName;
   }
 
   return (

@@ -4,11 +4,12 @@ import {
   ActivityStatus,
   FIRActivity,
   FIRSchedule,
+  FIRScheduleMember,
   FIRUser,
   ShowFIRSchedule,
   VisibilityStatus,
 } from "@superfitapp/superfitjs";
-import { NextApiRequest, NextApiResponse } from "next";
+import { scheduleMemberSnap } from "./db-authed";
 import { ShowFIRScheduleResponse } from "./db-public";
 
 export async function fetchShowSchedule(
@@ -31,10 +32,21 @@ export async function fetchShowSchedule(
 
   let showSchedule: ShowFIRSchedule = createShowSchedule(currentSchedule);
 
+  var scheduleMember: FIRScheduleMember | undefined = null;
+  if (userid) {
+    try {
+      const snap = await scheduleMemberSnap(userid, scheduleId);
+      if (snap && snap.data()) {
+        scheduleMember = snap.data() as FIRScheduleMember;
+      }
+    } catch {}
+  }
+
   if (currentSchedule.visibilityStatus != VisibilityStatus.Public) {
     return {
       schedule: showSchedule,
       activities: [],
+      scheduleMember: scheduleMember,
     };
   }
 
@@ -56,6 +68,7 @@ export async function fetchShowSchedule(
   return {
     schedule: showSchedule,
     activities: activities,
+    scheduleMember: scheduleMember,
   };
 }
 

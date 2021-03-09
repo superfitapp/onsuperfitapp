@@ -1,14 +1,22 @@
-import { handleAuth, handleCallback, Session } from "@auth0/nextjs-auth0";
-import firebase from "@/lib/firebase";
+import {
+  handleAuth,
+  handleCallback,
+  handleLogout,
+  Session,
+} from "@auth0/nextjs-auth0";
 import { auth } from "@/lib/firebase-admin";
+import { useFetchUser } from "@/lib/firUser";
+import firebase from "@/lib/firebase";
 
 const afterCallback = async (req, res, session: Session, state) => {
   try {
     if (session.accessToken && session.user?.sub) {
-      const firToken = await auth.createCustomToken(session.user.sub);
-      const firCredentials = await firebase
-        .auth()
-        .signInWithCustomToken(firToken);
+      useFetchUser({ required: true });
+
+      // const firToken = await auth.createCustomToken(session.user.sub);
+      // const firCredentials = await firebase
+      //   .auth()
+      //   .signInWithCustomToken(firToken);
     }
   } catch (error) {
     // don't throw attempt for firebase token
@@ -24,5 +32,9 @@ export default handleAuth({
     } catch (error) {
       res.status(error.status || 500).end(error.message);
     }
+  },
+  async logout(req, res) {
+    await firebase.auth().signOut();
+    await handleLogout(req, res);
   },
 });

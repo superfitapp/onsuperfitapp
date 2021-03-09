@@ -22,23 +22,14 @@ import {
 
 import * as React from "react";
 import { getSchedule } from "@/lib/db-public";
-import {
-  ShowScheduleViewModel,
-  createShowScheduleViewModel,
-} from "@/utils/ViewModels";
-import { Props } from "framer-motion/types/types";
+import { createShowScheduleViewModel } from "@/utils/ViewModels";
 import Error from "next/error";
-
 import { ButtonRadioGroup } from "@/partials/ButtonRadioGroup";
 import { ArrowDirection, ScheduleRow } from "@/partials/ScheduleRow";
-
-export interface ScheduleProps extends Props {
-  vm?: ShowScheduleViewModel;
-  notFound: boolean;
-}
+import { ScheduleProps } from "../[scheduleId]";
 
 function JoinSchedule(props: ScheduleProps, notFound: boolean) {
-  const schedule = props.vm?.data?.schedule;
+  const schedule = props.data.schedule;
 
   if (!schedule && notFound) {
     if (notFound) {
@@ -163,19 +154,23 @@ export async function getServerSideProps({ params }) {
     };
   }
 
-  let { schedule } = await getSchedule(scheduleId);
+  let data = await getSchedule(scheduleId);
+  var props: ScheduleProps = null;
 
-  if (!schedule) {
+  if (!data) {
     return {
       notFound: true,
     };
   }
 
+  props = {
+    scheduleId: scheduleId,
+    data: data,
+    activities: [],
+  };
+
   return {
-    props: {
-      vm: createShowScheduleViewModel(scheduleId, schedule),
-      notFound: false,
-    },
+    props: props,
   };
 }
 

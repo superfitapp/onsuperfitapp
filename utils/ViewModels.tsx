@@ -11,9 +11,13 @@ import {
   isDark,
 } from "@/utils/helpers";
 import {
+  FIRActivity,
   FIRInstructionSet,
+  FIRScheduleMember,
+  FIRUser,
   Instruction,
   InstructionBlock,
+  ShowFIRSchedule,
   StripePrice,
   WebLink,
 } from "@superfitapp/superfitjs";
@@ -25,11 +29,13 @@ import calendar from "dayjs/plugin/calendar";
 dayjs.extend(relativeTime);
 dayjs.extend(calendar);
 import "dayjs/locale/en"; // import locale
+import { V4MAPPED } from "node:dns";
+import { isPayingMember } from "./schedule-member";
 dayjs.locale("en"); // use locale
 
 export interface ShowScheduleViewModel {
   scheduleId: string;
-  data: ShowFIRScheduleResponse;
+  // data: ShowFIRScheduleResponse;
   thumbnailUrl?: string;
   photoUrl?: string;
   primaryColor: string;
@@ -71,38 +77,37 @@ export interface ActivityViewModel {
   textColor: string;
   activityType: string;
   videoThumbnailUrl?: string;
-
   scheduleTitle: string;
   schedulePhotoUrl?: string;
   scheduleOwnerDisplayName: string;
   instructionSetViewModel?: InstructionSetViewModel;
-
   scheduledDateRelative?: string;
   scheduledDateString?: string;
 }
 
 export function createShowScheduleViewModel(
   scheduleId: string,
-  data: ShowFIRScheduleResponse
+  schedule: ShowFIRSchedule,
+  scheduleMember?: FIRScheduleMember
 ): ShowScheduleViewModel {
-  const primaryColor = data.schedule.color || "#303030";
-  const secondaryColor = data.schedule.profile.secondaryColor || null;
+  const primaryColor = schedule.color || "#303030";
+  const secondaryColor = schedule.profile.secondaryColor || null;
   const secondaryColorLightRGBA = hexToRGB(secondaryColor, 0.15) || null;
-  const anyoneCanSignup = data.schedule.signupType == "anyoneCanSignUp";
+  const anyoneCanSignup = schedule.signupType == "anyoneCanSignUp";
 
   const currentPrice: StripePrice | undefined =
-    data.schedule.stripeCurrentOneTimePrice ||
-    data.schedule.stripeCurrentMonthlyPrice ||
-    data.schedule.stripeCurrentYearlyPrice;
+    schedule.stripeCurrentOneTimePrice ||
+    schedule.stripeCurrentMonthlyPrice ||
+    schedule.stripeCurrentYearlyPrice;
 
   const joinSchedulePaidCta =
-    anyoneCanSignup && data.schedule.enableSubscription && currentPrice
+    anyoneCanSignup && schedule.enableSubscription && currentPrice
       ? currentPrice.priceDisplayName || "Become a Paid Member"
       : null;
   const joinScheduleFreeCta =
     anyoneCanSignup &&
-    !data.schedule.payToJoin &&
-    data.schedule.enableSubscription &&
+    !schedule.payToJoin &&
+    schedule.enableSubscription &&
     currentPrice
       ? joinSchedulePaidCta
         ? "Start for Free"
@@ -111,18 +116,14 @@ export function createShowScheduleViewModel(
 
   let userIsPaidMember = false;
 
-  if (
-    data.currentUser?.billingInfo?.connectProducts &&
-    data.currentUser?.billingInfo?.connectProducts[
-      data.schedule.stripeProductId
-    ]
-  ) {
-    userIsPaidMember = true;
+  if (scheduleMember) {
+    userIsPaidMember = isPayingMember(scheduleMember);
+    console.log("IS PAYING USER?", userIsPaidMember);
   }
 
   var links: WebLink[] = [];
-  for (var key in data.schedule.profile?.links) {
-    const link = data.schedule.profile?.links[key];
+  for (var key in schedule.profile?.links) {
+    const link = schedule.profile?.links[key];
     links.push(link);
   }
 
@@ -135,9 +136,9 @@ export function createShowScheduleViewModel(
     socialIconsColor: isDark(primaryColor)
       ? hexToRGB(primaryColor, 0.15)
       : hexToRGB(primaryColor, 0.75),
-    introText: data.schedule.profile.about || null,
-    backgroundColor: data.schedule.profile.backgroundColor || null,
-    linksBackgroundColor: data.schedule.profile.linksBackgroundColor || null,
+    introText: schedule.profile.about || null,
+    backgroundColor: schedule.profile.backgroundColor || null,
+    linksBackgroundColor: schedule.profile.linksBackgroundColor || null,
     // linksTextColor: data.schedule.profile.linksTextColor || null,
     // linksBorder: `${data.schedule.profile.linksBorderWidth}px solid ${data.schedule.profile.linksBorderColor}`,
     // linksBorderRadius: `${config.linksBorderRadius}px`,
@@ -145,13 +146,12 @@ export function createShowScheduleViewModel(
     joinSchedulePaidCta: joinSchedulePaidCta,
     joinScheduleFreeCta: joinScheduleFreeCta,
     canSignUp: joinSchedulePaidCta != null || joinScheduleFreeCta != null,
-    userIsScheduleMember: false,
+    userIsScheduleMember: scheduleMember != undefined || false,
     userIsPaidMember: userIsPaidMember,
     scheduleId: scheduleId,
-    data: data,
   };
 
-  const photo = data?.schedule?.photo;
+  const photo = schedule?.photo;
   if (photo) {
     vm.thumbnailUrl = getThumbnailUrl(photo);
     vm.photoUrl = getPhotoUrl(photo);
@@ -162,11 +162,15 @@ export function createShowScheduleViewModel(
 
 export function createShowActivityViewModel(
   data: ShowFIRActivityResponse
-): ActivityViewModel {
-  let primaryColor = hexColor(data.activity.scheduleInfo.color || "#303030");
+): ActivityViewModel | undefined {
+  if (!data.activity) {
+    return null;
+  }
+
+  let primaryColor = hexColor(data.activity?.scheduleInfo?.color || "#303030");
 
   var youtubeLink: string | null = null;
-  if (data.activity.youtubeLink) {
+  if (data?.activity?.youtubeLink) {
     const youtubeId = getQueryString("v", data.activity.youtubeLink);
     if (youtubeId) {
       youtubeLink = `https://www.youtube.com/embed/${youtubeId}?autohide=1&showinfo=1&controls=1`;
@@ -189,12 +193,12 @@ export function createShowActivityViewModel(
   }
 
   var videoThumbnailUrl = null;
-  if (data.activity.youtubeLink) {
+  if (data.activity?.youtubeLink) {
     const youtubeId = getQueryString("v", data.activity.youtubeLink);
     videoThumbnailUrl = `https://img.youtube.com/vi/${youtubeId}/0.jpg`;
   } else if (
-    data.activity.customVideo &&
-    data.activity.customVideo?.muxPlaybackId
+    data.activity?.customVideo &&
+    data.activity?.customVideo?.muxPlaybackId
   ) {
     videoThumbnailUrl = `https://image.mux.com/${data.activity.customVideo?.muxPlaybackId}/animated.gif?fps=2&width=120`;
   }
@@ -232,7 +236,7 @@ export function createShowActivityViewModel(
 
   return {
     id: data.activity.id || null,
-    scheduleId: data.activity.scheduleInfo.id,
+    scheduleId: data.activity?.scheduleInfo?.id,
     color: primaryColor,
     colorGradient: hexToRGB(primaryColor, 0.75),
     textColor: isDark(primaryColor) ? "white" : "#303030",
