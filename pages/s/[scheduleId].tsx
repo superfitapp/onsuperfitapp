@@ -51,7 +51,6 @@ export async function getStaticProps({ params }) {
   props = {
     scheduleId: scheduleId,
     data: data,
-    activities: data.activities,
   };
 
   return {
@@ -95,7 +94,7 @@ function Schedule(props: ScheduleProps, notFound: boolean) {
   }
 
   const { user } = useUser();
-  var activities: FIRActivity[] = props.activities || [];
+  var activities: FIRActivity[] = props.data?.activities || [];
   var scheduleTitle = schedule?.title;
   const scheduleAbout = schedule?.profile?.about;
   var schedulePhotoUrl: string = null;

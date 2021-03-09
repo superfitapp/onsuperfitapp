@@ -25,18 +25,6 @@ export interface ShowFIRActivityResponse {
   instructionSet?: FIRInstructionSet;
 }
 
-// export async function getSchedule({
-//   id,
-//   fetchRecentActivities,
-// }: {
-//   id: string;
-//   fetchRecentActivities: boolean;
-//   userId?: string;
-// }): Promise<ShowFIRScheduleResponse> {
-//   const schedule = await fetchShowSchedule(id, fetchRecentActivities);
-//   return data;
-// }
-
 export async function getShowActivity(
   activityId: string,
   scheduleId: string

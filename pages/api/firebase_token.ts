@@ -3,13 +3,13 @@ import { auth } from "@/lib/firebase-admin";
 
 export default withApiAuthRequired(async function ProtectedRoute(req, res) {
   const session = getSession(req, res);
-  if (!session.user.sub) {
+  if (!session?.user?.sub) {
     res.status(401);
     res.end();
     return;
   }
 
-  let token = await generateFirebaseToken(session.user.sub);
+  let token = await generateFirebaseToken(session?.user?.sub);
   res.json({ token: token });
 });
 

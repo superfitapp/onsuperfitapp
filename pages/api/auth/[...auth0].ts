@@ -13,7 +13,7 @@ const afterCallback = async (req, res, session: Session, state) => {
     if (session.accessToken && session.user?.sub) {
       useFetchUser({ required: true });
 
-      // const firToken = await auth.createCustomToken(session.user.sub);
+      // const firToken = await auth.createCustomToken(session?.user?.sub);
       // const firCredentials = await firebase
       //   .auth()
       //   .signInWithCustomToken(firToken);

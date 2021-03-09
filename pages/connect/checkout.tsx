@@ -17,7 +17,7 @@ export default function ConnectCheckout() {
   const router = useRouter();
 
   const { user, loading } = useFetchUser({ required: true });
-  
+
   if (typeof window !== "undefined") {
     const returnTo = localStorage.getItem("returnTo");
     if (returnTo && returnTo != "/") {

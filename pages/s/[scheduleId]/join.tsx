@@ -181,7 +181,7 @@ export async function getServerSideProps({
   let data = await fetchShowSchedule(
     scheduleId as string,
     true,
-    session.user.sub
+    session?.user?.sub
   );
 
   var props: JoinScheduleProps = null;
