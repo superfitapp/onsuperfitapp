@@ -2,12 +2,10 @@ import { db } from "@/lib/firebase-admin";
 import { getSession } from "@auth0/nextjs-auth0";
 import {
   AccessLevel,
-  ActivityStatus,
   FIRActivity,
   FIRInstructionSet,
   FIRSchedule,
   FIRScheduleMember,
-  FIRUser,
   ShowFIRSchedule,
   VisibilityStatus,
 } from "@superfitapp/superfitjs";
@@ -86,7 +84,7 @@ export async function fetchShowActivity(
       schedule: showSchedule,
       scheduleMember: null,
       activity: null,
-      activityVisibility: null,
+      activityVisibility: activity.access,
     };
   }
 

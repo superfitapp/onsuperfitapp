@@ -16,18 +16,17 @@ import * as React from "react";
 import { BigMedia } from "../../partials/BigMedia";
 import { OwnerWithSocial } from "../../partials/OwnerWithSocial";
 import { ScheduledActivity } from "../../partials/ScheduledActivity";
-import { getSchedule, ShowFIRScheduleResponse } from "../../lib/db-public";
+import { ShowFIRScheduleResponse } from "../../lib/db-public";
 import { createShowScheduleViewModel } from "../../utils/ViewModels";
-import { Props } from "framer-motion/types/types";
 import { useUser } from "@auth0/nextjs-auth0";
 import useSWR from "swr";
 import fetcher from "@/utils/fetcher";
 import { FIRActivity } from "@superfitapp/superfitjs";
+import { fetchShowSchedule } from "@/lib/schedule";
 
-export interface ScheduleProps extends Props {
+export interface ScheduleProps {
   scheduleId: string;
   data: ShowFIRScheduleResponse;
-  activities: FIRActivity[];
 }
 
 export async function getStaticProps({ params }) {
@@ -41,7 +40,7 @@ export async function getStaticProps({ params }) {
     };
   }
 
-  let data = await getSchedule(scheduleId);
+  let data = await fetchShowSchedule(scheduleId, true);
 
   if (!data) {
     return {

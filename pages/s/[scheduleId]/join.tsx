@@ -21,26 +21,43 @@ import {
 } from "@chakra-ui/react";
 
 import * as React from "react";
-import { getSchedule } from "@/lib/db-public";
-import { createShowScheduleViewModel } from "@/utils/ViewModels";
+import {
+  createShowScheduleViewModel,
+  ShowScheduleViewModel,
+} from "@/utils/ViewModels";
 import Error from "next/error";
 import { ButtonRadioGroup } from "@/partials/ButtonRadioGroup";
 import { ArrowDirection, ScheduleRow } from "@/partials/ScheduleRow";
 import { ScheduleProps } from "../[scheduleId]";
+import { getSession } from "@auth0/nextjs-auth0";
+import { GetServerSidePropsContext } from "next";
+import { fetchShowSchedule } from "@/lib/schedule";
+import { useRouter } from "next/router";
+import { MdSubscriptions } from "react-icons/md";
+import { BsPersonCheckFill } from "react-icons/bs";
 
-function JoinSchedule(props: ScheduleProps, notFound: boolean) {
-  const schedule = props.data.schedule;
+export interface JoinScheduleProps {
+  scheduleId: string;
+  vm: ShowScheduleViewModel;
+}
 
-  if (!schedule && notFound) {
+function JoinSchedule(props: JoinScheduleProps, notFound: boolean) {
+  // const router = useRouter();
+
+  if (!props.vm && notFound == true) {
     if (notFound) {
       return <Error statusCode={404} />;
     }
   }
+  // if (props?.vm.userIsPaidMember && props.scheduleId) {
+  //   // already a PAID member, go back to schedule page
+  //   router.push(`/s/${props.scheduleId}`);
+  // }
 
-  const scheduleTitle = schedule.title;
+  const scheduleTitle = props.vm?.scheduleTitle;
   const schedulePhotoUrl = props.vm?.photoUrl;
-  const scheduleId = props.vm.scheduleId;
-  const scheduleOwnerDisplayName = props.vm.data.schedule.ownerDisplayName;
+  const scheduleId = props.vm?.scheduleId;
+  const scheduleOwnerDisplayName = props.vm?.ownerDisplayName;
 
   const [currentOption, setCurrentOption] = React.useState<
     StringOrNumber | undefined
@@ -97,20 +114,20 @@ function JoinSchedule(props: ScheduleProps, notFound: boolean) {
                     {
                       label: "Premium Monthly",
                       description: "$20/month",
-                      icon: <HiBriefcase />,
+                      icon: <MdSubscriptions />,
                       value: "analytics",
                     },
                     {
                       label: "Premium Yearly",
                       description: "$20/year",
-                      icon: <HiBriefcase />,
+                      icon: <MdSubscriptions />,
                       value: "analytiarstcs",
                     },
 
                     {
                       label: "Basic Member",
                       description: "Free",
-                      icon: <HiCursorClick />,
+                      icon: <BsPersonCheckFill />,
                       value: "intranet",
                     },
                   ]}
@@ -146,7 +163,14 @@ function JoinSchedule(props: ScheduleProps, notFound: boolean) {
   );
 }
 
-export async function getServerSideProps({ params }) {
+export async function getServerSideProps({
+  params,
+  req,
+  res,
+}: GetServerSidePropsContext) {
+  const session = getSession(req, res);
+  console.log("session.user", session?.user);
+
   const { scheduleId } = params;
   if (!scheduleId) {
     return {
@@ -154,8 +178,13 @@ export async function getServerSideProps({ params }) {
     };
   }
 
-  let data = await getSchedule(scheduleId);
-  var props: ScheduleProps = null;
+  let data = await fetchShowSchedule(
+    scheduleId as string,
+    true,
+    session.user.sub
+  );
+
+  var props: JoinScheduleProps = null;
 
   if (!data) {
     return {
@@ -163,10 +192,25 @@ export async function getServerSideProps({ params }) {
     };
   }
 
+  const vm = createShowScheduleViewModel(
+    scheduleId as string,
+    data.schedule,
+    data.scheduleMember
+  );
+
+  if (vm.userIsPaidMember) {
+    return {
+      props: {},
+      redirect: {
+        permanent: false,
+        destination: `/s/${scheduleId}`,
+      },
+    };
+  }
+
   props = {
-    scheduleId: scheduleId,
-    data: data,
-    activities: [],
+    scheduleId: scheduleId as string,
+    vm: vm,
   };
 
   return {

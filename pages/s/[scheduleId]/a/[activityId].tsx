@@ -95,6 +95,8 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
   );
 
   if (data) {
+    console.log(data);
+    
     activityViewModel = createShowActivityViewModel(data);
     scheduleViewModel = createShowScheduleViewModel(
       props.scheduleId,

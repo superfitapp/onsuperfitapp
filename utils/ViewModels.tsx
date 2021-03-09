@@ -35,7 +35,7 @@ dayjs.locale("en"); // use locale
 
 export interface ShowScheduleViewModel {
   scheduleId: string;
-  // data: ShowFIRScheduleResponse;
+  scheduleTitle: string;
   thumbnailUrl?: string;
   photoUrl?: string;
   primaryColor: string;
@@ -46,7 +46,7 @@ export interface ShowScheduleViewModel {
   socialIconsColor: string;
   introText?: string;
   backgroundColor: string;
-  // textColor: string;
+  ownerDisplayName?: string;
   linksBackgroundColor: string;
   // linksTextColor: string;
   // linksBorderRadius: string;
@@ -128,6 +128,7 @@ export function createShowScheduleViewModel(
   }
 
   let vm: ShowScheduleViewModel = {
+    scheduleTitle: schedule.title,
     primaryColor: hexColor(primaryColor),
     secondaryColor: secondaryColor,
     primaryColorLightRGBA: hexToRGB(primaryColor, 0.15),
@@ -139,6 +140,7 @@ export function createShowScheduleViewModel(
     introText: schedule.profile.about || null,
     backgroundColor: schedule.profile.backgroundColor || null,
     linksBackgroundColor: schedule.profile.linksBackgroundColor || null,
+    ownerDisplayName: schedule?.ownerDisplayName || null,
     // linksTextColor: data.schedule.profile.linksTextColor || null,
     // linksBorder: `${data.schedule.profile.linksBorderWidth}px solid ${data.schedule.profile.linksBorderColor}`,
     // linksBorderRadius: `${config.linksBorderRadius}px`,

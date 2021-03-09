@@ -14,6 +14,7 @@ import { ShowFIRScheduleResponse } from "./db-public";
 
 export async function fetchShowSchedule(
   scheduleId: string,
+  fetchRecentActivities: boolean,
   userid?: string
 ): Promise<ShowFIRScheduleResponse> {
   if (!scheduleId) {
@@ -50,26 +51,33 @@ export async function fetchShowSchedule(
     };
   }
 
-  // fetch recent activities
-  let activitiesSnap = await db
-    .collectionGroup("activities")
-    .orderBy("scheduledDate", "desc")
-    .limit(10)
-    .where("status", "==", ActivityStatus.Published)
-    .where("scheduleInfo.id", "==", scheduleSnap.id)
-    .get();
+  var activities: FIRActivity[] | undefined = null;
+  if (fetchRecentActivities) {
+    // fetch recent activities
+    let activitiesSnap = await db
+      .collectionGroup("activities")
+      .orderBy("scheduledDate", "desc")
+      .limit(10)
+      .where("status", "==", ActivityStatus.Published)
+      .where("scheduleInfo.id", "==", scheduleSnap.id)
+      .get();
 
-  const activities: FIRActivity[] | undefined = activitiesSnap.docs.map((x) => {
-    var activity = x.data() as FIRActivity;
-    activity.id = x.id;
-    return activity;
-  });
+    activities = activitiesSnap.docs.map((x) => {
+      var activity = x.data() as FIRActivity;
+      activity.id = x.id;
+      return activity;
+    });
+  }
 
-  return {
+  const data = {
     schedule: showSchedule,
     activities: activities,
     scheduleMember: scheduleMember,
   };
+
+  let string = JSON.stringify(data);
+
+  return JSON.parse(string);
 }
 
 export function createShowSchedule(schedule: FIRSchedule): ShowFIRSchedule {
