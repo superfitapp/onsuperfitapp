@@ -5,6 +5,7 @@ import {
   FIRInstructionSet,
 } from "@superfitapp/superfitjs";
 import axios from "axios";
+import { fetchShowSchedule } from "./show-schedule";
 
 export interface ShowFIRScheduleResponse {
   schedule: ShowFIRSchedule;
@@ -20,12 +21,13 @@ export interface ShowFIRActivityResponse {
 
 export async function getSchedule(
   id: string
-): Promise<ShowFIRScheduleResponse> {
-  const { data } = await axios.get<ShowFIRScheduleResponse>(
-    `${process.env.NEXT_PUBLIC_BASE_URL}/api/show/schedule/${id}`
-  );
+): Promise<{ schedule: ShowFIRScheduleResponse }> {
+  const schedule = await fetchShowSchedule(id);
+  
+  let string = JSON.stringify(schedule)
+  let data = JSON.parse(string)
 
-  return data;
+  return { schedule: data };
 }
 
 export async function getShowActivity(

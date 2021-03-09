@@ -8,8 +8,8 @@ const limiter = rateLimit({
 });
 export default async function (req: NextApiRequest, res: NextApiResponse) {
   try {
-    await limiter.check(res, 10, "FETCH_SCHEDULE_CACHE_TOKEN");
-    await fetchShowSchedule(req, res);
+    const response = await fetchShowSchedule(req.query.scheduleId as string);
+    res.status(200).json(response);
   } catch {
     res.status(429).json({ error: "Rate limit exceeded" });
   }

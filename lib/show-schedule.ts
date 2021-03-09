@@ -9,12 +9,12 @@ import {
   VisibilityStatus,
 } from "@superfitapp/superfitjs";
 import { NextApiRequest, NextApiResponse } from "next";
+import { ShowFIRScheduleResponse } from "./db-public";
 
 export async function fetchShowSchedule(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
-  const scheduleId = req.query.scheduleId as string;
+  scheduleId: string,
+  userid?: string
+): Promise<ShowFIRScheduleResponse> {
   if (!scheduleId) {
     throw Error("id required");
   }
@@ -32,11 +32,10 @@ export async function fetchShowSchedule(
   let showSchedule: ShowFIRSchedule = createShowSchedule(currentSchedule);
 
   if (currentSchedule.visibilityStatus != VisibilityStatus.Public) {
-    res.status(200).json({
+    return {
       schedule: showSchedule,
-    });
-
-    return;
+      activities: [],
+    };
   }
 
   // fetch recent activities
@@ -54,10 +53,10 @@ export async function fetchShowSchedule(
     return activity;
   });
 
-  res.status(200).json({
+  return {
     schedule: showSchedule,
     activities: activities,
-  });
+  };
 }
 
 export function createShowSchedule(schedule: FIRSchedule): ShowFIRSchedule {

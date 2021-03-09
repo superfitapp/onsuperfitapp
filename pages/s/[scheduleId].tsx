@@ -14,19 +14,15 @@ import Error from "next/error";
 import { SimpleGrid } from "@chakra-ui/react";
 import * as React from "react";
 import { BigMedia } from "../../partials/BigMedia";
-import { TagBelt } from "../../partials/TagBelt";
 import { OwnerWithSocial } from "../../partials/OwnerWithSocial";
 import { ScheduledActivity } from "../../partials/ScheduledActivity";
 import { getSchedule, ShowFIRScheduleResponse } from "../../lib/db-public";
-import {
-  ShowScheduleViewModel,
-  createShowScheduleViewModel,
-} from "../../utils/ViewModels";
+import { createShowScheduleViewModel } from "../../utils/ViewModels";
 import { Props } from "framer-motion/types/types";
 import { getSession, useUser } from "@auth0/nextjs-auth0";
 import useSWR from "swr";
 import fetcher from "@/utils/fetcher";
-import { lookup } from "node:dns";
+import { FIRActivity } from "@superfitapp/superfitjs";
 
 export interface ScheduleProps extends Props {
   scheduleId: string;
@@ -35,6 +31,7 @@ export interface ScheduleProps extends Props {
 
 export async function getStaticProps({ params }) {
   const { scheduleId } = params;
+
   if (!scheduleId) {
     return {
       notFound: true,
@@ -42,8 +39,9 @@ export async function getStaticProps({ params }) {
     };
   }
 
-  let scheduleData = await getSchedule(scheduleId);
-  if (!scheduleData) {
+  let { schedule } = await getSchedule(scheduleId);
+
+  if (!schedule) {
     return {
       notFound: true,
     };
@@ -52,7 +50,7 @@ export async function getStaticProps({ params }) {
   return {
     props: {
       scheduleId: scheduleId,
-      data: scheduleData,
+      data: schedule,
     },
     // Next.js will attempt to re-generate the page:
     // - When a request comes in
@@ -70,7 +68,7 @@ function Schedule(props: ScheduleProps, notFound: boolean) {
     }
 
     return (
-      <ScheduleLayout scheduleId={vm?.scheduleId}>
+      <ScheduleLayout scheduleId={props.scheduleId}>
         <Box
           as="section"
           my={{ base: "2", md: "8" }}
@@ -93,7 +91,11 @@ function Schedule(props: ScheduleProps, notFound: boolean) {
   }
 
   const { user } = useUser();
-  var vm: ShowScheduleViewModel | undefined;
+  var activities: FIRActivity[] = null;
+  var scheduleTitle = schedule?.title;
+  const scheduleAbout = schedule?.profile?.about;
+  var schedulePhotoUrl: string = null;
+  var ownerDisplayName: string = null;
 
   try {
     const { data } = useSWR<ShowFIRScheduleResponse>(
@@ -103,24 +105,23 @@ function Schedule(props: ScheduleProps, notFound: boolean) {
       fetcher,
       {
         initialData: props.data,
+        revalidateOnMount: user != undefined,
       }
     );
 
     if (data) {
-      vm = createShowScheduleViewModel(props.scheduleId, data);
+      const vm = createShowScheduleViewModel(props.scheduleId, data);
+      activities = vm?.data?.activities;
+      schedulePhotoUrl = vm?.photoUrl;
+      ownerDisplayName = vm.data?.schedule?.ownerDisplayName;
     }
   } catch (error) {
     console.log(error);
   }
 
-  var activities = vm?.data?.activities;
-  var scheduleTitle = schedule?.title;
-  const scheduleAbout = schedule?.profile?.about;
-  const schedulePhotoUrl = vm?.photoUrl;
-
   return (
     <>
-      <ScheduleLayout scheduleId={vm?.scheduleId}>
+      <ScheduleLayout scheduleId={props?.scheduleId}>
         <Box
           as="section"
           bg={mode("gray.50", "inherit")}
@@ -156,15 +157,16 @@ function Schedule(props: ScheduleProps, notFound: boolean) {
                     {scheduleAbout}
                   </Text>
                 </Box>
-
-                <Box mt="8">
-                  <OwnerWithSocial
-                    mt="8"
-                    name={`Created by ${vm?.data.schedule?.ownerDisplayName}`}
-                    image="https://images.unsplash.com/photo-1492633423870-43d1cd2775eb?ixid=MXwxMjA3fDB8MHxzZWFyY2h8MXx8bGFkeSUyMHNtaWxpbmd8ZW58MHx8MHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
-                    role="Developer Advocate"
-                  ></OwnerWithSocial>
-                </Box>
+                {ownerDisplayName && (
+                  <Box mt="8">
+                    <OwnerWithSocial
+                      mt="8"
+                      name={`Created by ${ownerDisplayName}`}
+                      image="https://images.unsplash.com/photo-1492633423870-43d1cd2775eb?ixid=MXwxMjA3fDB8MHxzZWFyY2h8MXx8bGFkeSUyMHNtaWxpbmd8ZW58MHx8MHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
+                      role="Developer Advocate"
+                    ></OwnerWithSocial>
+                  </Box>
+                )}
               </Flex>
             </Grid>
           </Box>
@@ -182,15 +184,16 @@ function Schedule(props: ScheduleProps, notFound: boolean) {
             columns={[1, 1, 3]}
             spacing={{ base: "20px", md: "40px" }}
           >
-            {activities.map((activity) => {
-              return (
-                <ScheduledActivity
-                  key={activity.id}
-                  activity={activity}
-                  schedule={schedule}
-                ></ScheduledActivity>
-              );
-            })}
+            {activities &&
+              activities?.map((activity) => {
+                return (
+                  <ScheduledActivity
+                    key={activity.id}
+                    activity={activity}
+                    schedule={schedule}
+                  ></ScheduledActivity>
+                );
+              })}
           </SimpleGrid>
         </Box>
       </ScheduleLayout>

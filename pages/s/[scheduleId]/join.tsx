@@ -21,11 +21,11 @@ import {
 } from "@chakra-ui/react";
 
 import * as React from "react";
-import { getSchedule } from "../../../lib/db-public";
+import { getSchedule } from "@/lib/db-public";
 import {
   ShowScheduleViewModel,
   createShowScheduleViewModel,
-} from "../../../utils/ViewModels";
+} from "@/utils/ViewModels";
 import { Props } from "framer-motion/types/types";
 import Error from "next/error";
 
@@ -163,9 +163,9 @@ export async function getServerSideProps({ params }) {
     };
   }
 
-  let showSchedule = await getSchedule(scheduleId);
+  let { schedule } = await getSchedule(scheduleId);
 
-  if (!showSchedule) {
+  if (!schedule) {
     return {
       notFound: true,
     };
@@ -173,7 +173,7 @@ export async function getServerSideProps({ params }) {
 
   return {
     props: {
-      vm: createShowScheduleViewModel(scheduleId, showSchedule),
+      vm: createShowScheduleViewModel(scheduleId, schedule),
       notFound: false,
     },
   };
