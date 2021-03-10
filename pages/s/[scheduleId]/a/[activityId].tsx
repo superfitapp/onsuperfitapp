@@ -95,8 +95,10 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
   );
 
   if (data) {
-    console.log(data);
-    
+    console.log("user", user?.email);
+
+    console.log("data.instructionSet", data.instructionSet?.instructionBlocks);
+
     activityViewModel = createShowActivityViewModel(data);
     scheduleViewModel = createShowScheduleViewModel(
       props.scheduleId,
@@ -109,7 +111,7 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
   var scheduledDateRelative = activityViewModel?.scheduledDateRelative || null;
 
   let instructionsBlockMap =
-    props?.vm?.instructionSetViewModel?.instructionsBlockMap || null;
+    activityViewModel?.instructionSetViewModel?.instructionsBlockMap || null;
 
   const activityTitle = activityViewModel?.title || null;
   const activityAbout = activityViewModel?.description || null;
@@ -486,40 +488,30 @@ export async function getStaticProps({ params }) {
     };
   }
 
-  try {
-    var props: ScheduledActivityProps = null;
+  var props: ScheduledActivityProps = null;
 
-    let data = await getShowActivity(activityId, scheduleId);
+  let data = await getShowActivity(activityId, scheduleId);
 
-    if (!data) {
-      return {
-        props: props,
-        notFound: true,
-        revalidate: 0,
-      };
-    }
-
-    props = {
-      scheduleId: scheduleId,
-      activityId: activityId,
-      data: data,
-    };
-
+  if (!data) {
     return {
       props: props,
-      notFound: false,
-      // Next.js will attempt to re-generate the page:
-      // - When a request comes in
-      // - At most once every second
-      revalidate: 1, // In seconds
-    };
-  } catch {
-    return {
-      props: {
-        vm: false,
-      },
       notFound: true,
-      revalidate: false,
+      revalidate: 0,
     };
   }
+
+  props = {
+    scheduleId: scheduleId,
+    activityId: activityId,
+    data: data,
+  };
+
+  return {
+    props: props,
+    notFound: false,
+    // Next.js will attempt to re-generate the page:
+    // - When a request comes in
+    // - At most once every second
+    revalidate: 1, // In seconds
+  };
 }

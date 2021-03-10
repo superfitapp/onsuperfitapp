@@ -72,7 +72,7 @@ export async function fetchShowActivity(
     .get();
 
   const activity: FIRActivity | undefined = activitySnap.data() as FIRActivity;
-  var instructionSet: FIRInstructionSet = null;
+  var instructionSet: FIRInstructionSet | undefined = null;
 
   if (!activity) {
     throw Error("activity not found.");
@@ -88,7 +88,11 @@ export async function fetchShowActivity(
     };
   }
 
+  // Either:
+  // 1. not a public activity and is a member
+  // 2. public activity
   let instructionSetId = activity.instructionSetId;
+
   if (instructionSetId) {
     let instructionSetSnap = await db
       .collection("instruction_sets")
@@ -99,13 +103,10 @@ export async function fetchShowActivity(
       | FIRInstructionSet
       | undefined = instructionSetSnap.data() as FIRInstructionSet;
 
-    if (instructionSet) {
+    if (instructionSetData) {
       instructionSet = instructionSetData;
     }
   }
-
-  ////
-
   return {
     schedule: showSchedule,
     activity: activity,

@@ -76,7 +76,6 @@ export const GuestHeaderNav = ({ scheduleId }: GuestHeaderNavProps) => {
           {!user && !isLoading && (
             <HStack spacing="3" display="flex">
               <Button
-                display={{ base: "none", md: "block" }}
                 onClick={login}
                 variant="ghost"
                 color={mode("gray.500", "gray.200")}
@@ -86,6 +85,7 @@ export const GuestHeaderNav = ({ scheduleId }: GuestHeaderNavProps) => {
               </Button>
               {scheduleId && (
                 <Button
+                  display={{ base: "none", md: "block" }}
                   onClick={() => {
                     router.push(`/s/${scheduleId}/join`);
                   }}

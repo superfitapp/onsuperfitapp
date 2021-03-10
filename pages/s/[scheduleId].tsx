@@ -23,6 +23,7 @@ import useSWR from "swr";
 import fetcher from "@/utils/fetcher";
 import { FIRActivity } from "@superfitapp/superfitjs";
 import { fetchShowSchedule } from "@/lib/schedule";
+import { fetchThumbnail, ThumbnailSize } from "@/utils/thumbnail-fetcher";
 
 export interface ScheduleProps {
   scheduleId: string;
@@ -41,6 +42,16 @@ export async function getStaticProps({ params }) {
   }
 
   let data = await fetchShowSchedule(scheduleId, true);
+
+  if (data.schedule?.photo?.customPhotoFirPath) {
+    console.log("HURRRRR");
+    const url = await fetchThumbnail(
+      ThumbnailSize.fiveTwelve,
+      data.schedule?.photo?.customPhotoFirPath
+    );
+    console.log(url);
+    
+  }
 
   if (!data) {
     return {
