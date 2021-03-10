@@ -27,6 +27,11 @@ module.exports = {
     },
   ],
   images: {
-    domains: ["blog.superfitapp.com", "images.unsplash.com", "superfitapp.com"],
+    domains: [
+      "blog.superfitapp.com",
+      "images.unsplash.com",
+      "superfitapp.com",
+      "firebasestorage.googleapis.com",
+    ],
   },
 };

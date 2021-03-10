@@ -44,13 +44,10 @@ export async function getStaticProps({ params }) {
   let data = await fetchShowSchedule(scheduleId, true);
 
   if (data.schedule?.photo?.customPhotoFirPath) {
-    console.log("HURRRRR");
-    const url = await fetchThumbnail(
-      ThumbnailSize.fiveTwelve,
-      data.schedule?.photo?.customPhotoFirPath
-    );
-    console.log(url);
-    
+    // const url = await fetchThumbnail(
+    //   ThumbnailSize.fiveTwelve,
+    //   data.schedule?.photo?.customPhotoFirPath
+    // );
   }
 
   if (!data) {

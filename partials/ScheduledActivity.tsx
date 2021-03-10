@@ -1,19 +1,20 @@
 import * as React from "react";
 import {
   Box,
-  Image,
   Flex,
-  Badge,
   Text,
-  AspectRatio,
   Stack,
   LinkBox,
   LinkOverlay,
+  chakra,
+  AspectRatio,
 } from "@chakra-ui/react";
+
 import { StackProps } from "@chakra-ui/react";
 import { FIRActivity, ShowFIRSchedule } from "@superfitapp/superfitjs";
 import { createShowActivityViewModel } from "@/utils/ViewModels";
 import { ShowFIRActivityResponse } from "@/lib/db-public";
+import NextImage from "./NextImage";
 interface ScheduledActivityProps extends StackProps {
   activity: FIRActivity;
   schedule: ShowFIRSchedule;
@@ -24,7 +25,6 @@ export const ScheduledActivity = (props: ScheduledActivityProps) => {
     activity: props.activity,
     schedule: props.schedule,
   };
-
   const vm = createShowActivityViewModel(x);
   const scheduleId = props.activity.scheduleInfo.id;
   const path = `/s/${scheduleId}/a/${props.activity.id}`;
@@ -38,9 +38,19 @@ export const ScheduledActivity = (props: ScheduledActivityProps) => {
         spacing={{ base: "4", md: "0" }}
         flex="1"
       >
-        <AspectRatio minWidth="150px" ratio={16 / 9}>
-          <Image objectFit="cover" borderRadius="sm" src={vm.thumbnailUrl} />
-        </AspectRatio>
+        {vm.thumbnailUrl && (
+          <AspectRatio ratio={16 / 9} minW={{ base: "150px", md: "auto" }}>
+            <NextImage
+              src={vm.thumbnailUrl}
+              borderRadius="sm"
+              w="auto"
+              h="auto"
+              layout="fill"
+              objectFit="cover"
+            />
+          </AspectRatio>
+        )}
+
         <Box>
           {/* Tags */}
           <Flex align="baseline" mt={2}>
