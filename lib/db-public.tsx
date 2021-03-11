@@ -18,7 +18,7 @@ export interface ShowFIRScheduleResponse {
 }
 
 export interface ShowFIRActivityResponse {
-  activityVisibility?: string;
+  accessLevel?: string;
   activity?: FIRActivity;
   schedule: ShowFIRSchedule;
   scheduleMember?: FIRScheduleMember;

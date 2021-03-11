@@ -76,11 +76,13 @@ export const ButtonRadio = (props: ButtonRadioProps) => {
             {icon}
           </Box>
 
-          <Text fontWeight="extrabold" fontSize="xl">
+          <Text fontWeight="bold" fontSize="xl">
             {label}
           </Text>
 
-          <Text fontSize="sm">{description}</Text>
+          <Text textColor={mode("gray.700", "gray.500")} overflow="hidden">
+            {description}
+          </Text>
           <Spacer minHeight="15px"></Spacer>
           <CheckboxIcon checked={state.isChecked} />
         </Flex>

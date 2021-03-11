@@ -42,16 +42,14 @@ import {
 import { Props } from "framer-motion/types/types";
 import { BigMedia } from "@/partials/BigMedia";
 import { ArrowDirection, ScheduleRow } from "@/partials/ScheduleRow";
-import {
-  FIRActivity,
-  FIRScheduleMember,
-  ShowFIRSchedule,
-} from "@superfitapp/superfitjs";
+import { AccessLevel } from "@superfitapp/superfitjs";
 import useSWR from "swr";
 import fetcher from "@/utils/fetcher";
 import { useUser } from "@auth0/nextjs-auth0";
+import { useRouter } from "next/router";
 
 function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
+  const router = useRouter();
   if (!props.data) {
     if (notFound == true) {
       return <Error statusCode={404} />;
@@ -95,10 +93,6 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
   );
 
   if (data) {
-    console.log("user", user?.email);
-
-    console.log("data.instructionSet", data.instructionSet?.instructionBlocks);
-
     activityViewModel = createShowActivityViewModel(data);
     scheduleViewModel = createShowScheduleViewModel(
       props.scheduleId,
@@ -116,6 +110,9 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
   const activityTitle = activityViewModel?.title || null;
   const activityAbout = activityViewModel?.description || null;
   const activityPhotoUrl = activityViewModel?.photoUrl || null;
+
+  const [buttonLoading, setButtonLoading] = React.useState<boolean>(false);
+  const showButtonLoading = (load) => setButtonLoading(load);
 
   return (
     <>
@@ -244,14 +241,24 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
                   arrowDirection={ArrowDirection.forward}
                 ></ScheduleRow>
 
-                <Button
-                  size="lg"
-                  colorScheme="blue"
-                  minH="14"
-                  rightIcon={<BiRightArrowAlt />}
-                >
-                  Get Started now
-                </Button>
+                {(!scheduleViewModel?.userIsPaidMember || false) &&
+                  scheduleViewModel?.joinSchedulePaidCta &&
+                  props?.data?.accessLevel != AccessLevel.all && (
+                    <Button
+                      isLoading={buttonLoading}
+                      size="lg"
+                      colorScheme="blue"
+                      minH="14"
+                      onClick={() => {
+                        showButtonLoading(true);
+                        router.push(`/s/${props.scheduleId}/join`);
+                        showButtonLoading(false);
+                      }}
+                      rightIcon={<BiRightArrowAlt />}
+                    >
+                      {scheduleViewModel?.joinSchedulePaidCta}
+                    </Button>
+                  )}
 
                 <Box
                   rounded="lg"

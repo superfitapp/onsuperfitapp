@@ -2,12 +2,7 @@ import Layout from "@/components/schedule-layout";
 import { StringOrNumber } from "@chakra-ui/utils";
 import { Fade, useBreakpointValue } from "@chakra-ui/react";
 
-import {
-  HiBriefcase,
-  HiChevronDoubleRight,
-  HiCursorClick,
-  HiPlus,
-} from "react-icons/hi";
+import { HiUserCircle, HiOutlineLockOpen, HiOutlineStar } from "react-icons/hi";
 
 import {
   Box,
@@ -49,10 +44,15 @@ function JoinSchedule(props: JoinScheduleProps, notFound: boolean) {
       return <Error statusCode={404} />;
     }
   }
+
   // if (props?.vm.userIsPaidMember && props.scheduleId) {
   //   // already a PAID member, go back to schedule page
   //   router.push(`/s/${props.scheduleId}`);
   // }
+
+  const confirmButtonPressed = () => {
+    //
+  };
 
   const scheduleTitle = props.vm?.scheduleTitle;
   const schedulePhotoUrl = props.vm?.photoUrl;
@@ -63,16 +63,44 @@ function JoinSchedule(props: JoinScheduleProps, notFound: boolean) {
     StringOrNumber | undefined
   >(null);
 
+  var options: {
+    label: string;
+    description: string;
+    icon: any;
+    value: string;
+  }[] = [];
+
+  if (props.vm.canSignUp) {
+    if (props.vm.joinSchedulePaidCta && props.vm.premiumPriceTitle) {
+      options.push({
+        label: `${props.vm.premiumPriceTitle}`,
+        description: `Premium membership- cancel anytime`,
+        icon: <HiOutlineStar />,
+        value: "premium",
+      });
+    }
+
+    if (props.vm.joinScheduleFreeCta) {
+      options.push({
+        label: "Free Member",
+        description: "No credit card required",
+        icon: <HiUserCircle />,
+        value: "free",
+      });
+    }
+  }
+
   return (
     <>
       <Layout scheduleId={null}>
-        <Box as="section" py="12">
-          <Box
-            rounded={{ lg: "lg" }}
-            bg={mode("white", "gray.700")}
-            shadow={{ base: "none", md: "lg" }}
-            overflow="hidden"
-          >
+        <Box
+          as="section"
+          shadow={{ base: "none", md: "lg" }}
+          rounded={{ lg: "lg" }}
+          bg={mode("white", "gray.700")}
+          overflow="hidden"
+        >
+          <Box py="8">
             <Box
               position={{ base: "fixed", sm: "relative" }}
               width="full"
@@ -95,7 +123,7 @@ function JoinSchedule(props: JoinScheduleProps, notFound: boolean) {
                 <Button
                   colorScheme="blue"
                   minW="20"
-                  // rightIcon={<HiChevronDoubleRight />}
+                  onClick={confirmButtonPressed}
                 >
                   Select
                 </Button>
@@ -109,55 +137,13 @@ function JoinSchedule(props: JoinScheduleProps, notFound: boolean) {
                   onChange={(value) => {
                     setCurrentOption(value);
                   }}
-                  defaultValue="analytics"
-                  options={[
-                    {
-                      label: "Premium Monthly",
-                      description: "$20/month",
-                      icon: <MdSubscriptions />,
-                      value: "analytics",
-                    },
-                    {
-                      label: "Premium Yearly",
-                      description: "$20/year",
-                      icon: <MdSubscriptions />,
-                      value: "analytiarstcs",
-                    },
-
-                    {
-                      label: "Basic Member",
-                      description: "Free",
-                      icon: <BsPersonCheckFill />,
-                      value: "intranet",
-                    },
-                  ]}
+                  defaultValue="premium"
+                  options={options}
                 />
               </Box>
             </Stack>
           </Box>
         </Box>
-
-        <Fade hidden in={currentOption != undefined}>
-          <Box
-            position="fixed"
-            insetX="0"
-            insetY="0"
-            w="full"
-            h="50px"
-            marginX="0"
-            overflow="hidden"
-            align="center"
-            rounded="lg"
-            p="40px"
-            color="white"
-            mt="4"
-            bg="teal.500"
-            // rounded="md"
-            shadow="md"
-          >
-            Fade
-          </Box>
-        </Fade>
       </Layout>
     </>
   );
@@ -169,7 +155,6 @@ export async function getServerSideProps({
   res,
 }: GetServerSidePropsContext) {
   const session = getSession(req, res);
-  console.log("session.user", session?.user);
 
   const { scheduleId } = params;
   if (!scheduleId) {

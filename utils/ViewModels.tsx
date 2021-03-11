@@ -48,12 +48,10 @@ export interface ShowScheduleViewModel {
   backgroundColor: string;
   ownerDisplayName?: string;
   linksBackgroundColor: string;
-  // linksTextColor: string;
-  // linksBorderRadius: string;
-  // linksBorder: string;
   links: WebLink[];
   joinSchedulePaidCta?: string;
   joinScheduleFreeCta?: string;
+  premiumPriceTitle?: string;
   canSignUp: boolean;
   userIsScheduleMember: boolean;
   userIsPaidMember: boolean;
@@ -100,10 +98,13 @@ export function createShowScheduleViewModel(
     schedule.stripeCurrentMonthlyPrice ||
     schedule.stripeCurrentYearlyPrice;
 
+  const premiumPriceTitle = currentPrice?.priceDisplayName || null;
+
   const joinSchedulePaidCta =
     anyoneCanSignup && schedule.enableSubscription && currentPrice
-      ? currentPrice.priceDisplayName || "Become a Paid Member"
+      ? "Become a Member"
       : null;
+
   const joinScheduleFreeCta =
     anyoneCanSignup &&
     !schedule.payToJoin &&
@@ -118,7 +119,6 @@ export function createShowScheduleViewModel(
 
   if (scheduleMember) {
     userIsPaidMember = isPayingMember(scheduleMember);
-    console.log("IS PAYING USER?", userIsPaidMember);
   }
 
   var links: WebLink[] = [];
@@ -141,6 +141,7 @@ export function createShowScheduleViewModel(
     backgroundColor: schedule.profile.backgroundColor || null,
     linksBackgroundColor: schedule.profile.linksBackgroundColor || null,
     ownerDisplayName: schedule?.ownerDisplayName || null,
+    premiumPriceTitle: premiumPriceTitle,
     // linksTextColor: data.schedule.profile.linksTextColor || null,
     // linksBorder: `${data.schedule.profile.linksBorderWidth}px solid ${data.schedule.profile.linksBorderColor}`,
     // linksBorderRadius: `${config.linksBorderRadius}px`,

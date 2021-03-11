@@ -43,9 +43,10 @@ export async function fetchShowActivity(
     } catch {}
   }
 
+  // not public schedule.
   if (currentSchedule.visibilityStatus != VisibilityStatus.Public) {
     if (!userId) {
-      // not public schedule, and not a user
+      // and not a user
       return {
         schedule: currentSchedule,
         activity: null,
@@ -83,8 +84,8 @@ export async function fetchShowActivity(
     return {
       schedule: showSchedule,
       scheduleMember: null,
-      activity: null,
-      activityVisibility: activity.access,
+      activity: activity,
+      accessLevel: activity.access,
     };
   }
 
@@ -112,6 +113,6 @@ export async function fetchShowActivity(
     activity: activity,
     instructionSet: instructionSet,
     scheduleMember: scheduleMember,
-    activityVisibility: activity.access,
+    accessLevel: activity.access,
   };
 }
