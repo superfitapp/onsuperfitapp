@@ -31,12 +31,7 @@ export default function CheckoutSchedule(
       return <Error statusCode={404} />;
     }
   }
-
-  // if (props?.vm.userIsPaidMember && props.scheduleId) {
-  //   // already a PAID member, go back to schedule page
-  //   router.push(`/s/${props.scheduleId}`);
-  // }
-
+  
   const {
     data: response,
     error,
@@ -48,9 +43,6 @@ export default function CheckoutSchedule(
       revalidateOnMount: true,
     }
   );
-
-  console.log("error", error);
-  console.log(response?.sessionId);
 
   if (
     // false &&
@@ -88,7 +80,7 @@ export default function CheckoutSchedule(
 
   return (
     <>
-      <Layout scheduleId={null}>
+      <Layout scheduleId={null} hideHeaderMobile={true}>
         <Box
           as="section"
           my={{ base: "2", md: "8" }}

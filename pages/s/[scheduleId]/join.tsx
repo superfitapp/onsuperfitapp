@@ -1,6 +1,6 @@
 import Layout from "@/components/schedule-layout";
 import { StringOrNumber } from "@chakra-ui/utils";
-import { Fade, useBreakpointValue } from "@chakra-ui/react";
+import { Fade, useBreakpoint } from "@chakra-ui/react";
 
 import { HiUserCircle, HiOutlineLockOpen, HiOutlineStar } from "react-icons/hi";
 
@@ -30,6 +30,7 @@ import { fetchShowSchedule } from "@/lib/schedule";
 import { useRouter } from "next/router";
 import { MdSubscriptions } from "react-icons/md";
 import { BsPersonCheckFill } from "react-icons/bs";
+import { routerLoading } from "@/utils/router-loading";
 
 export interface JoinScheduleProps {
   scheduleId: string;
@@ -37,7 +38,7 @@ export interface JoinScheduleProps {
 }
 
 function JoinSchedule(props: JoinScheduleProps, notFound: boolean) {
-  // const router = useRouter();
+  const router = useRouter();
 
   if (!props.vm && notFound == true) {
     if (notFound) {
@@ -45,23 +46,10 @@ function JoinSchedule(props: JoinScheduleProps, notFound: boolean) {
     }
   }
 
-  // if (props?.vm.userIsPaidMember && props.scheduleId) {
-  //   // already a PAID member, go back to schedule page
-  //   router.push(`/s/${props.scheduleId}`);
-  // }
-
-  const confirmButtonPressed = () => {
-    //
-  };
-
   const scheduleTitle = props.vm?.scheduleTitle;
   const schedulePhotoUrl = props.vm?.photoUrl;
   const scheduleId = props.vm?.scheduleId;
   const scheduleOwnerDisplayName = props.vm?.ownerDisplayName;
-
-  const [currentOption, setCurrentOption] = React.useState<
-    StringOrNumber | undefined
-  >(null);
 
   var options: {
     label: string;
@@ -70,14 +58,42 @@ function JoinSchedule(props: JoinScheduleProps, notFound: boolean) {
     value: string;
   }[] = [];
 
+  const {
+    isLoading,
+    effect: routerEffect,
+    onDestroy: routerOnDestroy,
+  } = routerLoading(router);
+
+  React.useEffect(() => {
+    routerEffect();
+    return () => {
+      routerOnDestroy();
+    };
+  }, []);
+
+  const confirmButtonPressed = () => {
+    switch (currentOption) {
+      case "free":
+        router.push(`/s/${props.scheduleId}/checklist`);
+        break;
+      case "premium":
+        router.push(`/s/${props.scheduleId}/checkout`);
+        break;
+    }
+  };
+
+  let defaultValue: string = null;
+
+  // move code to view model
   if (props.vm.canSignUp) {
     if (props.vm.joinSchedulePaidCta && props.vm.premiumPriceTitle) {
       options.push({
-        label: `${props.vm.premiumPriceTitle}`,
-        description: `Premium membership- cancel anytime`,
+        label: `Premium membership`,
+        description: `${props.vm.premiumPriceTitle} - cancel anytime`,
         icon: <HiOutlineStar />,
         value: "premium",
       });
+      defaultValue = "premium";
     }
 
     if (props.vm.joinScheduleFreeCta) {
@@ -87,14 +103,23 @@ function JoinSchedule(props: JoinScheduleProps, notFound: boolean) {
         icon: <HiUserCircle />,
         value: "free",
       });
+
+      if (options.length == 1) {
+        defaultValue = "free";
+      }
     }
   }
 
+  const [currentOption, setCurrentOption] = React.useState<
+    StringOrNumber | undefined
+  >(defaultValue);
+
   return (
     <>
-      <Layout scheduleId={null}>
+      <Layout scheduleId={null} hideHeaderMobile={true}>
         <Box
           as="section"
+          py={{ base: "2", md: "8" }}
           shadow={{ base: "none", md: "lg" }}
           rounded={{ lg: "lg" }}
           bg={mode("white", "gray.700")}
@@ -121,6 +146,8 @@ function JoinSchedule(props: JoinScheduleProps, notFound: boolean) {
                 ></ScheduleRow>
 
                 <Button
+                  loadingText="Loading"
+                  isLoading={isLoading}
                   colorScheme="blue"
                   minW="20"
                   onClick={confirmButtonPressed}

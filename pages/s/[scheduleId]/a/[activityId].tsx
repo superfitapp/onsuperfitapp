@@ -26,6 +26,7 @@ import { BiRightArrowAlt, BiRightArrowCircle } from "react-icons/bi";
 import * as React from "react";
 import { ListItem } from "@/partials/ListItem";
 import { List } from "@/partials/List";
+import NextLink from "next/link";
 import {
   getShowActivity,
   ShowFIRActivityResponse,
@@ -46,10 +47,16 @@ import { AccessLevel } from "@superfitapp/superfitjs";
 import useSWR from "swr";
 import fetcher from "@/utils/fetcher";
 import { useUser } from "@auth0/nextjs-auth0";
-import { useRouter } from "next/router";
+import { NextRouter, useRouter } from "next/router";
+import { routerLoading } from "@/utils/router-loading";
 
 function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
   const router = useRouter();
+
+  const { user } = useUser();
+  var activityViewModel: ActivityViewModel = null;
+  var scheduleViewModel: ShowScheduleViewModel = null;
+
   if (!props.data) {
     if (notFound == true) {
       return <Error statusCode={404} />;
@@ -77,9 +84,6 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
       );
     }
   }
-  const { user } = useUser();
-  var activityViewModel: ActivityViewModel = null;
-  var scheduleViewModel: ShowScheduleViewModel = null;
 
   const { data } = useSWR<ShowFIRActivityResponse>(
     user
@@ -91,6 +95,19 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
       revalidateOnMount: user != undefined,
     }
   );
+
+  const {
+    isLoading,
+    effect: routerEffect,
+    onDestroy: routerOnDestroy,
+  } = routerLoading(router);
+
+  React.useEffect(() => {
+    routerEffect();
+    return () => {
+      routerOnDestroy();
+    };
+  }, []);
 
   if (data) {
     activityViewModel = createShowActivityViewModel(data);
@@ -110,9 +127,6 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
   const activityTitle = activityViewModel?.title || null;
   const activityAbout = activityViewModel?.description || null;
   const activityPhotoUrl = activityViewModel?.photoUrl || null;
-
-  const [buttonLoading, setButtonLoading] = React.useState<boolean>(false);
-  const showButtonLoading = (load) => setButtonLoading(load);
 
   return (
     <>
@@ -245,18 +259,23 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
                   scheduleViewModel?.joinSchedulePaidCta &&
                   props?.data?.accessLevel != AccessLevel.all && (
                     <Button
-                      isLoading={buttonLoading}
+                      loadingText="Loading Plans"
+                      isLoading={isLoading}
                       size="lg"
                       colorScheme="blue"
                       minH="14"
                       onClick={() => {
-                        showButtonLoading(true);
                         router.push(`/s/${props.scheduleId}/join`);
-                        showButtonLoading(false);
                       }}
                       rightIcon={<BiRightArrowAlt />}
                     >
                       {scheduleViewModel?.joinSchedulePaidCta}
+                      {/* <NextLink
+                        href={`/s/${props.scheduleId}/join`}
+                        prefetch={true}
+                      >
+                        
+                      </NextLink> */}
                     </Button>
                   )}
 
@@ -307,12 +326,12 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
                       {instructionsBlockMap &&
                         activityViewModel?.instructionSetViewModel.orderedInstructionBlocks.map(
                           (block) => {
-                            const length = Object.keys(block.instructions)
-                              .length;
+                            // const length = Object.keys(block.instructions)
+                            //   .length;
                             return (
                               <>
                                 <ListItem
-                                  key={block.uniqueId}
+                                  key={`${block.uniqueId}`}
                                   title=""
                                   fontSize="large"
                                   // subTitle={`${length} Exercise${
@@ -340,7 +359,9 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
                                       instructionsBlockMap[block.uniqueId].map(
                                         (viewModel) => {
                                           return (
-                                            <AccordionItem>
+                                            <AccordionItem
+                                              key={`${viewModel?.instruction?.uniqueId}`}
+                                            >
                                               {({ isExpanded }) => (
                                                 <>
                                                   <h2>

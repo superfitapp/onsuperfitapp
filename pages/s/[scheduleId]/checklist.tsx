@@ -1,6 +1,5 @@
 import Layout from "@/components/schedule-layout";
 import { StringOrNumber } from "@chakra-ui/utils";
-import { Fade, HStack, useBreakpointValue } from "@chakra-ui/react";
 
 import {
   Box,
@@ -8,8 +7,10 @@ import {
   Divider,
   Flex,
   Stack,
-  StackDivider,
   Text,
+  Fade,
+  HStack,
+  useBreakpointValue,
   useColorModeValue as mode,
 } from "@chakra-ui/react";
 
@@ -19,13 +20,11 @@ import {
   ShowScheduleViewModel,
 } from "@/utils/ViewModels";
 import Error from "next/error";
-import { ButtonRadioGroup } from "@/partials/ButtonRadioGroup";
 import { ArrowDirection, ScheduleRow } from "@/partials/ScheduleRow";
 import { getSession } from "@auth0/nextjs-auth0";
 import { GetServerSidePropsContext } from "next";
 import { fetchShowSchedule } from "@/lib/schedule";
-import { MdSubscriptions } from "react-icons/md";
-import { BsPersonCheckFill } from "react-icons/bs";
+
 import { withPageAuthRequired } from "@auth0/nextjs-auth0";
 import { Steps } from "@/partials/steps/Steps";
 import { Step } from "@/partials/steps/Step";
@@ -57,10 +56,6 @@ export default function ScheduleChecklist(
       return <Error statusCode={404} />;
     }
   }
-  // if (props?.vm.userIsPaidMember && props.scheduleId) {
-  //   // already a PAID member, go back to schedule page
-  //   router.push(`/s/${props.scheduleId}`);
-  // }
 
   const scheduleTitle = props.vm?.scheduleTitle;
   const schedulePhotoUrl = props.vm?.photoUrl;
@@ -73,8 +68,8 @@ export default function ScheduleChecklist(
 
   return (
     <>
-      <Layout scheduleId={null}>
-        <Box as="section" py="12">
+      <Layout scheduleId={null} hideHeaderMobile={true}>
+        <Box as="section" py={{ base: "2", md: "8" }}>
           <Box
             rounded={{ lg: "lg" }}
             bg={mode("white", "gray.700")}
@@ -111,12 +106,15 @@ export default function ScheduleChecklist(
               px={{ base: "6", md: "8" }}
             >
               <Steps activeStep={activeStep}>
-                <Step title={`Join for Free`}>
+                <Step title={`Confirm Free Membership`}>
                   <StepContent>
                     <Stack shouldWrapChildren spacing="4">
                       <Text>
-                        Join the Free list and unlock access to members-only
-                        workouts.
+                        Join{" "}
+                        <Text fontWeight="medium" as="span">
+                          {props.vm.scheduleTitle}
+                        </Text>{" "}
+                        and unlock access to members-only workouts.
                       </Text>
                       <HStack>
                         <Button isDisabled variant="ghost">
@@ -131,7 +129,7 @@ export default function ScheduleChecklist(
                             nextStep();
                           }}
                         >
-                          Next
+                          Confirm
                         </Button>
                       </HStack>
                     </Stack>

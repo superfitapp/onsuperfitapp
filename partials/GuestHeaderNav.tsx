@@ -20,9 +20,13 @@ import { useUser } from "@auth0/nextjs-auth0";
 
 interface GuestHeaderNavProps {
   scheduleId?: string;
+  hideHeaderMobile: boolean;
 }
 
-export const GuestHeaderNav = ({ scheduleId }: GuestHeaderNavProps) => {
+export const GuestHeaderNav = ({
+  scheduleId,
+  hideHeaderMobile = false,
+}: GuestHeaderNavProps) => {
   const { user, error, isLoading } = useUser();
   const router = useRouter();
 
@@ -41,6 +45,10 @@ export const GuestHeaderNav = ({ scheduleId }: GuestHeaderNavProps) => {
 
   return (
     <Box
+      visibility={{
+        base: hideHeaderMobile ? "hidden" : "inherit",
+        sm: "inherit",
+      }}
       as="header"
       bg={mode("white", "gray.800")}
       rounded="2xl"
