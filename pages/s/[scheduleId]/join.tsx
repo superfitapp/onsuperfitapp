@@ -1,8 +1,8 @@
 import Layout from "@/components/schedule-layout";
 import { StringOrNumber } from "@chakra-ui/utils";
-import { Fade, useBreakpoint } from "@chakra-ui/react";
+import auth0 from "@auth0/nextjs-auth0";
 
-import { HiUserCircle, HiOutlineLockOpen, HiOutlineStar } from "react-icons/hi";
+import { HiUserCircle, HiOutlineStar } from "react-icons/hi";
 
 import {
   Box,
@@ -119,13 +119,13 @@ function JoinSchedule(props: JoinScheduleProps, notFound: boolean) {
       <Layout scheduleId={null} hideHeaderMobile={true}>
         <Box
           as="section"
-          py={{ base: "2", md: "8" }}
-          shadow={{ base: "none", md: "lg" }}
+          my={{ base: "2", md: "8" }}
+          shadow={{ base: "none", md: "xl" }}
           rounded={{ lg: "lg" }}
           bg={mode("white", "gray.700")}
           overflow="hidden"
         >
-          <Box py="8">
+          <Box>
             <Box
               position={{ base: "fixed", sm: "relative" }}
               width="full"

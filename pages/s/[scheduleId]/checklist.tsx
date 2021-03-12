@@ -8,10 +8,10 @@ import {
   Flex,
   Stack,
   Text,
-  Fade,
   HStack,
-  useBreakpointValue,
   useColorModeValue as mode,
+  Center,
+  Spinner,
 } from "@chakra-ui/react";
 
 import * as React from "react";
@@ -21,25 +21,40 @@ import {
 } from "@/utils/ViewModels";
 import Error from "next/error";
 import { ArrowDirection, ScheduleRow } from "@/partials/ScheduleRow";
-import { getSession } from "@auth0/nextjs-auth0";
+import { getSession, useUser } from "@auth0/nextjs-auth0";
 import { GetServerSidePropsContext } from "next";
-import { fetchShowSchedule } from "@/lib/schedule";
-
+import { isIOS, OsTypes, osVersion } from "react-device-detect";
 import { withPageAuthRequired } from "@auth0/nextjs-auth0";
 import { Steps } from "@/partials/steps/Steps";
 import { Step } from "@/partials/steps/Step";
 import { StepContent } from "@/partials/steps/StepContent";
 import { useSteps } from "@/partials/steps/useSteps";
+import { ShowFIRScheduleResponse } from "@/lib/db-public";
+import useSWR from "swr";
+import fetcher from "@/utils/fetcher";
+import ScheduleLayout from "@/components/schedule-layout";
+import { CheckoutScheduleProps } from "./checkout";
 
-export interface JoinScheduleProps {
+export interface ScheduleChecklistProps {
   scheduleId: string;
-  vm: ShowScheduleViewModel;
+  data: ShowFIRScheduleResponse;
+}
+
+enum ScheduleChecklistItem {
+  UpgradeToPremium,
+  ConfirmMembership,
+  InviteOnly,
+  YouAreMember,
+  DownloadApp,
+  BookmarkSchedule,
 }
 
 export default function ScheduleChecklist(
-  props: JoinScheduleProps,
+  props: ScheduleChecklistProps,
   notFound: boolean
 ) {
+  const { user } = useUser();
+
   const {
     nextStep,
     prevStep,
@@ -50,26 +65,82 @@ export default function ScheduleChecklist(
   } = useSteps({
     initialStep: 0,
   });
+  console.log("isIOS????", isIOS);
+  console.log("osVersion", osVersion);
+  console.log("OsTypes", OsTypes);
 
-  if (!props.vm && notFound == true) {
-    if (notFound) {
-      return <Error statusCode={404} />;
+  const { data } = useSWR<ShowFIRScheduleResponse>(
+    user
+      ? `/api/schedule/${props.scheduleId}`
+      : `/api/show/schedule/${props.scheduleId}`,
+    fetcher,
+    {
+      revalidateOnMount: true,
+    }
+  );
+
+  var vm: ShowScheduleViewModel = null;
+
+  if (data) {
+    vm = createShowScheduleViewModel(
+      props.scheduleId,
+      data.schedule,
+      data.scheduleMember
+    );
+  } else {
+    if (!props.scheduleId || !data?.schedule) {
+      if (notFound == true) {
+        return <Error statusCode={404} />;
+      }
+
+      return (
+        <ScheduleLayout scheduleId={props.scheduleId}>
+          <Box
+            as="section"
+            my={{ base: "2", md: "8" }}
+            py={{ base: "8", md: "12" }}
+            rounded="md"
+            bg={mode("gray.100", "gray.800")}
+          >
+            <Center>
+              <Spinner
+                thickness="4px"
+                speed="0.65s"
+                emptyColor="gray.200"
+                color="blue.500"
+                size="xl"
+              />
+            </Center>
+          </Box>
+        </ScheduleLayout>
+      );
     }
   }
 
-  const scheduleTitle = props.vm?.scheduleTitle;
-  const schedulePhotoUrl = props.vm?.photoUrl;
-  const scheduleId = props.vm?.scheduleId;
-  const scheduleOwnerDisplayName = props.vm?.ownerDisplayName;
+  const scheduleTitle = vm?.scheduleTitle;
+  const schedulePhotoUrl = vm?.photoUrl;
+  const scheduleId = vm?.scheduleId;
+  const scheduleOwnerDisplayName = vm?.ownerDisplayName;
+  var steps: ScheduleChecklistItem[] = [];
 
-  const [currentOption, setCurrentOption] = React.useState<
-    StringOrNumber | undefined
-  >(null);
+  // can sign up
+  if (vm.canSignUp) {
+    if (!vm.userIsScheduleMember && vm.joinScheduleFreeCta) {
+      // can join free
+      steps.push(ScheduleChecklistItem.ConfirmMembership);
+    } else if (!vm.userIsScheduleMember && vm.joinSchedulePaidCta) {
+      // can join paying
+      steps.push(ScheduleChecklistItem.UpgradeToPremium);
+    }
+  } else {
+    steps.push(ScheduleChecklistItem.InviteOnly);
+  }
 
   return (
     <>
       <Layout scheduleId={null} hideHeaderMobile={true}>
         <Box as="section" py={{ base: "2", md: "8" }}>
+          {osVersion}
           <Box
             rounded={{ lg: "lg" }}
             bg={mode("white", "gray.700")}
@@ -112,7 +183,7 @@ export default function ScheduleChecklist(
                       <Text>
                         Join{" "}
                         <Text fontWeight="medium" as="span">
-                          {props.vm.scheduleTitle}
+                          {vm.scheduleTitle}
                         </Text>{" "}
                         and unlock access to members-only workouts.
                       </Text>
@@ -207,29 +278,22 @@ export const getServerSideProps = withPageAuthRequired({
       };
     }
 
-    let data = await fetchShowSchedule(
-      scheduleId as string,
-      true,
-      session?.user?.sub
-    );
+    // let data = await fetchShowSchedule(
+    //   scheduleId as string,
+    //   true,
+    //   session?.user?.sub
+    // );
 
-    var props: JoinScheduleProps = null;
+    var props: CheckoutScheduleProps = null;
 
-    if (!data) {
-      return {
-        notFound: true,
-      };
-    }
-
-    const vm = createShowScheduleViewModel(
-      scheduleId as string,
-      data.schedule,
-      data.scheduleMember
-    );
+    // if (!data) {
+    //   return {
+    //     notFound: true,
+    //   };
+    // }
 
     props = {
       scheduleId: scheduleId as string,
-      vm: vm,
     };
 
     return {
