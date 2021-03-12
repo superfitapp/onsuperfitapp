@@ -1,6 +1,6 @@
 import Layout from "@/components/schedule-layout";
-import { StringOrNumber } from "@chakra-ui/utils";
-
+import Confetti from "react-dom-confetti";
+import { routerLoading } from "@/utils/router-loading";
 import {
   Box,
   Button,
@@ -12,6 +12,9 @@ import {
   useColorModeValue as mode,
   Center,
   Spinner,
+  useBoolean,
+  Link,
+  useBreakpointValue,
 } from "@chakra-ui/react";
 
 import * as React from "react";
@@ -34,6 +37,8 @@ import useSWR from "swr";
 import fetcher from "@/utils/fetcher";
 import ScheduleLayout from "@/components/schedule-layout";
 import { CheckoutScheduleProps } from "./checkout";
+import { useEffect } from "react";
+import { useRouter } from "next/router";
 
 export interface ScheduleChecklistProps {
   scheduleId: string;
@@ -46,7 +51,6 @@ enum ScheduleChecklistItem {
   InviteOnly,
   YouAreMember,
   DownloadApp,
-  BookmarkSchedule,
 }
 
 export default function ScheduleChecklist(
@@ -54,7 +58,8 @@ export default function ScheduleChecklist(
   notFound: boolean
 ) {
   const { user } = useUser();
-
+  const router = useRouter();
+  var steps: ScheduleChecklistItem[] = [];
   const {
     nextStep,
     prevStep,
@@ -65,14 +70,9 @@ export default function ScheduleChecklist(
   } = useSteps({
     initialStep: 0,
   });
-  console.log("isIOS????", isIOS);
-  console.log("osVersion", osVersion);
-  console.log("OsTypes", OsTypes);
-
+  const [confettiShown, setConfetti] = useBoolean(false);
   const { data } = useSWR<ShowFIRScheduleResponse>(
-    user
-      ? `/api/schedule/${props.scheduleId}`
-      : `/api/show/schedule/${props.scheduleId}`,
+    `/api/schedule/${props.scheduleId}`,
     fetcher,
     {
       revalidateOnMount: true,
@@ -81,7 +81,40 @@ export default function ScheduleChecklist(
 
   var vm: ShowScheduleViewModel = null;
 
+  const confirmMembership = async () => {
+    showLoading(true);
+    await new Promise((r) => setTimeout(r, 2000));
+    nextStep();
+    showLoading(false);
+    setConfetti.off();
+    setConfetti.on();
+  };
+
+  let confettiOnce = false;
+
+  const {
+    isLoading: routerIsLoading,
+    effect: routerEffect,
+    onDestroy: routerOnDestroy,
+  } = routerLoading(router);
+
+  useEffect(() => {
+    routerEffect();
+    setTimeout(() => {
+      if (user && !confettiOnce) {
+        setConfetti.off();
+        setConfetti.on();
+        confettiOnce = true;
+      }
+    }, 1000);
+
+    return () => {
+      routerOnDestroy();
+    };
+  }, []);
+
   if (data) {
+    console.log("data.scheduleMember", data.scheduleMember);
     vm = createShowScheduleViewModel(
       props.scheduleId,
       data.schedule,
@@ -121,20 +154,26 @@ export default function ScheduleChecklist(
   const schedulePhotoUrl = vm?.photoUrl;
   const scheduleId = vm?.scheduleId;
   const scheduleOwnerDisplayName = vm?.ownerDisplayName;
-  var steps: ScheduleChecklistItem[] = [];
 
   // can sign up
   if (vm.canSignUp) {
-    if (!vm.userIsScheduleMember && vm.joinScheduleFreeCta) {
-      // can join free
-      steps.push(ScheduleChecklistItem.ConfirmMembership);
-    } else if (!vm.userIsScheduleMember && vm.joinSchedulePaidCta) {
+    if (!vm.userIsScheduleMember) {
+      if (vm.joinScheduleFreeCta) {
+        // can join free
+        steps.push(ScheduleChecklistItem.ConfirmMembership);
+      } else if (vm.joinSchedulePaidCta) {
+        // can join paying
+        steps.push(ScheduleChecklistItem.UpgradeToPremium);
+      }
+    } else {
       // can join paying
-      steps.push(ScheduleChecklistItem.UpgradeToPremium);
+      steps.push(ScheduleChecklistItem.YouAreMember);
     }
   } else {
     steps.push(ScheduleChecklistItem.InviteOnly);
   }
+
+  steps.push(ScheduleChecklistItem.DownloadApp);
 
   return (
     <>
@@ -169,7 +208,6 @@ export default function ScheduleChecklist(
               <Divider />
             </Box>
 
-            {/*  */}
             <Box
               maxW="2xl"
               mx="auto"
@@ -177,89 +215,212 @@ export default function ScheduleChecklist(
               px={{ base: "6", md: "8" }}
             >
               <Steps activeStep={activeStep}>
-                <Step title={`Confirm Free Membership`}>
-                  <StepContent>
-                    <Stack shouldWrapChildren spacing="4">
-                      <Text>
-                        Join{" "}
-                        <Text fontWeight="medium" as="span">
-                          {vm.scheduleTitle}
-                        </Text>{" "}
-                        and unlock access to members-only workouts.
-                      </Text>
-                      <HStack>
-                        <Button isDisabled variant="ghost">
-                          Back
-                        </Button>
-                        <Button
-                          isLoading={isLoading}
-                          onClick={async () => {
-                            showLoading(true);
-                            await new Promise((r) => setTimeout(r, 2000));
-                            showLoading(false);
-                            nextStep();
-                          }}
+                {steps.map((step, stepIndex) => {
+                  const already = activeStep == 0 ? "already " : "now ";
+                  const revealedText = vm?.userIsPaidMember
+                    ? `You are ${already}a premium member!`
+                    : `You are ${already}a member!`;
+
+                  switch (step) {
+                    case ScheduleChecklistItem.InviteOnly:
+                      return (
+                        <Step title={`${vm.scheduleTitle} is invite-only.`}>
+                          <StepContent>
+                            <Stack shouldWrapChildren spacing="4">
+                              <HStack>
+                                <Button
+                                  variant="outline"
+                                  isLoading={routerIsLoading}
+                                  onClick={async () => {
+                                    router.push(`/s/${props.scheduleId}`);
+                                  }}
+                                >
+                                  Go Back
+                                </Button>
+                              </HStack>
+                            </Stack>
+                          </StepContent>
+                        </Step>
+                      );
+
+                    case ScheduleChecklistItem.UpgradeToPremium:
+                      return (
+                        <Step title={`Become a Premium Member`}>
+                          <StepContent>
+                            <Stack shouldWrapChildren spacing="4">
+                              <Text>
+                                Unlock{" "}
+                                <Text fontWeight="medium" as="span">
+                                  {vm.scheduleTitle} Premium
+                                </Text>{" "}
+                                for all members-only content.
+                              </Text>
+                              <HStack>
+                                <Button
+                                  variant="solid"
+                                  colorScheme="green"
+                                  isLoading={routerIsLoading}
+                                  onClick={async () => {
+                                    router.push(`/s/${props.scheduleId}/join`);
+                                  }}
+                                >
+                                  Get Premium
+                                </Button>
+                              </HStack>
+                            </Stack>
+                          </StepContent>
+                        </Step>
+                      );
+
+                    case ScheduleChecklistItem.YouAreMember:
+                      return (
+                        <Step
+                          key={stepIndex}
+                          title={
+                            activeStep == stepIndex ? revealedText : "Complete"
+                          }
                         >
-                          Confirm
-                        </Button>
-                      </HStack>
-                    </Stack>
-                  </StepContent>
-                </Step>
-                <Step title="Download the iOS app (optional)">
-                  <StepContent>
-                    <Stack shouldWrapChildren spacing="4">
-                      <Text>
-                        Get the full workout experience on the SuperFit mobile
-                        app (iOS/iPad/Mac)
-                      </Text>
-                      <HStack>
-                        <Button onClick={prevStep} variant="ghost">
-                          Back
-                        </Button>
-                        <Button onClick={nextStep} isLoading={isLoading}>
-                          Next
-                        </Button>
-                      </HStack>
-                    </Stack>
-                  </StepContent>
-                </Step>
-                <Step title="Upgrade to Premium">
-                  <StepContent>
-                    <Stack shouldWrapChildren spacing="4">
-                      <Text>
-                        Try out different ad text to see what brings in the most
-                        customers, and learn how to enhance your ads using
-                        features like ad extensions. If you run into any
-                        problems with your ads, find out how to tell if
-                        they&apos;re running and how to resolve approval issues.
-                      </Text>
-                      <HStack>
-                        <Button onClick={prevStep} variant="ghost">
-                          Back
-                        </Button>
-                        <Button isLoading={isLoading} onClick={nextStep}>
-                          Finish
-                        </Button>
-                      </HStack>
-                    </Stack>
-                  </StepContent>
-                </Step>
+                          <StepContent>
+                            <>
+                              <Box position="fixed" w="full" h="full">
+                                <Confetti
+                                  active={confettiShown}
+                                  config={{
+                                    angle: 360,
+                                    spread: 360,
+                                    startVelocity: 30,
+                                    elementCount: 100,
+                                    dragFriction: 0.09,
+                                    duration: 3000,
+                                    stagger: 5,
+                                    width: "17px",
+                                    height: "22px",
+                                    colors: [
+                                      "#a864fd",
+                                      "#29cdff",
+                                      "#78ff44",
+                                      "#ff718d",
+                                      "#fdff6a",
+                                    ],
+                                  }}
+                                />
+                              </Box>
+                              <Stack shouldWrapChildren spacing="4">
+                                <Text fontSize="md">
+                                  Follow me on social media
+                                </Text>
+
+                                <HStack>
+                                  {/* <Button
+                                    display={
+                                      activeStep == 0 ? "none" : "inherit"
+                                    }
+                                    onClick={prevStep}
+                                    isDisabled={activeStep == 0}
+                                    variant="ghost"
+                                  >
+                                    Back
+                                  </Button> */}
+                                  <Button
+                                    isLoading={isLoading}
+                                    onClick={nextStep}
+                                  >
+                                    Next
+                                  </Button>
+                                </HStack>
+                              </Stack>
+                            </>
+                          </StepContent>
+                        </Step>
+                      );
+                      break;
+                    case ScheduleChecklistItem.ConfirmMembership:
+                      return (
+                        <Step key={step} title={`Confirm Free Membership`}>
+                          <StepContent>
+                            <Stack shouldWrapChildren spacing="4">
+                              <Text>
+                                Join{" "}
+                                <Text fontWeight="medium" as="span">
+                                  {vm.scheduleTitle}
+                                </Text>{" "}
+                                and unlock members-only content.
+                              </Text>
+                              <HStack>
+                                <Button
+                                  onClick={prevStep}
+                                  isDisabled={activeStep == 0}
+                                  variant="ghost"
+                                >
+                                  Back
+                                </Button>
+                                <Button
+                                  isLoading={isLoading}
+                                  onClick={confirmMembership}
+                                >
+                                  Confirm
+                                </Button>
+                              </HStack>
+                            </Stack>
+                          </StepContent>
+                        </Step>
+                      );
+
+                    case ScheduleChecklistItem.DownloadApp:
+                      return (
+                        <Step
+                          key={step}
+                          title="Download the iOS app (optional)"
+                        >
+                          <StepContent>
+                            <Stack shouldWrapChildren spacing="4">
+                              <Text fontSize="lg">
+                                Access this schedule on SuperFit for{" "}
+                                <Link
+                                  fontWeight="semibold"
+                                  target="javascript:void();"
+                                  color="#4abf85"
+                                  href="https://itunes.apple.com/us/app/superfit-sports-workouts/id1225772126"
+                                >
+                                  iPhone, iPad and Mac
+                                </Link>
+                                .
+                              </Text>
+                              <Text fontSize="md" as="span">
+                                (Also— use the same email you signed in with
+                                here 👍)
+                              </Text>
+                              <HStack>
+                                <Button onClick={prevStep} variant="ghost">
+                                  Back
+                                </Button>
+                                <Button
+                                  onClick={nextStep}
+                                  isLoading={isLoading}
+                                >
+                                  Next
+                                </Button>
+                              </HStack>
+                            </Stack>
+                          </StepContent>
+                        </Step>
+                      );
+                  }
+                })}
               </Steps>
-              {activeStep === 3 && (
+              {activeStep === steps.length && (
                 <HStack py="16" spacing="4" shouldWrapChildren>
-                  <Text>All steps completed - you&apos;re finished</Text>
+                  <Text>All steps completed - you&apos;re finished 🎉</Text>
                   <Button
-                    onClick={reset}
+                    onClick={prevStep}
                     variant="link"
                     verticalAlign="baseline"
                   >
-                    Reset
+                    Back
                   </Button>
                 </HStack>
               )}
             </Box>
-            {/*  */}
           </Box>
         </Box>
       </Layout>
@@ -278,19 +439,7 @@ export const getServerSideProps = withPageAuthRequired({
       };
     }
 
-    // let data = await fetchShowSchedule(
-    //   scheduleId as string,
-    //   true,
-    //   session?.user?.sub
-    // );
-
     var props: CheckoutScheduleProps = null;
-
-    // if (!data) {
-    //   return {
-    //     notFound: true,
-    //   };
-    // }
 
     props = {
       scheduleId: scheduleId as string,

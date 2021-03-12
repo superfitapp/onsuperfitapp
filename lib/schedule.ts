@@ -12,11 +12,15 @@ import {
 import { scheduleMemberSnap } from "./db-authed";
 import { ShowFIRScheduleResponse } from "./db-public";
 
-export async function fetchShowSchedule(
-  scheduleId: string,
-  fetchRecentActivities: boolean,
-  userid?: string
-): Promise<ShowFIRScheduleResponse> {
+export async function fetchShowSchedule({
+  scheduleId,
+  fetchRecentActivities,
+  userId,
+}: {
+  scheduleId: string;
+  fetchRecentActivities: boolean;
+  userId?: string;
+}): Promise<ShowFIRScheduleResponse> {
   if (!scheduleId) {
     throw Error("id required");
   }
@@ -34,9 +38,10 @@ export async function fetchShowSchedule(
   let showSchedule: ShowFIRSchedule = createShowSchedule(currentSchedule);
 
   var scheduleMember: FIRScheduleMember | undefined = null;
-  if (userid) {
+
+  if (userId) {
     try {
-      const snap = await scheduleMemberSnap(userid, scheduleId);
+      const snap = await scheduleMemberSnap(userId, scheduleId);
       if (snap && snap.data()) {
         scheduleMember = snap.data() as FIRScheduleMember;
       }

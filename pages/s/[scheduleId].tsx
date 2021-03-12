@@ -41,14 +41,17 @@ export async function getStaticProps({ params }) {
     };
   }
 
-  let data = await fetchShowSchedule(scheduleId, true);
+  var data = await fetchShowSchedule({
+    scheduleId: scheduleId,
+    fetchRecentActivities: true,
+  });
 
-  if (data.schedule?.photo?.customPhotoFirPath) {
-    // const url = await fetchThumbnail(
-    //   ThumbnailSize.fiveTwelve,
-    //   data.schedule?.photo?.customPhotoFirPath
-    // );
-  }
+  // if (data.schedule?.photo?.customPhotoFirPath) {
+  // const url = await fetchThumbnail(
+  //   ThumbnailSize.fiveTwelve,
+  //   data.schedule?.photo?.customPhotoFirPath
+  // );
+  // }
 
   if (!data) {
     return {
@@ -110,8 +113,8 @@ function Schedule(props: ScheduleProps, notFound: boolean) {
 
   const { data } = useSWR<ShowFIRScheduleResponse>(
     user
-      ? `/api/schedule/${props.scheduleId}`
-      : `/api/show/schedule/${props.scheduleId}`,
+      ? `/api/schedule/${props.scheduleId}?fetchRecentActivities=true`
+      : `/api/show/schedule/${props.scheduleId}?fetchRecentActivities=true`,
     fetcher,
     {
       initialData: props.data,
@@ -134,6 +137,7 @@ function Schedule(props: ScheduleProps, notFound: boolean) {
       <ScheduleLayout scheduleId={props?.scheduleId}>
         <Box
           as="section"
+          textAlign={{ base: "center", md: "initial" }}
           bg={mode("gray.50", "inherit")}
           my={{ base: "2", md: "8" }}
           rounded="md"
@@ -143,19 +147,42 @@ function Schedule(props: ScheduleProps, notFound: boolean) {
           <Box>
             <Grid
               templateColumns={{ base: "1fr", md: "1fr 24rem" }}
-              columnGap={{ base: "12", lg: "20" }}
-              rowGap="10"
+              columnGap={{ base: "16", lg: "20" }}
+              rowGap="4"
             >
               {schedulePhotoUrl && (
-                <BigMedia
-                  alt="Getting Started with Chakra"
-                  src={schedulePhotoUrl}
-                />
+                <Box pos="relative">
+                  <BigMedia
+                    alt={`Photo of fitness schedule: ${scheduleTitle}`}
+                    src={schedulePhotoUrl}
+                    zIndex={1}
+                    boxShadow={{ base: "xl", md: "dark-lg" }}
+                    mx="auto"
+                    rounded={{ base: "lg", md: "xl" }}
+                    w={{ base: "100px", md: "100%" }}
+                    h={{ base: "100px", md: "100%" }}
+                  />
+                  <Box
+                    zIndex="0"
+                    position="absolute"
+                    display={{ base: "none", md: "initial" }}
+                    w={{ base: "100px", md: "100%" }}
+                    h={{ base: "100px", md: "100%" }}
+                    top={{ base: "-2", sm: "-4" }}
+                    left={{ base: "2", md: "4" }}
+                    boxShadow={{ base: "xl", md: "dark-lg" }}
+                    bg={mode("blue.600", "blue.300")}
+                    rounded={{ base: "full", sm: "xl" }}
+                  />
+                </Box>
               )}
 
-              <Flex direction="column" h="full">
+              <Flex
+                direction="column"
+                h="full"
+                align={{ base: "center", md: "initial" }}
+              >
                 <Box flex="1">
-                  {/* <TagBelt type="Workout" tags={["bodyweight", "at-home"]} /> */}
                   <Heading size="xl" mt="4" mb="4">
                     {scheduleTitle}
                   </Heading>

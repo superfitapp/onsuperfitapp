@@ -7,11 +7,13 @@ export default withApiAuthRequired(async function showSchedule(
   res: NextApiResponse
 ) {
   const { user } = getSession(req, res);
+  const fetchRecentActivities = req.query?.fetchRecentActivities;
 
-  const response = await fetchShowSchedule(
-    req.query.scheduleId as string,
-    user.sub
-  );
+  const response = await fetchShowSchedule({
+    scheduleId: req.query.scheduleId as string,
+    fetchRecentActivities: fetchRecentActivities == "true",
+    userId: user.sub,
+  });
 
   res.status(200).json(response);
 });

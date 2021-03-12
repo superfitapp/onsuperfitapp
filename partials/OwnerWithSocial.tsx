@@ -38,8 +38,8 @@ export const OwnerWithSocial = (props: OwnerWithSocialProps) => {
         align={{ base: "flex-start", md: "center" }}
       >
         {/* <Img
-          src="https://images.unsplash.com/photo-1580489944761-15a19d654956?ixid=MXwxMjA3fDB8MHxzZWFyY2h8MzU5fHxsYWR5JTIwc21pbGluZ3xlbnwwfHwwfA%3D%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
-          alt="Melinda Turner"
+          src=""
+          alt=""
           objectFit="cover"
           rounded="full"
           shadow="md"

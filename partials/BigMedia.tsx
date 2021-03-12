@@ -14,9 +14,7 @@ export const BigMedia = (props: BigMediaProps) => {
       pos="relative"
       cursor="pointer"
       className="group"
-      // h="400px"
       overflow="hidden"
-      boxShadow="2xl" 
       {...rest}
     >
       <Img
@@ -27,11 +25,11 @@ export const BigMedia = (props: BigMediaProps) => {
         htmlHeight="448"
         src={src}
         alt={alt}
-        rounded="md"
         transition="all 0.2s"
+        rounded="inherit"
         _groupHover={{ transform: "scale(1.05)" }}
       />
-      <PlayButton />
+      <PlayButton hidden size={{ base: "5", sm: "20" }} />
     </Box>
   );
 };

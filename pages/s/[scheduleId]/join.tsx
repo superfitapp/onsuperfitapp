@@ -28,8 +28,6 @@ import { getSession } from "@auth0/nextjs-auth0";
 import { GetServerSidePropsContext } from "next";
 import { fetchShowSchedule } from "@/lib/schedule";
 import { useRouter } from "next/router";
-import { MdSubscriptions } from "react-icons/md";
-import { BsPersonCheckFill } from "react-icons/bs";
 import { routerLoading } from "@/utils/router-loading";
 
 export interface JoinScheduleProps {
@@ -190,11 +188,11 @@ export async function getServerSideProps({
     };
   }
 
-  let data = await fetchShowSchedule(
-    scheduleId as string,
-    true,
-    session?.user?.sub
-  );
+  let data = await fetchShowSchedule({
+    scheduleId: scheduleId as string,
+    fetchRecentActivities: false,
+    userId: session?.user?.sub,
+  });
 
   var props: JoinScheduleProps = null;
 

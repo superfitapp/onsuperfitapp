@@ -21,8 +21,17 @@ import {
   AccordionIcon,
   AccordionButton,
   ExpandedIndex,
+  Badge,
+  Circle,
+  Link,
 } from "@chakra-ui/react";
-import { BiRightArrowAlt, BiRightArrowCircle } from "react-icons/bi";
+import {
+  BiHeartCircle,
+  BiLockOpen,
+  BiLockOpenAlt,
+  BiRightArrowAlt,
+  BiRightArrowCircle,
+} from "react-icons/bi";
 import * as React from "react";
 import { ListItem } from "@/partials/ListItem";
 import { List } from "@/partials/List";
@@ -49,6 +58,22 @@ import fetcher from "@/utils/fetcher";
 import { useUser } from "@auth0/nextjs-auth0";
 import { NextRouter, useRouter } from "next/router";
 import { routerLoading } from "@/utils/router-loading";
+import {
+  HiArrowRight,
+  HiLockOpen,
+  HiOutlineHeart,
+  HiOutlineLockOpen,
+} from "react-icons/hi";
+import {
+  FaAward,
+  FaDonate,
+  FaFreebsd,
+  FaGratipay,
+  FaHeartbeat,
+  FaLock,
+  FaLockOpen,
+} from "react-icons/fa";
+import { BsHeartFill } from "react-icons/bs";
 
 function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
   const router = useRouter();
@@ -162,7 +187,6 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
                     >
                       <HStack
                         align="baseline"
-                        // justify="space-between"
                         justify="flex-end"
                         fontSize="sm"
                         color={mode("gray.100", "gray.800")}
@@ -176,8 +200,8 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
                         >
                           <Text
                             textTransform="uppercase"
-                            fontSize="sm"
-                            fontWeight="medium"
+                            fontSize="xs"
+                            fontWeight="semibold"
                           >
                             {activityViewModel?.activityType}
                           </Text>
@@ -237,7 +261,13 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
                     )}
                   </VStack>
                   <Center rounded="lg" bg="rgba(0,0,0,0.05)">
-                    <Text py="1" px="2" fontSize="lg" fontWeight="medium">
+                    <Text
+                      hidden
+                      py="1"
+                      px="2"
+                      fontSize="lg"
+                      fontWeight="medium"
+                    >
                       $50
                     </Text>
                   </Center>
@@ -245,7 +275,7 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
 
                 <ScheduleRow
                   mb={{ base: "4", md: "12" }}
-                  mt={{ base: "1", md: "2" }}
+                  mt={{ base: "2", md: "4" }}
                   schedulePhotoUrl={activityViewModel?.schedulePhotoUrl}
                   scheduleOwnerDisplayName={
                     activityViewModel?.scheduleOwnerDisplayName
@@ -312,15 +342,86 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
                 </Box>
               </Box>
 
-              <Accordion allowToggle>
-                <VStack spacing={{ base: "6", md: "8" }} align="stretch">
-                  {activityViewModel?.videoThumbnailUrl && (
-                    <BigMedia
-                      alt={`Workout video for ${activityViewModel?.title}`}
-                      src={activityViewModel?.videoThumbnailUrl}
-                    />
-                  )}
+              <VStack spacing={{ base: "6", md: "8" }} align="stretch">
+                {props?.data?.accessLevel == AccessLevel.all && (
+                  <Flex w="full" mx="auto" justifyContent="center">
+                    <HStack
+                      className="group"
+                      as="a"
+                      href="#"
+                      ps="2"
+                      pr="4"
+                      mt={{ base: "4", md: "0" }}
+                      py="1"
+                      bg={mode(
+                        "rgb(255, 255, 255, 0.7)",
+                        "rgb(255, 255, 255, 0.4)"
+                      )}
+                      rounded="full"
+                      fontSize="sm"
+                      display="inline-flex"
+                    >
+                      <BiHeartCircle color="rgb(255, 78, 78)" size="30" />
 
+                      <Text>
+                        This activity is{" "}
+                        <Text as="span" fontWeight="medium">
+                          free of charge
+                        </Text>
+                      </Text>
+                      <Box
+                        aria-hidden
+                        transition="0.2s all"
+                        _groupHover={{ transform: "translateX(2px)" }}
+                        as={BiRightArrowAlt}
+                        display="inline-block"
+                      />
+                      <Link
+                        target="javascript:void();"
+                        href="venmo://paycharge?txn=pay&recipients=leojkwan&amount=9.99&note=For%20Things"
+                        textColor={mode("rgb(255, 78, 78)", "rgb(255, 78, 78)")}
+                        fontWeight="semibold"
+                      >
+                        Send Tip
+                      </Link>
+                    </HStack>
+                  </Flex>
+                )}
+
+                <Flex hidden w="full" mx="auto" justifyContent="center">
+                  <HStack
+                    className="group"
+                    as="a"
+                    href="#"
+                    pr="3"
+                    py="1"
+                    mx="auto"
+                    bg={mode("gray.200", "gray.700")}
+                    rounded="full"
+                    fontSize="sm"
+                    mt="3"
+                    display="inline-flex"
+                  >
+                    <Badge
+                      p="2"
+                      variant="solid"
+                      rounded="full"
+                      textTransform="capitalize"
+                    >
+                      <FaLock></FaLock>
+                    </Badge>
+                    <Box fontWeight="medium">Content is Locked</Box>
+                  </HStack>
+                </Flex>
+
+                {activityViewModel?.videoThumbnailUrl && (
+                  <BigMedia
+                    alt={`Workout video for ${activityViewModel?.title}`}
+                    src={activityViewModel?.videoThumbnailUrl}
+                  />
+                )}
+
+                <Accordion allowToggle>
                   <Box>
                     <List spacing="12">
                       {instructionsBlockMap &&
@@ -475,8 +576,8 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
                         )}
                     </List>
                   </Box>
-                </VStack>
-              </Accordion>
+                </Accordion>
+              </VStack>
             </Grid>
           </Box>
         </Box>
