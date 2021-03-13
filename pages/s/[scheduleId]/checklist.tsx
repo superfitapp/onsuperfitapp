@@ -26,7 +26,7 @@ import Error from "next/error";
 import { ArrowDirection, ScheduleRow } from "@/partials/ScheduleRow";
 import { getSession, useUser } from "@auth0/nextjs-auth0";
 import { GetServerSidePropsContext } from "next";
-import { isIOS, OsTypes, osVersion } from "react-device-detect";
+import { isIOS, osVersion } from "react-device-detect";
 import { withPageAuthRequired } from "@auth0/nextjs-auth0";
 import { Steps } from "@/partials/steps/Steps";
 import { Step } from "@/partials/steps/Step";

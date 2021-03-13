@@ -1,5 +1,6 @@
 import Error from "next/error";
 import Layout from "@/components/schedule-layout";
+import { isIOS, osVersion } from "react-device-detect";
 import {
   Box,
   Text,
@@ -143,7 +144,9 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
     );
   }
 
-  console.log(data?.scheduleMember?.memberRole);
+  const tipLink = isIOS
+    ? `venmo://paycharge?txn=pay&recipients=leojkwan&amount=9.99&note=Just%20Testing%20heh`
+    : `https://venmo.com/leojkwan`;
 
   var scheduledDateString = activityViewModel?.scheduledDateString || null;
   var scheduledDateRelative = activityViewModel?.scheduledDateRelative || null;
@@ -377,7 +380,7 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
                       />
                       <Link
                         target="javascript:void();"
-                        href="venmo://paycharge?txn=pay&recipients=leojkwan&amount=9.99&note=For%20Things"
+                        href={tipLink}
                         textColor={mode("rgb(255, 78, 78)", "rgb(255, 78, 78)")}
                         fontWeight="semibold"
                       >
