@@ -17,6 +17,8 @@ import useSWR from "swr";
 import fetcher from "@/utils/fetcher";
 import { withPageAuthRequired } from "@auth0/nextjs-auth0";
 import { SubscribeScheduleResponse } from "pages/api/schedule/[scheduleId]/checkout_session";
+import { JoinScheduleProps } from "./join";
+import { fetchShowSchedule } from "@/lib/schedule";
 
 export interface CheckoutScheduleProps {
   scheduleId: string;
@@ -31,7 +33,7 @@ export default function CheckoutSchedule(
       return <Error statusCode={404} />;
     }
   }
-  
+
   const {
     data: response,
     error,
@@ -111,6 +113,36 @@ export const getServerSideProps = withPageAuthRequired({
     if (!scheduleId) {
       return {
         notFound: true,
+      };
+    }
+
+    let data = await fetchShowSchedule({
+      scheduleId: scheduleId as string,
+      fetchRecentActivities: false,
+      userId: session?.user?.sub,
+    });
+
+    var props: CheckoutScheduleProps = null;
+
+    if (!data) {
+      return {
+        notFound: true,
+      };
+    }
+
+    const vm = createShowScheduleViewModel(
+      scheduleId as string,
+      data.schedule,
+      data.scheduleMember
+    );
+
+    if (vm.userIsPaidMember) {
+      return {
+        props: {},
+        redirect: {
+          permanent: false,
+          destination: `/s/${scheduleId}`,
+        },
       };
     }
 
