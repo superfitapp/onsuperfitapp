@@ -8,6 +8,9 @@ import {
   Heading,
   Center,
   Spinner,
+  Button,
+  Fade,
+  Spacer,
 } from "@chakra-ui/react";
 import Error from "next/error";
 
@@ -17,13 +20,18 @@ import { BigMedia } from "../../partials/BigMedia";
 import { OwnerWithSocial } from "../../partials/OwnerWithSocial";
 import { ScheduledActivity } from "../../partials/ScheduledActivity";
 import { ShowFIRScheduleResponse } from "../../lib/db-public";
-import { createShowScheduleViewModel } from "../../utils/ViewModels";
+import {
+  createShowScheduleViewModel,
+  ShowScheduleViewModel,
+} from "../../utils/ViewModels";
 import { useUser } from "@auth0/nextjs-auth0";
 import useSWR from "swr";
 import fetcher from "@/utils/fetcher";
 import { FIRActivity } from "@superfitapp/superfitjs";
 import { fetchShowSchedule } from "@/lib/schedule";
-import { fetchThumbnail, ThumbnailSize } from "@/utils/thumbnail-fetcher";
+import { routerLoading } from "@/utils/router-loading";
+import { useRouter } from "next/router";
+import { BiRightArrowAlt } from "react-icons/bi";
 
 export interface ScheduleProps {
   scheduleId: string;
@@ -75,6 +83,33 @@ export async function getStaticProps({ params }) {
 
 function Schedule(props: ScheduleProps, notFound: boolean) {
   const schedule = props.data?.schedule;
+  const router = useRouter();
+  const { user } = useUser();
+
+  const {
+    isLoading,
+    effect: routerEffect,
+    onDestroy: routerOnDestroy,
+  } = routerLoading(router);
+
+  const { data, isValidating } = useSWR<ShowFIRScheduleResponse>(
+    user
+      ? `/api/schedule/${props.scheduleId}?fetchRecentActivities=true`
+      : `/api/show/schedule/${props.scheduleId}?fetchRecentActivities=true`,
+    fetcher,
+    {
+      initialData: props.data,
+      revalidateOnMount: user != undefined,
+      revalidateOnFocus: false,
+    }
+  );
+
+  React.useEffect(() => {
+    routerEffect();
+    return () => {
+      routerOnDestroy();
+    };
+  }, []);
 
   if (!props.scheduleId || !schedule) {
     if (notFound == true) {
@@ -104,37 +139,31 @@ function Schedule(props: ScheduleProps, notFound: boolean) {
     );
   }
 
-  const { user } = useUser();
   var activities: FIRActivity[] = props.data?.activities || [];
   var scheduleTitle = schedule?.title;
   const scheduleAbout = schedule?.profile?.about;
   var schedulePhotoUrl: string = null;
   var ownerDisplayName: string = null;
 
-  const { data } = useSWR<ShowFIRScheduleResponse>(
-    user
-      ? `/api/schedule/${props.scheduleId}?fetchRecentActivities=true`
-      : `/api/show/schedule/${props.scheduleId}?fetchRecentActivities=true`,
-    fetcher,
-    {
-      initialData: props.data,
-      revalidateOnMount: user != undefined,
-    }
-  );
+  let vm: ShowScheduleViewModel = null;
 
   if (data) {
-    const vm = createShowScheduleViewModel(
+    vm = createShowScheduleViewModel(
       props.scheduleId,
       data.schedule,
       data.scheduleMember
     );
+    
     schedulePhotoUrl = vm?.photoUrl;
     ownerDisplayName = data.schedule?.ownerDisplayName;
   }
 
   return (
     <>
-      <ScheduleLayout scheduleId={props?.scheduleId}>
+      <ScheduleLayout
+        scheduleId={props?.scheduleId}
+        scheduleMember={data?.scheduleMember}
+      >
         <Box
           as="section"
           textAlign={{ base: "center", md: "initial" }}
@@ -168,8 +197,8 @@ function Schedule(props: ScheduleProps, notFound: boolean) {
                     display={{ base: "none", md: "initial" }}
                     w={{ base: "100px", md: "100%" }}
                     h={{ base: "100px", md: "100%" }}
-                    top={{ base: "-2", sm: "-4" }}
-                    left={{ base: "2", md: "4" }}
+                    top={{ base: "-2", sm: "-2" }}
+                    left={{ base: "2", md: "2" }}
                     boxShadow={{ base: "xl", md: "dark-lg" }}
                     bg={mode("blue.600", "blue.300")}
                     rounded={{ base: "full", sm: "xl" }}
@@ -194,6 +223,28 @@ function Schedule(props: ScheduleProps, notFound: boolean) {
                     {scheduleAbout}
                   </Text>
                 </Box>
+
+                <Fade in={!isValidating}>
+                  {(!vm.userIsPaidMember || false) && vm?.joinSchedulePaidCta && (
+                    <Button
+                      my="3"
+                      loadingText="Loading Plans"
+                      isLoading={isLoading}
+                      // size="lg"
+                      colorScheme="blue"
+                      variant="outline"
+                      minH={{ base: "10", md: "12" }}
+                      onClick={() => {
+                        router.push(`/s/${props.scheduleId}/join`);
+                      }}
+                      rightIcon={<BiRightArrowAlt />}
+                    >
+                      {vm?.joinSchedulePaidCta}
+                    </Button>
+                  )}
+                </Fade>
+                <Spacer></Spacer>
+
                 {ownerDisplayName && (
                   <Box mt="8">
                     <OwnerWithSocial

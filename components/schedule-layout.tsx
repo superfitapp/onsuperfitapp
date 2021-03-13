@@ -1,17 +1,20 @@
 import { Box } from "@chakra-ui/react";
 import { GuestHeaderNav } from "../partials/GuestHeaderNav";
 import { ChakraProvider } from "@chakra-ui/react";
+import { FIRScheduleMember } from "@superfitapp/superfitjs";
 
 interface ScheduleLayoutProps {
   scheduleId?: string;
   hideHeaderMobile?: boolean;
+  scheduleMember?: FIRScheduleMember;
   children: any;
 }
 
 function ScheduleLayout({
-  children,
   scheduleId,
   hideHeaderMobile = false,
+  scheduleMember,
+  children,
 }: ScheduleLayoutProps) {
   return (
     <ChakraProvider>
@@ -23,6 +26,7 @@ function ScheduleLayout({
         <GuestHeaderNav
           hideHeaderMobile={hideHeaderMobile}
           scheduleId={scheduleId}
+          scheduleMember={scheduleMember}
         ></GuestHeaderNav>
         <main>{children}</main>
       </Box>

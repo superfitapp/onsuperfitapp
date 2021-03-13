@@ -143,6 +143,8 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
     );
   }
 
+  console.log(data?.scheduleMember?.memberRole);
+
   var scheduledDateString = activityViewModel?.scheduledDateString || null;
   var scheduledDateRelative = activityViewModel?.scheduledDateRelative || null;
 
@@ -155,7 +157,10 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
 
   return (
     <>
-      <Layout scheduleId={activityViewModel?.scheduleId}>
+      <Layout
+        scheduleId={activityViewModel?.scheduleId}
+        scheduleMember={data.scheduleMember}
+      >
         <Box
           as="section"
           my={{ base: "2", md: "8" }}
@@ -300,12 +305,6 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
                       rightIcon={<BiRightArrowAlt />}
                     >
                       {scheduleViewModel?.joinSchedulePaidCta}
-                      {/* <NextLink
-                        href={`/s/${props.scheduleId}/join`}
-                        prefetch={true}
-                      >
-                        
-                      </NextLink> */}
                     </Button>
                   )}
 

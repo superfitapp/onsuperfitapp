@@ -1,7 +1,9 @@
 import {
   Avatar,
+  Badge,
   Box,
   Button,
+  Center,
   Flex,
   HStack,
   Menu,
@@ -10,6 +12,7 @@ import {
   MenuGroup,
   MenuItem,
   MenuList,
+  Text,
   useColorModeValue as mode,
 } from "@chakra-ui/react";
 import Image from "next/image";
@@ -17,15 +20,18 @@ import * as React from "react";
 import { NavLink } from "./NavLink";
 import { useRouter } from "next/router";
 import { useUser } from "@auth0/nextjs-auth0";
+import { FIRScheduleMember } from "@superfitapp/superfitjs";
 
 interface GuestHeaderNavProps {
   scheduleId?: string;
   hideHeaderMobile: boolean;
+  scheduleMember?: FIRScheduleMember;
 }
 
 export const GuestHeaderNav = ({
   scheduleId,
   hideHeaderMobile = false,
+  scheduleMember,
 }: GuestHeaderNavProps) => {
   const { user, error, isLoading } = useUser();
   const router = useRouter();
@@ -57,24 +63,23 @@ export const GuestHeaderNav = ({
       mx={{ base: "2", md: "0" }}
       boxShadow="sm"
     >
-      <Box maxW="7xl" mx="auto" py="2" px={{ base: "6", md: "8" }}>
+      <Box maxW="7xl" mx="auto" py="2" px={{ base: "2", md: "6" }}>
         <Flex as="nav" justify="space-between">
           <HStack spacing="4">
             <Image
               src="https://superfitapp.com/img/brand.svg"
               alt="SuperFit Logo Mark"
-              className="avatar-img rounded-circle"
               height="45"
               width="45"
             />
-            <NavLink.Desktop href="https://superfitapp.com">
+            <NavLink.Desktop fontWeight="bold" href="https://superfitapp.com">
               Built on SuperFit
             </NavLink.Desktop>
           </HStack>
 
           {isLoading && (
             <Button
-              color={mode("gray.600", "gray.200")}
+              color={mode("gray.500", "gray.200")}
               as={Button}
               variant="ghost"
               loading={isLoading.toString()}
@@ -91,14 +96,15 @@ export const GuestHeaderNav = ({
               >
                 Log in
               </Button>
-              {scheduleId && (
+              {scheduleId && !scheduleMember && (
                 <Button
                   display={{ base: "none", md: "block" }}
                   onClick={() => {
                     router.push(`/s/${scheduleId}/join`);
                   }}
                   colorScheme="blue"
-                  rounded="2xl"
+                  variant="ghost"
+                  rounded="lg"
                 >
                   Join
                 </Button>
@@ -107,17 +113,35 @@ export const GuestHeaderNav = ({
           )}
 
           {user && (
-            <Flex align="center" zIndex={99}>
+            <Flex zIndex={99}>
               <Menu placement="bottom-end">
                 <MenuButton
                   color={mode("gray.600", "gray.200")}
                   as={Button}
                   variant="ghost"
                   leftIcon={
-                    <Avatar size="sm" name="Dan Abrahmov" src={user.picture} />
+                    <Avatar
+                      borderColor={mode("gray.500", "inherit")}
+                      size="sm"
+                      name={`Avatar of ${user.name || user.nickname}`}
+                      src={user.picture}
+                    />
                   }
                 >
-                  Profile
+                  <Center justifyItems="center">
+                    {scheduleMember && (
+                      <Badge
+                        py="1"
+                        px="1"
+                        variant="subtle"
+                        color={mode("gray.600", "gray.200")}
+                      >
+                        <Text textTransform="uppercase" size="xs">
+                          {scheduleMember.memberRole}
+                        </Text>
+                      </Badge>
+                    )}
+                  </Center>
                 </MenuButton>
                 <MenuList>
                   <MenuGroup title="Profile">
