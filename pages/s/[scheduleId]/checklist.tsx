@@ -216,10 +216,9 @@ export default function ScheduleChecklist(
             >
               <Steps activeStep={activeStep}>
                 {steps.map((step, stepIndex) => {
-                  const already = activeStep == 0 ? "already " : "now ";
                   const revealedText = vm?.userIsPaidMember
-                    ? `You are ${already}a premium member!`
-                    : `You are ${already}a member!`;
+                    ? `You are a premium member!`
+                    : `You are a free member!`;
 
                   switch (step) {
                     case ScheduleChecklistItem.InviteOnly:

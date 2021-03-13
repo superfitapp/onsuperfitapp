@@ -81,7 +81,7 @@ export async function getStaticProps({ params }) {
   };
 }
 
-function Schedule(props: ScheduleProps, notFound: boolean) {
+function SchedulePage(props: ScheduleProps, notFound: boolean) {
   const schedule = props.data?.schedule;
   const router = useRouter();
   const { user } = useUser();
@@ -153,7 +153,7 @@ function Schedule(props: ScheduleProps, notFound: boolean) {
       data.schedule,
       data.scheduleMember
     );
-    
+
     schedulePhotoUrl = vm?.photoUrl;
     ownerDisplayName = data.schedule?.ownerDisplayName;
   }
@@ -298,4 +298,4 @@ export async function getStaticPaths() {
   };
 }
 
-export default Schedule;
+export default SchedulePage;
