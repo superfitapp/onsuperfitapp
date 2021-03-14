@@ -23,7 +23,6 @@ function ScheduleLayout({
     <ChakraProvider theme={userTheme}>
       <Box
         mx="auto"
-        // bgColor="primary"
         maxW={{ base: "xl", md: "4xl" }}
         py={{ base: "4", md: "6" }}
       >

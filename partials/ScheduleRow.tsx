@@ -51,6 +51,7 @@ export const ScheduleRow = ({
         <BiArrowBack />
       </Center>
     )}
+
     {schedulePhotoUrl && (
       <Avatar
         display={{ base: hideTitleOnSmall ? "none" : "inherit", sm: "inherit" }}
@@ -65,19 +66,21 @@ export const ScheduleRow = ({
 
     <Flex as="button" flexDirection="column">
       {scheduleTitle && (
-        <Text
+        <Heading
           color={mode("gray.700", "gray.600")}
+          fontSize="md"
           fontWeight="medium"
           align="start"
           noOfLines={{ base: 1, sm: 2 }}
         >
           {scheduleTitle}
-        </Text>
+        </Heading>
       )}
 
       {scheduleOwnerDisplayName && (
         <Text
           color={mode("gray.600", "gray.400")}
+          fontSize="sm"
           align="start"
           noOfLines={{ base: 1, sm: 2 }}
         >

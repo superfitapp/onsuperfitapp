@@ -15,11 +15,13 @@
   box-shadow: $box-shadow-light;
   color: $white;
 
-  &::before, &::after {
+  &::before,
+  &::after {
     font-family: "Feather";
   }
 
-  &:hover, &:focus {
+  &:hover,
+  &:focus {
     background-color: $primary;
     box-shadow: $box-shadow;
   }
@@ -55,14 +57,12 @@
   display: none;
 }
 
-
 // Button white
 
 .flickity-button-white .flickity-button {
   background-color: $white;
   color: $primary;
 }
-
 
 // Button bottom
 
@@ -82,7 +82,6 @@
   right: 2.5rem;
 }
 
-
 // Button inset
 
 .flickity-button-inset .flickity-button {
@@ -97,20 +96,17 @@
   right: 1.5rem;
 }
 
-
 // Viewport
 
 .flickity-viewport-visible .flickity-viewport {
   overflow: visible;
 }
 
-
 // Adaptive height
 
 [data-flickity*='"adaptiveHeight": true'] .flickity-viewport {
-  transition: all .5s ease; // Make the transition match the rough duration of flicking between items
+  transition: all 0.5s ease; // Make the transition match the rough duration of flicking between items
 }
-
 
 // Fixing .col gutters because Bootstrap sets it to 0 if they are not direct children of a .row
 

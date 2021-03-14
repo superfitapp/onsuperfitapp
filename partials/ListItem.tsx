@@ -6,6 +6,8 @@ import {
   useColorModeValue,
   Heading,
   StackProps,
+  Box,
+  Center,
 } from "@chakra-ui/react";
 import * as React from "react";
 
@@ -22,16 +24,24 @@ export const ListItem = (props: ListItemProps) => {
   return (
     <Stack as="li" direction="row" spacing="4" {...stackProps}>
       <Flex direction="column" alignItems="center" aria-hidden="true">
-        <Circle
-          bg={useColorModeValue("blue.500", "blue.300")}
-          size="12"
-          borderWidth="4px"
-          borderColor={useColorModeValue("white", "gray.800")}
+        <Center
+          bg={useColorModeValue("primaryAlpha.800", "primaryAlpha.500")}
+          width="40px"
+          height="40px"
+          boxShadow="lg"
+          rounded="lg"
           color={useColorModeValue("white", "black")}
         >
           {icon}
-        </Circle>
-        {!isLastItem && <Flex flex="1" borderRightWidth="1px" mb="-12" />}
+        </Center>
+        {!isLastItem && (
+          <Flex
+            flex="1"
+            borderRightColor="primaryAlpha.200"
+            borderRightWidth="4px"
+            mb="-12"
+          ></Flex>
+        )}
       </Flex>
       <Stack spacing="4" pt="1" flex="1">
         <Flex direction="column">

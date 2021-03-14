@@ -1,6 +1,7 @@
 import { Circle, SquareProps } from "@chakra-ui/react";
 import * as React from "react";
-import { BsPlayFill } from "react-icons/bs";
+import { BsPlay, BsPlayFill } from "react-icons/bs";
+import { FaPlayCircle } from "react-icons/fa";
 
 export const PlayButton = (props: SquareProps) => {
   const { ...rest } = props;
@@ -9,7 +10,7 @@ export const PlayButton = (props: SquareProps) => {
     <Circle
       centerContent
       fontSize="3xl"
-      bg="blue.500"
+      bg="primaryAlpha.600"
       color="white"
       pos="absolute"
       top="50%"
@@ -17,7 +18,7 @@ export const PlayButton = (props: SquareProps) => {
       transform="translate(-50%, -50%)"
       {...rest}
     >
-      <BsPlayFill />
+      <BsPlay />
     </Circle>
   );
 };

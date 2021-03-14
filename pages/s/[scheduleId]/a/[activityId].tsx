@@ -74,7 +74,8 @@ import {
   FaLock,
   FaLockOpen,
 } from "react-icons/fa";
-import { BsHeartFill } from "react-icons/bs";
+import { createThemeFromSchedule } from "@/styles/theme";
+import { LoadingPlaceholder } from "@/partials/LoadingPlaceholder";
 
 function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
   const router = useRouter();
@@ -89,23 +90,7 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
     } else {
       return (
         <Layout scheduleId={props.scheduleId}>
-          <Box
-            as="section"
-            my={{ base: "2", md: "8" }}
-            py={{ base: "8", md: "12" }}
-            rounded="md"
-            bg={mode("gray.100", "gray.800")}
-          >
-            <Center>
-              <Spinner
-                thickness="4px"
-                speed="0.65s"
-                emptyColor="gray.200"
-                color="blue.500"
-                size="xl"
-              />
-            </Center>
-          </Box>
+          <LoadingPlaceholder></LoadingPlaceholder>
         </Layout>
       );
     }
@@ -158,11 +143,14 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
   const activityAbout = activityViewModel?.description || null;
   const activityPhotoUrl = activityViewModel?.photoUrl || null;
 
+  const userTheme = createThemeFromSchedule(data.schedule);
+
   return (
     <>
       <Layout
         scheduleId={activityViewModel?.scheduleId}
         scheduleMember={data.scheduleMember}
+        userTheme={userTheme}
       >
         <Box
           as="section"
@@ -344,7 +332,6 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
               </Box>
 
               <VStack spacing={{ base: "6", md: "8" }} align="stretch">
-                
                 {props?.data?.accessLevel == AccessLevel.all && (
                   <Flex hidden w="full" mx="auto" justifyContent="center">
                     <HStack
@@ -420,6 +407,10 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
                   <BigMedia
                     alt={`Workout video for ${activityViewModel?.title}`}
                     src={activityViewModel?.videoThumbnailUrl}
+                    videoSrc={
+                      activityViewModel?.customMuxUrl ||
+                      activityViewModel?.youtubeLink
+                    }
                   />
                 )}
 
@@ -429,18 +420,17 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
                       {instructionsBlockMap &&
                         activityViewModel?.instructionSetViewModel.orderedInstructionBlocks.map(
                           (block) => {
-                            // const length = Object.keys(block.instructions)
-                            //   .length;
                             return (
                               <>
                                 <ListItem
                                   key={`${block.uniqueId}`}
                                   title=""
-                                  fontSize="large"
+                                  // fontSize="large"
                                   // subTitle={`${length} Exercise${
                                   //   length > 1 ? "s" : ""
                                   // }`}
                                   subTitle=""
+                                  color="green"
                                   icon={
                                     <Center>
                                       <Box
@@ -463,7 +453,7 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
                                         (viewModel) => {
                                           return (
                                             <AccordionItem
-                                              key={`${viewModel?.instruction?.uniqueId}`}
+                                              key={`${viewModel.instruction?.uniqueId}`}
                                             >
                                               {({ isExpanded }) => (
                                                 <>
