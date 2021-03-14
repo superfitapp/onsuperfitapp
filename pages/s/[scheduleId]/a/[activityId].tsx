@@ -344,8 +344,9 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
               </Box>
 
               <VStack spacing={{ base: "6", md: "8" }} align="stretch">
+                
                 {props?.data?.accessLevel == AccessLevel.all && (
-                  <Flex w="full" mx="auto" justifyContent="center">
+                  <Flex hidden w="full" mx="auto" justifyContent="center">
                     <HStack
                       className="group"
                       as="a"

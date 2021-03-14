@@ -51,7 +51,6 @@ class Sitemap extends React.Component {
         .replace(".mdx", "");
       return path === "/index" ? "" : path;
     });
-    console.log(req.headers.host);
 
     res.setHeader("Content-Type", "text/xml");
     res.write(createSitemap("superfitapp.com", routes, posts));

@@ -1,8 +1,5 @@
 import { Avatar, BoxProps, Circle, StackProps } from "@chakra-ui/react";
 import * as React from "react";
-import { BsPlayFill } from "react-icons/bs";
-import Error from "next/error";
-import Layout from "@/components/schedule-layout";
 import {
   Box,
   Text,
@@ -12,20 +9,10 @@ import {
   Heading,
   Img,
   HStack,
-  Button,
   Center,
-  VStack,
-  Spinner,
-  AspectRatio,
   Spacer,
 } from "@chakra-ui/react";
-import { ShowScheduleViewModel } from "@/utils/ViewModels";
-import {
-  BiArrowBack,
-  BiRightArrow,
-  BiRightArrowAlt,
-  BiRightArrowCircle,
-} from "react-icons/bi";
+import { BiArrowBack, BiRightArrowAlt } from "react-icons/bi";
 
 interface ScheduleRowProps extends StackProps {
   scheduleId: string;

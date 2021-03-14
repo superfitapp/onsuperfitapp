@@ -103,7 +103,7 @@ export const GuestHeaderNav = ({
                   onClick={() => {
                     router.push(`/s/${scheduleId}/join`);
                   }}
-                  colorScheme="blue"
+                  color="primaryAlpha.800"
                   variant="ghost"
                   rounded="lg"
                 >

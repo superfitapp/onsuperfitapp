@@ -32,6 +32,7 @@ import { fetchShowSchedule } from "@/lib/schedule";
 import { routerLoading } from "@/utils/router-loading";
 import { useRouter } from "next/router";
 import { BiRightArrowAlt } from "react-icons/bi";
+import { createThemeFromSchedule } from "@/styles/theme";
 
 export interface ScheduleProps {
   scheduleId: string;
@@ -87,7 +88,8 @@ export async function getStaticProps({ params }) {
 }
 
 function SchedulePage(props: ScheduleProps, notFound: boolean) {
-  const schedule = props.data?.schedule;
+  const schedule = props?.data?.schedule;
+
   const router = useRouter();
   const { user } = useUser();
 
@@ -110,7 +112,7 @@ function SchedulePage(props: ScheduleProps, notFound: boolean) {
               thickness="4px"
               speed="0.65s"
               emptyColor="gray.200"
-              color="blue.500"
+              color="primary"
               size="xl"
             />
           </Center>
@@ -163,11 +165,15 @@ function SchedulePage(props: ScheduleProps, notFound: boolean) {
     ownerDisplayName = data.schedule?.ownerDisplayName;
   }
 
+  const userTheme = createThemeFromSchedule(data.schedule);
+  console.log("userTheme", userTheme);
+
   return (
     <>
       <ScheduleLayout
         scheduleId={props?.scheduleId}
         scheduleMember={data?.scheduleMember}
+        userTheme={userTheme}
       >
         <Box
           as="section"
@@ -205,7 +211,7 @@ function SchedulePage(props: ScheduleProps, notFound: boolean) {
                     top={{ base: "-2", sm: "-2" }}
                     left={{ base: "2", md: "2" }}
                     boxShadow={{ base: "xl", md: "dark-lg" }}
-                    bg={mode("blue.600", "blue.300")}
+                    bgColor="primaryAlpha.900"
                     rounded={{ base: "full", sm: "xl" }}
                   />
                 </Box>
@@ -235,9 +241,16 @@ function SchedulePage(props: ScheduleProps, notFound: boolean) {
                       my="3"
                       loadingText="Loading Plans"
                       isLoading={isLoading}
-                      // size="lg"
-                      colorScheme="blue"
-                      variant="outline"
+                      borderWidth="2px"
+                      p="6"
+                      borderColor="primaryAlpha.100"
+                      bgColor="primaryAlpha.100"
+                      _hover={{
+                        bg: mode("primary", "primaryAlpha.800"),
+                        textColor: "white",
+                      }}
+                      color="primary"
+                      variant="solid"
                       minH={{ base: "10", md: "12" }}
                       onClick={() => {
                         router.push(`/s/${props.scheduleId}/join`);
