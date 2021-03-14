@@ -33,6 +33,7 @@ import { routerLoading } from "@/utils/router-loading";
 import { useRouter } from "next/router";
 import { BiRightArrowAlt } from "react-icons/bi";
 import { createThemeFromSchedule } from "@/styles/theme";
+import { NextSeo } from "next-seo";
 
 export interface ScheduleProps {
   scheduleId: string;
@@ -166,10 +167,35 @@ function SchedulePage(props: ScheduleProps, notFound: boolean) {
   }
 
   const userTheme = createThemeFromSchedule(data.schedule);
-  console.log("userTheme", userTheme);
+
+  // let og_title = props.post.og_title;
+  // let og_description = props.post.og_description;
+  // let baseUrl = "https://superfitapp.com";
 
   return (
     <>
+      <NextSeo
+        title={scheduleTitle}
+        description={scheduleAbout}
+        titleTemplate="%s | Built on SuperFit"
+        // canonical={canonical}
+        openGraph={{
+          type: "website",
+          locale: "en_IE",
+          // url: baseUrl,
+          title: scheduleTitle,
+          description: scheduleAbout,
+          site_name: scheduleTitle,
+          images: [
+            {
+              url: schedulePhotoUrl,
+              width: 800,
+              height: 500,
+              alt: `${scheduleTitle} Image`,
+            },
+          ],
+        }}
+      />
       <ScheduleLayout
         scheduleId={props?.scheduleId}
         scheduleMember={data?.scheduleMember}
