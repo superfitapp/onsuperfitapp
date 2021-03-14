@@ -8,12 +8,22 @@ import PersonalPro from "@/components/prices/personal-pro";
 import Commerce from "@/components/prices/commerce";
 import Free from "@/components/prices/free";
 import { NextSeo } from "next-seo";
+import { useRouter } from "next/router";
 
 export default function Home() {
+  const router = useRouter();
   useEffect(() => {
     require("@/public/js/bigpicture");
     require("@/public/js/pricing");
   }, []);
+
+  if (typeof window !== "undefined") {
+    const returnTo = localStorage.getItem("returnTo");
+    if (returnTo) {
+      localStorage.removeItem("returnTo");
+      router.push(returnTo);
+    }
+  }
 
   return (
     <>
