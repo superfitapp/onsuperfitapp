@@ -168,17 +168,13 @@ function SchedulePage(props: ScheduleProps, notFound: boolean) {
 
   const userTheme = createThemeFromSchedule(data.schedule);
 
-  // let og_title = props.post.og_title;
-  // let og_description = props.post.og_description;
-  // let baseUrl = "https://superfitapp.com";
-
   return (
     <>
       <NextSeo
         title={scheduleTitle}
         description={scheduleAbout}
         titleTemplate="%s | Built on SuperFit"
-        // canonical={canonical}
+        canonical={`${process.env.NEXT_PUBLIC_BASE_URL}/s/${props.scheduleId}`}
         openGraph={{
           type: "website",
           locale: "en_IE",
