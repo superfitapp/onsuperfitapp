@@ -8,6 +8,15 @@ class MyDocument extends Document {
         <Head>
           {/* GA */}
           {/* Global Site Tag (gtag.js) - Google Analytics */}
+          {/* Simple Analytics script */}
+          <script
+            async
+            defer
+            src="https://sa.superfitapp.com/latest.js"
+          ></script>
+          <noscript>
+            <img src="https://sa.superfitapp.com/noscript.gif" alt="" />
+          </noscript>
 
           {isProduction && (
             <>
