@@ -1,0 +1,25 @@
+//
+// user-variables.scss
+// Use this to overwrite Bootstrap and theme variables
+//
+
+// @import url("https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap");
+
+// Feather icons
+
+@font-face {
+  font-family: "Feather";
+  src: url("#{$path-to-fonts}/Feather/Feather.ttf?sdxovp") format("truetype"),
+    url("#{$path-to-fonts}/Feather/Feather.woff?sdxovp") format("woff"),
+    url("#{$path-to-fonts}/Feather/Feather.svg?sdxovp#Feather") format("svg");
+  font-weight: 400;
+  font-style: normal;
+}
+
+$font-family-base: "Nunito", serif !default;
+
+$navbar-brand-height: 3rem !default;
+
+// Paths
+$path-to-img: "/img" !default;
+$path-to-fonts: "/fonts" !default;

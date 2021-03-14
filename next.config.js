@@ -1,3 +1,5 @@
+const path = require("path");
+
 module.exports = {
   async rewrites() {
     return [
@@ -25,6 +27,9 @@ module.exports = {
       ],
     },
   ],
+  sassOptions: {
+    includePaths: [path.join(__dirname, "styles")],
+  },
   images: {
     domains: [
       "blog.superfitapp.com",
@@ -32,5 +37,20 @@ module.exports = {
       "superfitapp.com",
       "firebasestorage.googleapis.com",
     ],
+  },
+  webpack(config, { isServer }) {
+    // Fixes npm packages that depend on `fs` module
+    if (!isServer) {
+      config.node = {
+        fs: "empty",
+      };
+    }
+
+    config.module.rules.push({
+      test: /\.svg$/,
+      use: ["@svgr/webpack"],
+    });
+
+    return config;
   },
 };

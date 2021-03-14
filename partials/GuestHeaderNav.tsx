@@ -5,6 +5,7 @@ import {
   Button,
   Center,
   Flex,
+  Heading,
   HStack,
   Menu,
   MenuButton,
@@ -65,15 +66,15 @@ export const GuestHeaderNav = ({
     >
       <Box maxW="7xl" mx="auto" py="2" px={{ base: "2", md: "6" }}>
         <Flex as="nav" justify="space-between">
-          <HStack spacing="4">
+          <HStack spacing="2">
             <Image
               src="https://superfitapp.com/img/brand.svg"
               alt="SuperFit Logo Mark"
               height="45"
               width="45"
             />
-            <NavLink.Desktop fontWeight="bold" href="https://superfitapp.com">
-              Built on SuperFit
+            <NavLink.Desktop fontWeight="semibold" href="/">
+              <Heading size="sm">Built on SuperFit</Heading>
             </NavLink.Desktop>
           </HStack>
 
@@ -149,11 +150,6 @@ export const GuestHeaderNav = ({
                     <MenuItem onClick={() => router.push("/api/auth/logout")}>
                       Logout
                     </MenuItem>
-                  </MenuGroup>
-                  <MenuDivider />
-                  <MenuGroup title="Help">
-                    <MenuItem>Docs</MenuItem>
-                    <MenuItem>FAQ</MenuItem>
                   </MenuGroup>
                 </MenuList>
               </Menu>

@@ -40,10 +40,14 @@ export interface ScheduleProps {
 
 export async function getStaticProps({ params }) {
   const { scheduleId } = params;
-  var props: ScheduleProps | undefined = null;
+  var props: ScheduleProps | undefined = {
+    scheduleId: scheduleId,
+    data: null,
+  };
 
   if (!scheduleId) {
     return {
+      props: props,
       notFound: true,
       revalidate: 1,
     };
@@ -63,6 +67,7 @@ export async function getStaticProps({ params }) {
 
   if (!data) {
     return {
+      props: props,
       notFound: true,
     };
   }
@@ -85,31 +90,6 @@ function SchedulePage(props: ScheduleProps, notFound: boolean) {
   const schedule = props.data?.schedule;
   const router = useRouter();
   const { user } = useUser();
-
-  const {
-    isLoading,
-    effect: routerEffect,
-    onDestroy: routerOnDestroy,
-  } = routerLoading(router);
-
-  const { data, isValidating } = useSWR<ShowFIRScheduleResponse>(
-    user
-      ? `/api/schedule/${props.scheduleId}?fetchRecentActivities=true`
-      : `/api/show/schedule/${props.scheduleId}?fetchRecentActivities=true`,
-    fetcher,
-    {
-      initialData: props.data,
-      revalidateOnMount: user != undefined,
-      revalidateOnFocus: false,
-    }
-  );
-
-  React.useEffect(() => {
-    routerEffect();
-    return () => {
-      routerOnDestroy();
-    };
-  }, []);
 
   if (!props.scheduleId || !schedule) {
     if (notFound == true) {
@@ -138,6 +118,31 @@ function SchedulePage(props: ScheduleProps, notFound: boolean) {
       </ScheduleLayout>
     );
   }
+
+  const {
+    isLoading,
+    effect: routerEffect,
+    onDestroy: routerOnDestroy,
+  } = routerLoading(router);
+
+  const { data, isValidating } = useSWR<ShowFIRScheduleResponse>(
+    user
+      ? `/api/schedule/${props.scheduleId}?fetchRecentActivities=true`
+      : `/api/show/schedule/${props.scheduleId}?fetchRecentActivities=true`,
+    fetcher,
+    {
+      initialData: props.data,
+      revalidateOnMount: user != undefined,
+      revalidateOnFocus: false,
+    }
+  );
+
+  React.useEffect(() => {
+    routerEffect();
+    return () => {
+      routerOnDestroy();
+    };
+  }, []);
 
   var activities: FIRActivity[] = props.data?.activities || [];
   var scheduleTitle = schedule?.title;

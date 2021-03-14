@@ -78,7 +78,12 @@ export const ScheduleRow = ({
 
     <Flex as="button" flexDirection="column">
       {scheduleTitle && (
-        <Text fontWeight="medium" align="start" noOfLines={{ base: 1, sm: 2 }}>
+        <Text
+          color={mode("gray.700", "gray.600")}
+          fontWeight="medium"
+          align="start"
+          noOfLines={{ base: 1, sm: 2 }}
+        >
           {scheduleTitle}
         </Text>
       )}

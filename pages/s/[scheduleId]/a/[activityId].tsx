@@ -250,23 +250,22 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
                   alignItems="start"
                 >
                   <VStack align="stretch" spacing="0">
-                    <Heading
-                      size="md"
-                      letterSpacing="tight"
-                      fontWeight="medium"
-                    >
-                      {activityTitle}
-                    </Heading>
-
                     {scheduledDateString && (
                       <Text
-                        fontSize="lg"
-                        fontWeight="regular"
+                        // fontSize="sm"
+                        // fontWeight="semibold"
                         color={mode("gray.500", "gray.200")}
                       >
                         {scheduledDateString}
                       </Text>
                     )}
+                    <Text
+                      fontSize="xl"
+                      letterSpacing="tight"
+                      fontWeight="medium"
+                    >
+                      {activityTitle}
+                    </Text>
                   </VStack>
                   <Center rounded="lg" bg="rgba(0,0,0,0.05)">
                     <Text

@@ -114,7 +114,6 @@ export default function ScheduleChecklist(
   }, []);
 
   if (data) {
-    console.log("data.scheduleMember", data.scheduleMember);
     vm = createShowScheduleViewModel(
       props.scheduleId,
       data.schedule,
@@ -179,7 +178,6 @@ export default function ScheduleChecklist(
     <>
       <Layout scheduleId={null} hideHeaderMobile={true}>
         <Box as="section" py={{ base: "2", md: "8" }}>
-          {osVersion}
           <Box
             rounded={{ lg: "lg" }}
             bg={mode("white", "gray.700")}

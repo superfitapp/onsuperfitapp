@@ -84,29 +84,6 @@ export const ScheduledActivity = (props: ScheduledActivityProps) => {
               {vm.title}
             </Text>
           </LinkOverlay>
-
-          {/* <HStack
-            align="baseline"
-            justify="flex-start"
-            fontSize="xs"
-            color={useColorModeValue("gray.600", "gray.300")}
-          >
-            <Center
-              bg="rgba(0,0,0,0.05)"
-              rounded="lg"
-              py="1"
-              px="2"
-              fontSize="xs"
-            >
-              <Text
-                // textTransform="uppercase"
-                fontSize="xs"
-                fontWeight="semibold"
-              >
-                {vm?.activityType}
-              </Text>
-            </Center>
-          </HStack> */}
         </Box>
       </Stack>
     </LinkBox>
