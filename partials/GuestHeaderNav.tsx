@@ -146,7 +146,16 @@ export const GuestHeaderNav = ({
                 <MenuList>
                   <MenuGroup title="Profile">
                     <MenuItem>My Account</MenuItem>
-                    <MenuItem onClick={() => router.push("/api/auth/logout")}>
+                    <MenuItem
+                      onClick={() => {
+                        if (typeof window !== "undefined") {
+                          if (router.asPath != "/") {
+                            localStorage.setItem("returnTo", router.asPath);
+                          }
+                        }
+                        router.push("/api/auth/logout");
+                      }}
+                    >
                       Logout
                     </MenuItem>
                   </MenuGroup>

@@ -58,15 +58,11 @@ export const BigMedia = (props: BigMediaProps) => {
       {videoSrc && (
         <>
           <PlayButton size={{ base: "5", sm: "20" }} />
-
           <Modal onClose={onClose} size={"xl"} isOpen={isOpen}>
             <ModalOverlay />
             <ModalContent>
               <ReactPlayer width="100%" height="100%" controls url={videoSrc} />
               <ModalCloseButton color="white" />
-              {/* <ModalBody>
-                
-              </ModalBody> */}
             </ModalContent>
           </Modal>
         </>

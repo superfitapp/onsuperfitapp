@@ -26,23 +26,17 @@ import {
   Circle,
   Link,
 } from "@chakra-ui/react";
-import {
-  BiHeartCircle,
-  BiLockOpen,
-  BiLockOpenAlt,
-  BiRightArrowAlt,
-  BiRightArrowCircle,
-} from "react-icons/bi";
+import { BiHeartCircle, BiRightArrowAlt } from "react-icons/bi";
 import * as React from "react";
 import { ListItem } from "@/partials/ListItem";
 import { List } from "@/partials/List";
-import NextLink from "next/link";
+
 import {
   getShowActivity,
   ShowFIRActivityResponse,
   ShowFIRScheduleResponse,
 } from "@/lib/db-public";
-import ReactPlayer from "react-player";
+import ReactPlayer from "react-player/lazy";
 
 import {
   createShowActivityViewModel,
@@ -57,23 +51,10 @@ import { AccessLevel } from "@superfitapp/superfitjs";
 import useSWR from "swr";
 import fetcher from "@/utils/fetcher";
 import { useUser } from "@auth0/nextjs-auth0";
-import { NextRouter, useRouter } from "next/router";
+import { useRouter } from "next/router";
 import { routerLoading } from "@/utils/router-loading";
-import {
-  HiArrowRight,
-  HiLockOpen,
-  HiOutlineHeart,
-  HiOutlineLockOpen,
-} from "react-icons/hi";
-import {
-  FaAward,
-  FaDonate,
-  FaFreebsd,
-  FaGratipay,
-  FaHeartbeat,
-  FaLock,
-  FaLockOpen,
-} from "react-icons/fa";
+
+import { FaLock } from "react-icons/fa";
 import { createThemeFromSchedule } from "@/styles/theme";
 import { LoadingPlaceholder } from "@/partials/LoadingPlaceholder";
 import { NextSeo } from "next-seo";
@@ -90,23 +71,38 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
       return <Error statusCode={404} />;
     } else {
       return (
-        <Layout scheduleId={props.scheduleId}>
-          <LoadingPlaceholder></LoadingPlaceholder>
-        </Layout>
+        <>
+          <NextSeo
+            canonical={`${process.env.NEXT_PUBLIC_BASE_URL}/s/${props.scheduleId}/a/${props.activityId}`}
+            additionalMetaTags={[
+              {
+                name: "apple-itunes-app",
+                content:
+                  "app-clip-bundle-id=com.superfit.superfit.Clip,app-id=GXS8378HLM",
+              },
+            ]}
+          ></NextSeo>
+          <Layout scheduleId={props.scheduleId}>
+            <LoadingPlaceholder></LoadingPlaceholder>
+          </Layout>
+        </>
       );
     }
   }
 
-  const { data } = useSWR<ShowFIRActivityResponse>(
-    user
-      ? `/api/schedule/${props.scheduleId}/activity/${props.activityId}`
-      : `/api/show/schedule/${props.scheduleId}/activity/${props.activityId}`,
-    fetcher,
-    {
-      initialData: props.data,
-      revalidateOnMount: user != undefined,
-    }
-  );
+  var data: ShowFIRActivityResponse = props.data;
+  if (user) {
+    const { data: swrData } = useSWR<ShowFIRActivityResponse>(
+      `/api/schedule/${props.scheduleId}/activity/${props.activityId}`,
+      fetcher,
+      {
+        initialData: props.data,
+        revalidateOnMount: true,
+      }
+    );
+
+    data = swrData;
+  }
 
   const {
     isLoading,
@@ -153,10 +149,16 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
         description={activityAbout}
         titleTemplate="%s | Built on SuperFit"
         canonical={`${process.env.NEXT_PUBLIC_BASE_URL}/s/${props.scheduleId}/a/${props.activityId}`}
+        additionalMetaTags={[
+          {
+            name: "apple-itunes-app",
+            content:
+              "app-clip-bundle-id=com.superfit.superfit.Clip,app-id=GXS8378HLM",
+          },
+        ]}
         openGraph={{
           type: "website",
           locale: "en_IE",
-          // url: baseUrl,
           title: activityTitle,
           description: activityAbout,
           site_name: activityTitle,
@@ -360,7 +362,7 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
                     <HStack
                       className="group"
                       as="a"
-                      href="#"
+                      href={tipLink}
                       ps="2"
                       pr="4"
                       mt={{ base: "4", md: "0" }}
@@ -388,14 +390,12 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
                         as={BiRightArrowAlt}
                         display="inline-block"
                       />
-                      <Link
-                        target="javascript:void();"
-                        href={tipLink}
+                      <Text
                         textColor={mode("rgb(255, 78, 78)", "rgb(255, 78, 78)")}
                         fontWeight="semibold"
                       >
                         Send Tip
-                      </Link>
+                      </Text>
                     </HStack>
                   </Flex>
                 )}

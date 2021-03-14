@@ -1,8 +1,6 @@
-import Link from "next/link";
 import Clipboard from "@/partials/icons/duotone-icons/general/clipboard.svg";
 import Dollar from "@/partials/icons/duotone-icons/shopping/dollar.svg";
-import Update from "@/partials/icons/duotone-icons/general/update.svg";
-import { useEffect } from "react";
+const isProduction = process.env.NODE_ENV === "production";
 import Head from "next/head";
 
 interface NavInit {
@@ -13,30 +11,29 @@ interface NavInit {
 }
 
 function LandingNav({ user, loading, containerClass, navClassList }: NavInit) {
-  useEffect(() => {
-    // require("@/public/js/modal");
-    // require("@/public/js/navbar");
-    // require("@/public/js/navbar-dropdown");
-    // const HW_config = {
-    //   selector: "#changelogButton",
-    //   trigger: "#changelogButton",
-    //   account: process.env.NEXT_PUBLIC_HEADWAY_ID,
-    // };
-    // var headwayScript = document.createElement("script");
-    // headwayScript.src = "/js/headway.js";
-    // headwayScript.async = true;
-    // document.body.appendChild(headwayScript);
-    // headwayScript.onload = function () {
-    //   const Headway = window["Headway"];
-    //   Headway?.init(HW_config);
-    // };
-    // return () => {
-    //   document.body.removeChild(headwayScript);
-    // };
-  }, []);
-
   return (
     <>
+      <Head>
+        {isProduction && (
+          <>
+            <script
+              async
+              src={`https://www.googletagmanager.com/gtag/js?id=${process.env.GTM_ID}`}
+            />
+            <script
+              dangerouslySetInnerHTML={{
+                __html: `
+              (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+              new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+              j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+              'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+              })(window,document,'script','dataLayer','GTM-5V6J7GG');
+              `,
+              }}
+            />
+          </>
+        )}
+      </Head>
       <nav className={"navbar " + navClassList}>
         <div className={containerClass}>
           {/* Brand */}
