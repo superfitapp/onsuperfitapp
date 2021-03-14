@@ -76,6 +76,7 @@ import {
 } from "react-icons/fa";
 import { createThemeFromSchedule } from "@/styles/theme";
 import { LoadingPlaceholder } from "@/partials/LoadingPlaceholder";
+import { NextSeo } from "next-seo";
 
 function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
   const router = useRouter();
@@ -147,6 +148,28 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
 
   return (
     <>
+      <NextSeo
+        title={activityTitle}
+        description={activityAbout}
+        titleTemplate="%s | Built on SuperFit"
+        canonical={`${process.env.NEXT_PUBLIC_BASE_URL}/s/${props.scheduleId}/a/${props.activityId}`}
+        openGraph={{
+          type: "website",
+          locale: "en_IE",
+          // url: baseUrl,
+          title: activityTitle,
+          description: activityAbout,
+          site_name: activityTitle,
+          images: [
+            {
+              url: activityPhotoUrl,
+              width: 800,
+              height: 500,
+              alt: `Image of ${activityTitle} from ${scheduleViewModel.scheduleTitle}`,
+            },
+          ],
+        }}
+      />
       <Layout
         scheduleId={activityViewModel?.scheduleId}
         scheduleMember={data.scheduleMember}

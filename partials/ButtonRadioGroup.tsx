@@ -28,7 +28,7 @@ export const ButtonRadioGroup = (props: ButtonRadioGroupProps) => {
           icon={option.icon}
           description={option.description}
           label={option.label}
-          {...getRadioProps({ value: option.value }) }
+          {...getRadioProps({ value: option.value })}
         />
       ))}
     </Stack>
