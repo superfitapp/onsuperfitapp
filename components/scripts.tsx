@@ -7,10 +7,10 @@ function Scripts() {
     // require("flickity");
     // require("flickity-fade");
 
-    // require("@/public/js/aos");
-    // require("@/public/js/popover");
-    // require("@/public/js/modal");
-    // require("@/public/js/smooth-scroll");
+    require("@/public/js/aos");
+    require("@/public/js/popover");
+    require("@/public/js/modal");
+    require("@/public/js/smooth-scroll");
   }, []);
   return <div></div>;
 }

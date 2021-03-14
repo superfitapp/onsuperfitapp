@@ -22,14 +22,12 @@ import {
   WebLink,
 } from "@superfitapp/superfitjs";
 import InstructionBuilder from "./InstructionBuilder";
-
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import calendar from "dayjs/plugin/calendar";
 dayjs.extend(relativeTime);
 dayjs.extend(calendar);
 import "dayjs/locale/en"; // import locale
-import { V4MAPPED } from "node:dns";
 import { isPayingMember } from "./schedule-member";
 dayjs.locale("en"); // use locale
 
