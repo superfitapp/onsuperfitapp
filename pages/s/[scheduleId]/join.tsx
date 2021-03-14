@@ -1,9 +1,6 @@
 import Layout from "@/components/schedule-layout";
 import { StringOrNumber } from "@chakra-ui/utils";
-import auth0 from "@auth0/nextjs-auth0";
-
 import { HiUserCircle, HiOutlineStar } from "react-icons/hi";
-
 import {
   Box,
   Button,
@@ -23,31 +20,42 @@ import {
 import Error from "next/error";
 import { ButtonRadioGroup } from "@/partials/ButtonRadioGroup";
 import { ArrowDirection, ScheduleRow } from "@/partials/ScheduleRow";
-import { ScheduleProps } from "../[scheduleId]";
 import { getSession } from "@auth0/nextjs-auth0";
 import { GetServerSidePropsContext } from "next";
 import { fetchShowSchedule } from "@/lib/schedule";
 import { useRouter } from "next/router";
 import { routerLoading } from "@/utils/router-loading";
+import { createThemeFromSchedule } from "@/styles/theme";
+import { ShowFIRScheduleResponse } from "@/lib/db-public";
 
 export interface JoinScheduleProps {
   scheduleId: string;
-  vm: ShowScheduleViewModel;
+  data: ShowFIRScheduleResponse;
 }
 
 function JoinSchedule(props: JoinScheduleProps, notFound: boolean) {
   const router = useRouter();
 
-  if (!props.vm && notFound == true) {
+  if (!props.data && notFound == true) {
     if (notFound) {
       return <Error statusCode={404} />;
     }
   }
 
-  const scheduleTitle = props.vm?.scheduleTitle;
-  const schedulePhotoUrl = props.vm?.photoUrl;
-  const scheduleId = props.vm?.scheduleId;
-  const scheduleOwnerDisplayName = props.vm?.ownerDisplayName;
+  var vm: ShowScheduleViewModel = null;
+
+  if (props.data) {
+    vm = createShowScheduleViewModel(
+      props.scheduleId,
+      props.data.schedule,
+      props.data.scheduleMember
+    );
+  }
+
+  const scheduleTitle = vm?.scheduleTitle;
+  const schedulePhotoUrl = vm?.photoUrl;
+  const scheduleId = vm?.scheduleId;
+  const scheduleOwnerDisplayName = vm?.ownerDisplayName;
 
   var options: {
     label: string;
@@ -83,18 +91,18 @@ function JoinSchedule(props: JoinScheduleProps, notFound: boolean) {
   let defaultValue: string = null;
 
   // move code to view model
-  if (props.vm.canSignUp) {
-    if (props.vm.joinSchedulePaidCta && props.vm.premiumPriceTitle) {
+  if (vm.canSignUp) {
+    if (vm.joinSchedulePaidCta && vm.premiumPriceTitle) {
       options.push({
         label: `Premium membership`,
-        description: `${props.vm.premiumPriceTitle} - cancel anytime`,
+        description: `${vm.premiumPriceTitle} - cancel anytime`,
         icon: <HiOutlineStar />,
         value: "premium",
       });
       defaultValue = "premium";
     }
 
-    if (props.vm.joinScheduleFreeCta) {
+    if (vm.joinScheduleFreeCta) {
       options.push({
         label: "Free Member",
         description: "No credit card required",
@@ -112,9 +120,11 @@ function JoinSchedule(props: JoinScheduleProps, notFound: boolean) {
     StringOrNumber | undefined
   >(defaultValue);
 
+  const userTheme = createThemeFromSchedule(props.data?.schedule);
+
   return (
     <>
-      <Layout scheduleId={null} hideHeaderMobile={true}>
+      <Layout scheduleId={null} hideHeaderMobile={true} userTheme={userTheme}>
         <Box
           as="section"
           my={{ base: "2", md: "8" }}
@@ -146,7 +156,8 @@ function JoinSchedule(props: JoinScheduleProps, notFound: boolean) {
                 <Button
                   loadingText="Loading"
                   isLoading={isLoading}
-                  colorScheme="blue"
+                  color="primary"
+                  bgColor="primaryAlpha.100"
                   minW="20"
                   onClick={confirmButtonPressed}
                 >
@@ -220,7 +231,7 @@ export async function getServerSideProps({
 
   props = {
     scheduleId: scheduleId as string,
-    vm: vm,
+    data: data,
   };
 
   return {

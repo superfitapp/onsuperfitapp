@@ -27,7 +27,9 @@ const RadioBox = chakra("div", {
 const CheckboxIcon = (props: { checked: boolean }) => (
   <Box
     fontSize="4xl"
-    color={props.checked ? "blue.600" : mode("gray.300", "whiteAlpha.400")}
+    color={
+      props.checked ? "primaryAlpha.900" : mode("gray.300", "whiteAlpha.400")
+    }
   >
     {props.checked ? <MdRadioButtonChecked /> : <MdRadioButtonUnchecked />}
   </Box>
@@ -46,8 +48,8 @@ export const ButtonRadio = (props: ButtonRadioProps) => {
   );
 
   const checkedStyles = {
-    bg: mode("blue.50", "rgb(0 31 71)"),
-    borderColor: "blue.600",
+    bg: mode("primaryAlpha.100", "rgb(0 31 71)"),
+    borderColor: "primaryAlpha.700",
   };
 
   return (
@@ -71,7 +73,7 @@ export const ButtonRadio = (props: ButtonRadioProps) => {
             aria-hidden
             fontSize="4xl"
             mb="3"
-            color={state.isChecked ? "blue.600" : undefined}
+            color={state.isChecked ? "primaryAlpha.500" : undefined}
           >
             {icon}
           </Box>
