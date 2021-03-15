@@ -198,9 +198,9 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
                       direction="column"
                       align="stretch"
                       py={{ base: "4", md: "4" }}
-                      position="relative"
                       justify="flex-end"
                       zIndex={1}
+                      position="relative"
                       w="full"
                       h="full"
                       mx="auto"

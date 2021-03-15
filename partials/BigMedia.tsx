@@ -46,13 +46,11 @@ export const BigMedia = (props: BigMediaProps) => {
         w="full"
         h="full"
         objectFit="cover"
-        htmlWidth="672"
-        htmlHeight="448"
         src={src}
         alt={alt}
         transition="all 0.2s"
         rounded="inherit"
-        _groupHover={{ transform: "scale(1.05)" }}
+        _groupHover={{ transform: "scale(1.10)" }}
       />
 
       {videoSrc && (

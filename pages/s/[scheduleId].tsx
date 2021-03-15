@@ -60,13 +60,6 @@ export async function getStaticProps({ params }) {
     fetchRecentActivities: true,
   });
 
-  // if (data.schedule?.photo?.customPhotoFirPath) {
-  // const url = await fetchThumbnail(
-  //   ThumbnailSize.fiveTwelve,
-  //   data.schedule?.photo?.customPhotoFirPath
-  // );
-  // }
-
   if (!data) {
     return {
       props: props,
@@ -213,7 +206,7 @@ function SchedulePage(props: ScheduleProps, notFound: boolean) {
               rowGap="4"
             >
               {schedulePhotoUrl && (
-                <Box pos="relative">
+                <Box className="test" pos="relative" maxH="400px">
                   <BigMedia
                     alt={`Photo of fitness schedule: ${scheduleTitle}`}
                     src={schedulePhotoUrl}
