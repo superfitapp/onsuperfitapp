@@ -18,14 +18,14 @@ class MyDocument extends Document {
             <img src="https://sa.superfitapp.com/noscript.gif" alt="" />
           </noscript>
 
-          <script
+          {/* <script
             dangerouslySetInnerHTML={{
               __html: `
                   !function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.async=!0,p.src=s.api_host+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="capture identify alias people.set people.set_once set_config register register_once unregister opt_out_capturing has_opted_out_capturing opt_in_capturing reset isFeatureEnabled onFeatureFlags".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
                   posthog.init('LyJRDTNSobDueUGmeWT-vXMFT8OpHdhVtjmQvAxnV_o',{api_host:'https://app.posthog.com'})
               `,
             }}
-          />
+          /> */}
 
           <meta content="IE=edge" httpEquiv="X-UA-Compatible" />
           <meta content="#0c4979" name="theme-color" />
@@ -36,10 +36,7 @@ class MyDocument extends Document {
           />
           <link href="/favicons/favicon.ico" rel="shortcut icon" />
           <link href="/favicons/site.webmanifest" rel="manifest" />
-          {/* <link
-            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
-            rel="stylesheet"
-          /> */}
+
           <link
             href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap"
             rel="stylesheet"

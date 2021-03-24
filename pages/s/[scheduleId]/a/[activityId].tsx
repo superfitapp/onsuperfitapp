@@ -13,7 +13,6 @@ import {
   Button,
   Center,
   VStack,
-  Spinner,
   AspectRatio,
   Spacer,
   Accordion,
@@ -92,20 +91,15 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
 
   var data: ShowFIRActivityResponse = props.data;
   if (user) {
-    try {
-      const { data: swrData } = useSWR<ShowFIRActivityResponse>(
-        `/api/schedule/${props.scheduleId}/activity/${props.activityId}`,
-        fetcher,
-        {
-          initialData: props.data,
-          revalidateOnMount: true,
-        }
-      );
-  
-      data = swrData;
-    } catch {
-      data = null
-    }
+    const { data: swrData } = useSWR<ShowFIRActivityResponse>(
+      `/api/schedule/${props.scheduleId}/activity/${props.activityId}`,
+      fetcher,
+      {
+        revalidateOnMount: true,
+      }
+    );
+
+    data = swrData;
   }
 
   const {
