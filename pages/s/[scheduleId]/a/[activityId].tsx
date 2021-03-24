@@ -92,16 +92,20 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
 
   var data: ShowFIRActivityResponse = props.data;
   if (user) {
-    const { data: swrData } = useSWR<ShowFIRActivityResponse>(
-      `/api/schedule/${props.scheduleId}/activity/${props.activityId}`,
-      fetcher,
-      {
-        initialData: props.data,
-        revalidateOnMount: true,
-      }
-    );
-
-    data = swrData;
+    try {
+      const { data: swrData } = useSWR<ShowFIRActivityResponse>(
+        `/api/schedule/${props.scheduleId}/activity/${props.activityId}`,
+        fetcher,
+        {
+          initialData: props.data,
+          revalidateOnMount: true,
+        }
+      );
+  
+      data = swrData;
+    } catch {
+      data = null
+    }
   }
 
   const {
