@@ -213,6 +213,7 @@ function SchedulePage(props: ScheduleProps, notFound: boolean) {
                     zIndex={1}
                     boxShadow={{ base: "xl", md: "dark-lg" }}
                     mx="auto"
+                    maxH="400px"
                     rounded={{ base: "lg", md: "xl" }}
                     w={{ base: "100px", md: "100%" }}
                     h={{ base: "100px", md: "100%" }}

@@ -60,8 +60,29 @@ import { NextSeo } from "next-seo";
 
 function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
   const router = useRouter();
-
   const { user } = useUser();
+  const {
+    isLoading,
+    effect: routerEffect,
+    onDestroy: routerOnDestroy,
+  } = routerLoading(router);
+
+  React.useEffect(() => {
+    routerEffect();
+    return () => {
+      routerOnDestroy();
+    };
+  }, []);
+
+  const { data } = useSWR<ShowFIRActivityResponse>(
+    `/api/schedule/${props.scheduleId}/activity/${props.activityId}`,
+    fetcher,
+    {
+      initialData: props.data,
+      revalidateOnMount: user != undefined,
+    }
+  );
+
   var activityViewModel: ActivityViewModel = null;
   var scheduleViewModel: ShowScheduleViewModel = null;
 
@@ -88,32 +109,6 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
       );
     }
   }
-
-  var data: ShowFIRActivityResponse = props.data;
-  if (user) {
-    const { data: swrData } = useSWR<ShowFIRActivityResponse>(
-      `/api/schedule/${props.scheduleId}/activity/${props.activityId}`,
-      fetcher,
-      {
-        revalidateOnMount: true,
-      }
-    );
-
-    data = swrData;
-  }
-
-  const {
-    isLoading,
-    effect: routerEffect,
-    onDestroy: routerOnDestroy,
-  } = routerLoading(router);
-
-  React.useEffect(() => {
-    routerEffect();
-    return () => {
-      routerOnDestroy();
-    };
-  }, []);
 
   if (data) {
     activityViewModel = createShowActivityViewModel(data);
