@@ -31,9 +31,7 @@ export default function Home() {
       router.push(returnTo);
     }
   }
-
-  console.log(PrivacyStatus.private);
-
+  
   return (
     <>
       <NextSeo canonical="https://superfitapp.com" />

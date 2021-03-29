@@ -9,7 +9,7 @@ import {
   ShowFIRSchedule,
   VisibilityStatus,
 } from "@superfitapp/superfitjs";
-import { scheduleMemberSnap } from "./db-authed";
+import { scheduleMemberSnap } from "./schedule-member";
 import { ShowFIRScheduleResponse } from "./db-public";
 
 export async function fetchShowSchedule({

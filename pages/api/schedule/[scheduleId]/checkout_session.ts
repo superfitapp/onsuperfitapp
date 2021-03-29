@@ -1,8 +1,6 @@
 import { withApiAuthRequired, getSession } from "@auth0/nextjs-auth0";
 import { stripeNode } from "@/utils/stripe-server";
-
 import { db } from "@/lib/firebase-admin";
-
 import { FIRSchedule, FIRUser } from "@superfitapp/superfitjs";
 import { fetchOrCreateStripeCustomerIdForConnectAccount } from "@/utils/stripe-server";
 
@@ -97,17 +95,16 @@ export default withApiAuthRequired(async function ProtectedRoute(req, res) {
     }
   );
 
-  let response: SubscribeScheduleResponse = {
+  let response: CheckoutResponse = {
     type: "checkout",
     sessionId: session.id,
     connectStripeAccountId: scheduleOwner.billingInfo.stripe.connectId,
   };
 
   res.json(response);
-  // return response;
 });
 
-export interface SubscribeScheduleResponse {
+export interface CheckoutResponse {
   type: string;
   message?: string;
   sessionId?: string;

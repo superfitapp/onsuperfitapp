@@ -86,8 +86,8 @@ export function createShowScheduleViewModel(
   schedule: ShowFIRSchedule,
   scheduleMember?: FIRScheduleMember
 ): ShowScheduleViewModel {
-  const primaryColor = schedule.color || "#303030";
-  const secondaryColor = schedule.profile.secondaryColor || null;
+  const primaryColor = schedule?.color || "#303030";
+  const secondaryColor = schedule?.profile.secondaryColor || null;
   const secondaryColorLightRGBA = hexToRGB(secondaryColor, 0.15) || null;
   const anyoneCanSignup = schedule.signupType == "anyoneCanSignUp";
 

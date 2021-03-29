@@ -1,14 +1,8 @@
 import Layout from "@/components/schedule-layout";
 import getStripe from "@/utils/stripe";
-import { Center, Fade, Spinner, useBreakpointValue } from "@chakra-ui/react";
-
+import { Center, Spinner } from "@chakra-ui/react";
 import { Box, useColorModeValue as mode } from "@chakra-ui/react";
-
 import * as React from "react";
-import {
-  createShowScheduleViewModel,
-  ShowScheduleViewModel,
-} from "@/utils/ViewModels";
 import Error from "next/error";
 import { getSession, useUser } from "@auth0/nextjs-auth0";
 import { GetServerSidePropsContext } from "next";
@@ -17,15 +11,15 @@ import useSWR from "swr";
 import fetcher from "@/utils/fetcher";
 import { withPageAuthRequired } from "@auth0/nextjs-auth0";
 import { CheckoutResponse } from "pages/api/schedule/[scheduleId]/checkout_session";
-import { JoinScheduleProps } from "./join";
 import { fetchShowSchedule } from "@/lib/schedule";
 
-export interface CheckoutScheduleProps {
+export interface CheckoutActivityProps {
   scheduleId: string;
+  activityId: string;
 }
 
-export default function CheckoutSchedule(
-  props: CheckoutScheduleProps,
+export default function CheckoutActivity(
+  props: CheckoutActivityProps,
   notFound: boolean
 ) {
   if (!props.scheduleId && notFound == true) {
@@ -34,12 +28,8 @@ export default function CheckoutSchedule(
     }
   }
 
-  const {
-    data: response,
-    error,
-    isValidating,
-  } = useSWR<CheckoutResponse>(
-    `/api/schedule/${props.scheduleId}/checkout_session`,
+  const { data: response, error, isValidating } = useSWR<CheckoutResponse>(
+    `/api/schedule/${props.scheduleId}/activity/${props.activityId}/checkout`,
     fetcher,
     {
       revalidateOnMount: true,
@@ -63,9 +53,6 @@ export default function CheckoutSchedule(
             sessionId: response.sessionId,
           })
           .then(function (result) {
-            // this.joinSchedulePaidLoading = false;
-            // this.errorMessage = result.error.message;
-            console.log("result", result);
             if (result.error) {
               throw result.error;
             }
@@ -75,7 +62,6 @@ export default function CheckoutSchedule(
           });
       })
       .catch((error) => {
-        console.log(error);
         return <Error statusCode={404} />;
       });
   }
@@ -105,53 +91,29 @@ export default function CheckoutSchedule(
   );
 }
 
-export const getServerSideProps = withPageAuthRequired({
-  async getServerSideProps({ params, req, res }: GetServerSidePropsContext) {
+export async function getServerSideProps({
+  params,
+  req,
+  res,
+}: GetServerSidePropsContext) {
+  {
     const session = getSession(req, res);
 
-    const { scheduleId } = params;
-    if (!scheduleId) {
+    const { scheduleId, activityId } = params;
+
+    if (!scheduleId || !activityId) {
       return {
         notFound: true,
       };
     }
 
-    let data = await fetchShowSchedule({
+    var props: CheckoutActivityProps = {
       scheduleId: scheduleId as string,
-      fetchRecentActivities: false,
-      userId: session?.user?.sub,
-    });
-
-    var props: CheckoutScheduleProps = null;
-
-    if (!data) {
-      return {
-        notFound: true,
-      };
-    }
-
-    const vm = createShowScheduleViewModel(
-      scheduleId as string,
-      data.schedule,
-      data.scheduleMember
-    );
-
-    if (vm.userIsPaidMember) {
-      return {
-        props: {},
-        redirect: {
-          permanent: false,
-          destination: `/s/${scheduleId}`,
-        },
-      };
-    }
-
-    var props: CheckoutScheduleProps = {
-      scheduleId: scheduleId as string,
+      activityId: activityId as string,
     };
 
     return {
       props: props,
     };
-  },
-});
+  }
+}

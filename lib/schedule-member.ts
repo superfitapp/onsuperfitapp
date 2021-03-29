@@ -64,3 +64,4 @@ export async function addUserToSchedule(
     .collection("schedule_members")
     .add(member);
 }
+

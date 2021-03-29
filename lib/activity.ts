@@ -9,7 +9,7 @@ import {
   ShowFIRSchedule,
   VisibilityStatus,
 } from "@superfitapp/superfitjs";
-import { scheduleMemberSnap } from "./db-authed";
+import { scheduleMemberSnap } from "./schedule-member";
 import { ShowFIRActivityResponse } from "./db-public";
 import { createShowSchedule } from "./schedule";
 
