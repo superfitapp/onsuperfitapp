@@ -86,8 +86,8 @@ export function createShowScheduleViewModel(
   schedule: ShowFIRSchedule,
   scheduleMember?: FIRScheduleMember
 ): ShowScheduleViewModel {
-  const primaryColor = schedule?.color || "#303030";
-  const secondaryColor = schedule?.profile.secondaryColor || null;
+  const primaryColor = schedule.color || "#303030";
+  const secondaryColor = schedule.profile.secondaryColor || null;
   const secondaryColorLightRGBA = hexToRGB(secondaryColor, 0.15) || null;
   const anyoneCanSignup = schedule.signupType == "anyoneCanSignUp";
 
@@ -138,7 +138,7 @@ export function createShowScheduleViewModel(
     introText: schedule.profile.about || null,
     backgroundColor: schedule.profile.backgroundColor || null,
     linksBackgroundColor: schedule.profile.linksBackgroundColor || null,
-    ownerDisplayName: schedule?.ownerDisplayName || null,
+    ownerDisplayName: schedule.ownerDisplayName || null,
     premiumPriceTitle: premiumPriceTitle,
     // linksTextColor: data.schedule.profile.linksTextColor || null,
     // linksBorder: `${data.schedule.profile.linksBorderWidth}px solid ${data.schedule.profile.linksBorderColor}`,
@@ -152,7 +152,7 @@ export function createShowScheduleViewModel(
     scheduleId: scheduleId,
   };
 
-  const photo = schedule?.photo;
+  const photo = schedule.photo;
   if (photo) {
     vm.thumbnailUrl = getThumbnailUrl(photo);
     vm.photoUrl = getPhotoUrl(photo);

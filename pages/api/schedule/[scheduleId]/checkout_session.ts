@@ -3,6 +3,7 @@ import { stripeNode } from "@/utils/stripe-server";
 import { db } from "@/lib/firebase-admin";
 import { FIRSchedule, FIRUser } from "@superfitapp/superfitjs";
 import { fetchOrCreateStripeCustomerIdForConnectAccount } from "@/utils/stripe-server";
+import { CheckoutType } from "./activity/[activityId]/CheckoutType";
 
 export default withApiAuthRequired(async function ProtectedRoute(req, res) {
   const userSession = getSession(req, res);
@@ -69,6 +70,9 @@ export default withApiAuthRequired(async function ProtectedRoute(req, res) {
   const session = await stripeNode.checkout.sessions.create(
     {
       payment_method_types: ["card"],
+      metadata: {
+        checkoutType: CheckoutType.Schedule,
+      },
       line_items: [
         {
           price: stripePrice.priceId,
@@ -109,4 +113,5 @@ export interface CheckoutResponse {
   message?: string;
   sessionId?: string;
   connectStripeAccountId?: string;
+  customerEmail?: string;
 }

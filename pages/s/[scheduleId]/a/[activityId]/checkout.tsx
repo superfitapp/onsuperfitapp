@@ -4,14 +4,11 @@ import { Center, Spinner } from "@chakra-ui/react";
 import { Box, useColorModeValue as mode } from "@chakra-ui/react";
 import * as React from "react";
 import Error from "next/error";
-import { getSession, useUser } from "@auth0/nextjs-auth0";
+import { getSession } from "@auth0/nextjs-auth0";
 import { GetServerSidePropsContext } from "next";
-import { ShowFIRScheduleResponse } from "@/lib/db-public";
 import useSWR from "swr";
 import fetcher from "@/utils/fetcher";
-import { withPageAuthRequired } from "@auth0/nextjs-auth0";
 import { CheckoutResponse } from "pages/api/schedule/[scheduleId]/checkout_session";
-import { fetchShowSchedule } from "@/lib/schedule";
 
 export interface CheckoutActivityProps {
   scheduleId: string;
@@ -35,6 +32,8 @@ export default function CheckoutActivity(
       revalidateOnMount: true,
     }
   );
+
+  console.log(response?.customerEmail);
 
   if (
     // false &&

@@ -7,10 +7,11 @@ import {
   stripeNode,
 } from "@/utils/stripe-server";
 import { fetchScheduleOwnerConnectData } from "@/lib/db-authed";
+import { CheckoutType } from "./CheckoutType";
 export default async function CheckoutActivity(req, res) {
   const userSession = getSession(req, res);
   const user = userSession?.user;
-  let userId = req.user?.sub;
+  let userId = user?.sub;
 
   let activityId = req.query["activityId"];
   let scheduleId = req.query["scheduleId"];
@@ -56,13 +57,15 @@ export default async function CheckoutActivity(req, res) {
       connectId
     );
   }
-
+  
   let unitAmount = 100;
   let fee = unitAmount * 0.05;
   const session = await stripeNode.checkout.sessions.create(
     {
+      customer: currentUserCustomerId,
       payment_method_types: ["card"],
       metadata: {
+        checkoutType: CheckoutType.Activity,
         ownerId: owner.userId,
         userId: userId,
         activityId: activityId,
@@ -85,7 +88,6 @@ export default async function CheckoutActivity(req, res) {
           quantity: 1,
         },
       ],
-      customer: currentUserCustomerId,
       allow_promotion_codes: true,
       mode: "payment",
       success_url: `https://superfitapp.com/s/${scheduleId}`,
@@ -100,6 +102,7 @@ export default async function CheckoutActivity(req, res) {
     type: "checkout",
     sessionId: session.id,
     connectStripeAccountId: connectId,
+    customerEmail: user?.email,
   };
 
   res.json(response);

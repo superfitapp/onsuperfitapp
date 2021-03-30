@@ -80,6 +80,7 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
     {
       initialData: props.data,
       revalidateOnMount: user != undefined,
+      revalidateOnFocus: false
     }
   );
 
@@ -110,7 +111,7 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
     }
   }
 
-  if (data) {
+  if (data && data.schedule) {
     activityViewModel = createShowActivityViewModel(data);
     scheduleViewModel = createShowScheduleViewModel(
       props.scheduleId,
