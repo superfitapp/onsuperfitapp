@@ -10,7 +10,7 @@ export interface SFThemeProps {
 export function createThemeFromSchedule(schedule?: ShowFIRSchedule): any {
   return createTheme({
     primaryHex: schedule?.color,
-    secondaryHex: schedule?.profile?.secondaryColor,
+    secondaryHex: schedule?.secondaryColor,
   });
 }
 

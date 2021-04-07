@@ -19,7 +19,7 @@ import { HiMail } from "react-icons/hi";
 import { SiInstagram, SiTiktok } from "react-icons/si";
 
 interface OwnerWithSocialProps extends StackProps {
-  name: string;
+  name?: string;
   iconColor: string;
   profile?: ScheduleProfile;
 }
@@ -49,13 +49,15 @@ export const OwnerWithSocial = (props: OwnerWithSocialProps) => {
             spacing="3"
             alignItems="center"
           >
-            <Text
-              fontSize="md"
-              fontWeight="medium"
-              color={useColorModeValue("gray.500", "gray.200")}
-            >
-              Created by {name}
-            </Text>
+            {name && (
+              <Text
+                fontSize="md"
+                fontWeight="medium"
+                color={useColorModeValue("gray.500", "gray.200")}
+              >
+                Created by {name}
+              </Text>
+            )}
 
             <HStack mt="0" spacing="2">
               {profile.email && (

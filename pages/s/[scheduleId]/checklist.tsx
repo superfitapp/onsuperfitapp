@@ -1,6 +1,7 @@
 import Layout from "@/components/schedule-layout";
 import Confetti from "react-dom-confetti";
 import { routerLoading } from "@/utils/router-loading";
+import { OwnerWithSocial } from "@/partials/OwnerWithSocial";
 import {
   Box,
   Button,
@@ -279,7 +280,7 @@ export default function ScheduleChecklist(
                         >
                           <StepContent>
                             <>
-                              <Box position="fixed" w="full" h="full">
+                              <Box position="fixed">
                                 <Confetti
                                   active={confettiShown}
                                   config={{
@@ -304,20 +305,16 @@ export default function ScheduleChecklist(
                               </Box>
                               <Stack shouldWrapChildren spacing="4">
                                 <Text fontSize="md">
-                                  Follow me on social media
+                                  Follow {vm?.scheduleTitle} on social media
                                 </Text>
+                                <Box mb="4">
+                                  <OwnerWithSocial
+                                    profile={data?.schedule?.profile}
+                                    iconColor={vm?.socialIconsColor}
+                                  ></OwnerWithSocial>
+                                </Box>
 
                                 <HStack>
-                                  {/* <Button
-                                    display={
-                                      activeStep == 0 ? "none" : "inherit"
-                                    }
-                                    onClick={prevStep}
-                                    isDisabled={activeStep == 0}
-                                    variant="ghost"
-                                  >
-                                    Back
-                                  </Button> */}
                                   <Button
                                     isLoading={isLoading}
                                     onClick={nextStep}
