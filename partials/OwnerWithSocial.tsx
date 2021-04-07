@@ -2,7 +2,6 @@ import {
   Box,
   StackProps,
   HStack,
-  Img,
   Stack,
   Text,
   Link,
@@ -10,20 +9,24 @@ import {
   VisuallyHidden,
   Center,
 } from "@chakra-ui/react";
+import { ScheduleProfile } from "@superfitapp/superfitjs";
 
 import * as React from "react";
-import { FaTwitter, FaLinkedinIn, FaInstagram } from "react-icons/fa";
-import { TextWithIcon } from "../partials/TextWithIcon";
-import { VerifiedBadge } from "../partials/VerifiedBadge";
+import { BiLink } from "react-icons/bi";
+import { FaTwitter, FaYoutube, FaLinkedin } from "react-icons/fa";
+import { HiMail } from "react-icons/hi";
+
+import { SiInstagram, SiTiktok } from "react-icons/si";
 
 interface OwnerWithSocialProps extends StackProps {
-  image: string;
   name: string;
-  role: string;
+  iconColor: string;
+  profile?: ScheduleProfile;
 }
 
 export const OwnerWithSocial = (props: OwnerWithSocialProps) => {
-  const { image, name, role, ...rest } = props;
+  const { name, profile, iconColor, ...rest } = props;
+
   return (
     <Stack
       spacing={{ base: "8", md: "4" }}
@@ -37,15 +40,6 @@ export const OwnerWithSocial = (props: OwnerWithSocialProps) => {
         spacing="3"
         align={{ base: "flex-start", md: "center" }}
       >
-        {/* <Img
-          src=""
-          alt=""
-          objectFit="cover"
-          rounded="full"
-          shadow="md"
-          w="12"
-          h="12"
-        /> */}
         <Box flex="1">
           <Stack
             justify="space-between"
@@ -53,66 +47,132 @@ export const OwnerWithSocial = (props: OwnerWithSocialProps) => {
             mb={{ base: "3", md: "1" }}
             color={useColorModeValue("gray.800", "gray.400")}
             spacing="3"
-            alignItems={{ base: "flex-start", md: "center" }}
+            alignItems="center"
           >
             <Text
               fontSize="md"
-              fontWeight="semibold"
+              fontWeight="medium"
               color={useColorModeValue("gray.500", "gray.200")}
             >
-              {name}
+              Created by {name}
             </Text>
 
             <HStack mt="0" spacing="2">
-              <Link
-                isExternal
-                color={useColorModeValue("blue.600", "blue.300")}
-                href=""
-              >
-                <VisuallyHidden>{`${name}'s Twitter page`}</VisuallyHidden>
-                <Center w="40px" h="40px" bg="rgba(0,0,0,0.05)" rounded="full">
-                  <FaTwitter aria-hidden />
-                </Center>
-              </Link>
-              <Link
-                isExternal
-                color={useColorModeValue("blue.600", "blue.300")}
-                href=""
-              >
-                <VisuallyHidden>{`${name}'s Twitter page`}</VisuallyHidden>
-                <Center w="40px" h="40px" bg="rgba(0,0,0,0.05)" rounded="full">
-                  <FaInstagram aria-hidden />
-                </Center>
-              </Link>
-              <Link
-                isExternal
-                color={useColorModeValue("blue.600", "blue.300")}
-                href=""
-              >
-                <VisuallyHidden>{`${name}'s Twitter page`}</VisuallyHidden>
-                <Center w="40px" h="40px" bg="rgba(0,0,0,0.05)" rounded="full">
-                  <FaLinkedinIn aria-hidden />
-                </Center>
-              </Link>
+              {profile.email && (
+                <Link
+                  isExternal
+                  color={iconColor}
+                  href={`mailto:${profile.email}`}
+                >
+                  <VisuallyHidden>{`${name}'s email`}</VisuallyHidden>
+                  <Center
+                    w="40px"
+                    h="40px"
+                    bg="rgba(0,0,0,0.05)"
+                    rounded="full"
+                  >
+                    <HiMail aria-hidden />
+                  </Center>
+                </Link>
+              )}
+              {profile.twitterUsername && (
+                <Link
+                  isExternal
+                  color={iconColor}
+                  href={`https://twitter.com/${profile.twitterUsername}`}
+                >
+                  <VisuallyHidden>{`${name}'s Twitter page`}</VisuallyHidden>
+                  <Center
+                    w="40px"
+                    h="40px"
+                    bg="rgba(0,0,0,0.05)"
+                    rounded="full"
+                  >
+                    <FaTwitter aria-hidden />
+                  </Center>
+                </Link>
+              )}
+              {profile.youtubeUrl && (
+                <Link isExternal color={iconColor} href={profile.youtubeUrl}>
+                  <VisuallyHidden>{`${name}'s YouTube page`}</VisuallyHidden>
+                  <Center
+                    w="40px"
+                    h="40px"
+                    bg="rgba(0,0,0,0.05)"
+                    rounded="full"
+                  >
+                    <FaYoutube aria-hidden />
+                  </Center>
+                </Link>
+              )}
+              {profile.instagramUsername && (
+                <Link
+                  isExternal
+                  color={iconColor}
+                  href={`https://instagram.com/${profile.instagramUsername}`}
+                >
+                  <VisuallyHidden>{`${name}'s Instagram page`}</VisuallyHidden>
+                  <Center
+                    w="40px"
+                    h="40px"
+                    bg="rgba(0,0,0,0.05)"
+                    rounded="full"
+                  >
+                    <SiInstagram aria-hidden />
+                  </Center>
+                </Link>
+              )}
+              {profile.tiktokUsername && (
+                <Link
+                  isExternal
+                  color={iconColor}
+                  href={`https://www.tiktok.com/@${profile.tiktokUsername}`}
+                >
+                  <VisuallyHidden>{`${name}'s TikTok page`}</VisuallyHidden>
+                  <Center
+                    w="40px"
+                    h="40px"
+                    bg="rgba(0,0,0,0.05)"
+                    rounded="full"
+                  >
+                    <SiTiktok aria-hidden />
+                  </Center>
+                </Link>
+              )}
+              {profile.linkedinUsername && (
+                <Link
+                  isExternal
+                  color={iconColor}
+                  href={`https://linkedin.com/in/${profile.linkedinUsername}`}
+                >
+                  <VisuallyHidden>{`${name}'s LinkedIn page`}</VisuallyHidden>
+                  <Center
+                    w="40px"
+                    h="40px"
+                    bg="rgba(0,0,0,0.05)"
+                    rounded="full"
+                  >
+                    <FaLinkedin aria-hidden />
+                  </Center>
+                </Link>
+              )}
+              {profile.websiteUrl && (
+                <Link isExternal color={iconColor} href={profile.websiteUrl}>
+                  <VisuallyHidden>{`Custom website/personal page`}</VisuallyHidden>
+                  <Center
+                    w="40px"
+                    h="40px"
+                    bg="rgba(0,0,0,0.05)"
+                    rounded="full"
+                  >
+                    <BiLink aria-hidden />
+                  </Center>
+                </Link>
+              )}
             </HStack>
-            {/* <VerifiedBadge /> */}
           </Stack>
         </Box>
       </Stack>
-      {/* <HStack spacing="4">
-<Button
-  variant="outline"
-  leftIcon={<Box as={HiPencil} fontSize="lg" />}
->
-  Edit
-</Button>
-<Button
-  colorScheme="blue"
-  leftIcon={<Box as={HiCheck} fontSize="lg" />}
->
-  Approve
-</Button>
-</HStack> */}
     </Stack>
   );
 };

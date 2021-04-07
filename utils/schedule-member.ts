@@ -1,5 +1,6 @@
 import { FIRScheduleMember } from "@superfitapp/superfitjs";
 
+// TODO:// this should be tested
 export function isPayingMember(scheduleMember: FIRScheduleMember): boolean {
   const info = scheduleMember.membershipInfo;
 

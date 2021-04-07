@@ -1,7 +1,4 @@
-import {
-  ShowFIRActivityResponse,
-  ShowFIRScheduleResponse,
-} from "../lib/db-public";
+import { ShowFIRActivityResponse } from "../lib/db-public";
 import {
   getPhotoUrl,
   getQueryString,
@@ -87,7 +84,7 @@ export function createShowScheduleViewModel(
   scheduleMember?: FIRScheduleMember
 ): ShowScheduleViewModel {
   const primaryColor = schedule.color || "#303030";
-  const secondaryColor = schedule.profile.secondaryColor || null;
+  const secondaryColor = schedule.secondaryColor || null;
   const secondaryColorLightRGBA = hexToRGB(secondaryColor, 0.15) || null;
   const anyoneCanSignup = schedule.signupType == "anyoneCanSignUp";
 
@@ -132,17 +129,12 @@ export function createShowScheduleViewModel(
     primaryColorLightRGBA: hexToRGB(primaryColor, 0.15),
     secondaryColorLightRGBA: secondaryColorLightRGBA,
     onPrimaryTextColor: isDark(primaryColor) ? "white" : "#303030",
-    socialIconsColor: isDark(primaryColor)
-      ? hexToRGB(primaryColor, 0.15)
-      : hexToRGB(primaryColor, 0.75),
+    socialIconsColor: hexToRGB(primaryColor, 0.75),
     introText: schedule.profile.about || null,
     backgroundColor: schedule.profile.backgroundColor || null,
     linksBackgroundColor: schedule.profile.linksBackgroundColor || null,
     ownerDisplayName: schedule.ownerDisplayName || null,
     premiumPriceTitle: premiumPriceTitle,
-    // linksTextColor: data.schedule.profile.linksTextColor || null,
-    // linksBorder: `${data.schedule.profile.linksBorderWidth}px solid ${data.schedule.profile.linksBorderColor}`,
-    // linksBorderRadius: `${config.linksBorderRadius}px`,
     links: links.sort((x, y) => x.order - y.order),
     joinSchedulePaidCta: joinSchedulePaidCta,
     joinScheduleFreeCta: joinScheduleFreeCta,

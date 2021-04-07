@@ -283,9 +283,9 @@ function SchedulePage(props: ScheduleProps, notFound: boolean) {
                   <Box mt="8">
                     <OwnerWithSocial
                       mt="8"
-                      name={`Created by ${ownerDisplayName}`}
-                      image="https://images.unsplash.com/photo-1492633423870-43d1cd2775eb?ixid=MXwxMjA3fDB8MHxzZWFyY2h8MXx8bGFkeSUyMHNtaWxpbmd8ZW58MHx8MHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
-                      role="Developer Advocate"
+                      name={ownerDisplayName}
+                      profile={schedule.profile}
+                      iconColor={vm.socialIconsColor}
                     ></OwnerWithSocial>
                   </Box>
                 )}
