@@ -11,6 +11,8 @@ import {
 } from "@superfitapp/superfitjs";
 import logger from "@/lib/LoggerService";
 
+// Note: be careful- superfit firebase serverless has exact logic for legacy
+// ios apps. this logicc is just for next.js web application.
 export default withApiAuthRequired(async function ProtectedRoute(req, res) {
   const session = getSession(req, res);
   const userId = session?.user?.sub;
@@ -55,6 +57,7 @@ export default withApiAuthRequired(async function ProtectedRoute(req, res) {
       email: payload.email,
       username: payload.migratedUsername || `${email}${randomNumber}`,
     };
+
     if (payload.migratedBillingInfo) {
       firUser["billingInfo"] = payload.migratedBillingInfo;
     }

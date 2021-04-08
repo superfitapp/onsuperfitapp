@@ -60,11 +60,11 @@ export const OwnerWithSocial = (props: OwnerWithSocialProps) => {
             )}
 
             <HStack mt="0" spacing="2">
-              {profile.email && (
+              {profile?.email && (
                 <Link
                   isExternal
                   color={iconColor}
-                  href={`mailto:${profile.email}`}
+                  href={`mailto:${profile?.email}`}
                 >
                   <VisuallyHidden>{`${name}'s email`}</VisuallyHidden>
                   <Center
@@ -77,11 +77,11 @@ export const OwnerWithSocial = (props: OwnerWithSocialProps) => {
                   </Center>
                 </Link>
               )}
-              {profile.twitterUsername && (
+              {profile?.twitterUsername && (
                 <Link
                   isExternal
                   color={iconColor}
-                  href={`https://twitter.com/${profile.twitterUsername}`}
+                  href={`https://twitter.com/${profile?.twitterUsername}`}
                 >
                   <VisuallyHidden>{`${name}'s Twitter page`}</VisuallyHidden>
                   <Center
@@ -94,8 +94,8 @@ export const OwnerWithSocial = (props: OwnerWithSocialProps) => {
                   </Center>
                 </Link>
               )}
-              {profile.youtubeUrl && (
-                <Link isExternal color={iconColor} href={profile.youtubeUrl}>
+              {profile?.youtubeUrl && (
+                <Link isExternal color={iconColor} href={profile?.youtubeUrl}>
                   <VisuallyHidden>{`${name}'s YouTube page`}</VisuallyHidden>
                   <Center
                     w="40px"
@@ -107,11 +107,11 @@ export const OwnerWithSocial = (props: OwnerWithSocialProps) => {
                   </Center>
                 </Link>
               )}
-              {profile.instagramUsername && (
+              {profile?.instagramUsername && (
                 <Link
                   isExternal
                   color={iconColor}
-                  href={`https://instagram.com/${profile.instagramUsername}`}
+                  href={`https://instagram.com/${profile?.instagramUsername}`}
                 >
                   <VisuallyHidden>{`${name}'s Instagram page`}</VisuallyHidden>
                   <Center
@@ -124,11 +124,11 @@ export const OwnerWithSocial = (props: OwnerWithSocialProps) => {
                   </Center>
                 </Link>
               )}
-              {profile.tiktokUsername && (
+              {profile?.tiktokUsername && (
                 <Link
                   isExternal
                   color={iconColor}
-                  href={`https://www.tiktok.com/@${profile.tiktokUsername}`}
+                  href={`https://www.tiktok.com/@${profile?.tiktokUsername}`}
                 >
                   <VisuallyHidden>{`${name}'s TikTok page`}</VisuallyHidden>
                   <Center
@@ -141,11 +141,11 @@ export const OwnerWithSocial = (props: OwnerWithSocialProps) => {
                   </Center>
                 </Link>
               )}
-              {profile.linkedinUsername && (
+              {profile?.linkedinUsername && (
                 <Link
                   isExternal
                   color={iconColor}
-                  href={`https://linkedin.com/in/${profile.linkedinUsername}`}
+                  href={`https://linkedin.com/in/${profile?.linkedinUsername}`}
                 >
                   <VisuallyHidden>{`${name}'s LinkedIn page`}</VisuallyHidden>
                   <Center
@@ -158,8 +158,8 @@ export const OwnerWithSocial = (props: OwnerWithSocialProps) => {
                   </Center>
                 </Link>
               )}
-              {profile.websiteUrl && (
-                <Link isExternal color={iconColor} href={profile.websiteUrl}>
+              {profile?.websiteUrl && (
+                <Link isExternal color={iconColor} href={profile?.websiteUrl}>
                   <VisuallyHidden>{`Custom website/personal page`}</VisuallyHidden>
                   <Center
                     w="40px"

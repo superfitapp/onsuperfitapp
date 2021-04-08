@@ -31,7 +31,7 @@ export default function Home() {
       router.push(returnTo);
     }
   }
-  
+
   return (
     <>
       <NextSeo canonical="https://superfitapp.com" />
@@ -494,15 +494,9 @@ export default function Home() {
             <div className="container">
               <div className="row align-items-center justify-content-between">
                 <div className="col-12 col-md-6 col-lg-5">
-                  <a
-                    className="badge rounded-pill bg-warning-soft"
-                    href="blog-search.html"
-                  >
-                    <span className="h6 text-uppercase">New</span>
-                  </a>
                   {/* Heading */}
                   <h2 className="display-3 fw-bold text-white mb-6 mb-md-8">
-                    Introducing Paid Memberships.
+                    Offer Paid Memberships.
                   </h2>
                   <p className="text-muted lead mb-6">
                     <span className="text-white fw-bold">Simple.</span> Add a
@@ -513,7 +507,6 @@ export default function Home() {
                     <span className="text-white fw-bold">Secure.</span> Process
                     payments with Stripe— the leading payment processor for
                     companies like Peloton, Lyft, Kickstarter, Postmates and{" "}
-                    {/* <Link > */}
                     <a
                       target="javascript:(void);"
                       href="https://stripe.com/customers"
@@ -523,14 +516,13 @@ export default function Home() {
                     </a>
                     .
                   </p>
-
-                  {/* <Link > */}
                   <a
-                    href="/paid-memberships"
+                  hidden
+                    href="https://superfitapp.com/pro?recurringInterval=month"
                     className="btn  btn-rounded btn-success shadow lift mt-4"
                   >
                     <span className="h6 text-uppercase fw-bold">
-                      Learn More
+                      Upgrade to Personal Pro
                     </span>
                   </a>
                   {/* </Link> */}
@@ -609,18 +601,18 @@ export default function Home() {
             </div>
 
             <div className="container-fluid">
-              <div className="row d-flex justify-content-between gx-0">
-                <div className="col-12 col-md-4">
+              <div className="row d-flex">
+                <div className="col-12 col-md-6">
                   <Free />
                 </div>
 
-                <div className="col-12 col-md-4  ms-md-n3">
+                <div className="col-12 col-md-6  ms-md-n3">
                   <PersonalPro />
                 </div>
 
-                <div className="col-12 col-md-4 ms-md-n3">
+                {/* <div className="col-12 col-md-4 ms-md-n3">
                   <Commerce />
-                </div>
+                </div> */}
               </div>
             </div>
           </section>
@@ -674,53 +666,12 @@ export default function Home() {
                                 We offer a generous free tier that's much better
                                 than a free trial! You can add as many workouts
                                 and clients into one workout "schedule" for
-                                free. <br />
-                                <br />
-                                SuperFit currently does not serve ads for free
-                                users; instead, any exercises and workouts
-                                published is visible on our community tab. Other
-                                users can view, start, or copy and "remix"
-                                public workouts.
+                                free.
                               </p>
                             </div>
                           </div>
                         </div>
-                        <div className="list-group-item">
-                          {/* Toggle */}
-                          <a
-                            className="d-flex align-items-center text-reset text-decoration-none"
-                            data-bs-toggle="collapse"
-                            href="#featuresTwo"
-                            role="button"
-                            aria-expanded="false"
-                            aria-controls="featuresTwo"
-                          >
-                            <div className="me-auto">
-                              {/* Title */}
-                              <p className="font-weight-bold mb-0">
-                                Is SuperFit on Android?
-                              </p>
-                            </div>
-                            {/* Chevron */}
-                            <span className="collapse-chevron text-muted ms-4">
-                              <i className="fe fe-lg fe-chevron-down" />
-                            </span>
-                          </a>{" "}
-                          {/* Collapse */}
-                          <div
-                            className="collapse"
-                            id="featuresTwo"
-                            data-parent="#featuresAccordion"
-                          >
-                            <div className="py-5 py-md-6">
-                              <p>
-                                Not yet. While the client app is coming in 2021,
-                                our focus is currently to guarantee a great
-                                experience on iOS and web.
-                              </p>
-                            </div>
-                          </div>
-                        </div>
+
                         <div className="list-group-item">
                           {/* Toggle */}
                           <a

@@ -43,11 +43,11 @@ function Footer({ user, loading, footerSectionClassList, footerClassList }) {
               <h6 className="fw-bold text-uppercase text-gray-700">Product</h6>
               {/* List */}
               <ul className="list-unstyled text-muted mb-6 mb-md-8 mb-lg-0">
-                <li className="mb-3">
+                {/* <li className="mb-3">
                   <a href="/paid-memberships" className="text-reset">
                     Paid Memberships
                   </a>
-                </li>
+                </li> */}
                 <li className="mb-3">
                   <a
                     target="_blank"

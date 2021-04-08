@@ -22,10 +22,10 @@ export default function PersonalPro() {
               <span className="h2 mb-0 mt-2">$</span>
               <span
                 className="price display-2 mb-0"
-                data-annual={30}
-                data-monthly={40}
+                data-annual={15}
+                data-monthly={20}
               >
-                30
+                15
               </span>
               <span className="h2 align-self-end mb-1">/mo</span>
             </div>
@@ -59,14 +59,6 @@ export default function PersonalPro() {
               </p>
             </div>
             <div className="d-flex">
-              {/* Check */}
-              <div className="badge badge-rounded-circle bg-success-soft mt-1 me-4">
-                <i className="fe fe-check" />
-              </div>
-              <p>Priority Video Call Support</p>
-            </div>
-            <div className="d-flex">
-              {/* Check */}
               <div className="badge badge-rounded-circle bg-success-soft mt-1 me-4">
                 <i className="fe fe-check" />
               </div>
@@ -76,7 +68,7 @@ export default function PersonalPro() {
         </div>
       </div>
       <a
-        href="https://on.superfitapp.com/pro?recurringInterval=month"
+        href="https://superfitapp.com/pro?recurringInterval=month"
         className="card-btn btn w-100 btn-lg btn-success"
       >
         Get Personal Pro

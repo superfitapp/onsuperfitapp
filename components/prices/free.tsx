@@ -65,19 +65,6 @@ export default function Free() {
               </div>
               <p>Upload custom exercises</p>
             </div>
-            <div className="d-flex">
-              <div className="badge badge-rounded-circle bg-info-soft mt-1 me-4">
-                <i className="fe fe-check" />
-              </div>
-              <p>Big community exercise library</p>
-            </div>
-            <div className="d-flex">
-              {/* Check */}
-              <div className="badge badge-rounded-circle bg-info-soft mt-1 me-4">
-                <i className="fe fe-check" />
-              </div>
-              <p>Youtube video link integration</p>
-            </div>
           </div>
         </div>
       </div>
