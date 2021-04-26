@@ -4,16 +4,19 @@ import {
   AccessLevel,
   FIRActivity,
   FIRInstructionSet,
+  FIRProgressLog,
   FIRSchedule,
   FIRScheduleMember,
+  FIRUser,
   ShowFIRSchedule,
   VisibilityStatus,
 } from "@superfitapp/superfitjs";
 import { scheduleMemberSnap } from "./schedule-member";
 import { ShowFIRActivityResponse } from "./db-public";
 import { createShowSchedule } from "./schedule";
+import { progressLogSnap } from "./progress-log";
 
-export async function fetchShowActivity(
+export async function fetchActivity(
   scheduleId: string,
   activityId: string,
   userId?: string
@@ -31,37 +34,30 @@ export async function fetchShowActivity(
   if (!currentSchedule) {
     throw Error("schedule not found.");
   }
-  let showSchedule: ShowFIRSchedule = createShowSchedule(currentSchedule);
 
-  var scheduleMember: FIRScheduleMember | undefined = null;
+  // not public schedule.
+  if (currentSchedule.visibilityStatus == VisibilityStatus.Archived) {
+    throw Error("activity no longer available");
+  }
+
+  let showSchedule: ShowFIRSchedule = createShowSchedule(currentSchedule);
+  let scheduleMember: FIRScheduleMember | undefined = null;
+  let userLog: FIRProgressLog | undefined = null;
+
   if (userId) {
     try {
       const snap = await scheduleMemberSnap(userId, scheduleId);
       if (snap && snap.data()) {
         scheduleMember = snap.data() as FIRScheduleMember;
+
+        let logSnap = await progressLogSnap({
+          activityId: activityId,
+          userId: userId,
+        });
+
+        userLog = logSnap?.data() as FIRProgressLog;
       }
     } catch {}
-  }
-
-  // not public schedule.
-  if (currentSchedule.visibilityStatus != VisibilityStatus.Public) {
-    if (!userId) {
-      // and not a user
-      return {
-        schedule: currentSchedule,
-        activity: null,
-      };
-    } else {
-      // not public, not a member
-      if (!scheduleMember) {
-        return {
-          schedule: currentSchedule,
-          activity: null,
-        };
-      } else {
-        // is a member
-      }
-    }
   }
 
   // is a public schedule
@@ -79,9 +75,17 @@ export async function fetchShowActivity(
     throw Error("activity not found.");
   }
 
+  const accessOptions = accessOptionsForActivity({
+    activity: activity,
+    member: scheduleMember,
+    userLog: userLog,
+  });
+
   if (activity.access != AccessLevel.all && !scheduleMember) {
     // not public activity, not a member
     return {
+      hasAccess: false,
+      accessOptions: accessOptions,
       schedule: showSchedule,
       scheduleMember: null,
       activity: activity,
@@ -109,10 +113,28 @@ export async function fetchShowActivity(
     }
   }
   return {
+    hasAccess: true,
+    accessOptions: accessOptions,
     schedule: showSchedule,
     activity: activity,
     instructionSet: instructionSet,
     scheduleMember: scheduleMember,
     accessLevel: activity.access,
   };
+}
+
+function accessOptionsForActivity(data: {
+  activity: FIRActivity;
+  member?: FIRScheduleMember;
+  userLog?: FIRProgressLog;
+}): ActivityAccessOption[] {
+  let options: ActivityAccessOption[] = [];
+
+  return options;
+}
+
+export enum ActivityAccessOption {
+  member = "member",
+  paidMember = "paidMember",
+  oneTimePurchase = "oneTimePurchase",
 }

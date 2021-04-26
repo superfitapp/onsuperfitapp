@@ -30,11 +30,7 @@ import * as React from "react";
 import { ListItem } from "@/partials/ListItem";
 import { List } from "@/partials/List";
 
-import {
-  getShowActivity,
-  ShowFIRActivityResponse,
-  ShowFIRScheduleResponse,
-} from "@/lib/db-public";
+import { getShowActivity, ShowFIRActivityResponse } from "@/lib/db-public";
 import ReactPlayer from "react-player/lazy";
 
 import {
@@ -80,7 +76,7 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
     {
       initialData: props.data,
       revalidateOnMount: user != undefined,
-      revalidateOnFocus: false
+      revalidateOnFocus: false,
     }
   );
 
@@ -299,6 +295,7 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
                   arrowDirection={ArrowDirection.forward}
                 ></ScheduleRow>
 
+                {/* not a paid member and schedule allows joining and access level is public */}
                 {(!scheduleViewModel?.userIsPaidMember || false) &&
                   scheduleViewModel?.joinSchedulePaidCta &&
                   props?.data?.accessLevel != AccessLevel.all && (
@@ -352,6 +349,7 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
 
               <VStack spacing={{ base: "6", md: "8" }} align="stretch">
                 {props?.data?.accessLevel == AccessLevel.all && (
+                  // feature is hidden
                   <Flex hidden w="full" mx="auto" justifyContent="center">
                     <HStack
                       className="group"
@@ -394,6 +392,7 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
                   </Flex>
                 )}
 
+                {/* logic not complete yet, hide lock */}
                 <Flex hidden w="full" mx="auto" justifyContent="center">
                   <HStack
                     className="group"
@@ -442,12 +441,7 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
                                 <ListItem
                                   key={`${block.uniqueId}`}
                                   title=""
-                                  // fontSize="large"
-                                  // subTitle={`${length} Exercise${
-                                  //   length > 1 ? "s" : ""
-                                  // }`}
                                   subTitle=""
-                                  color="green"
                                   icon={
                                     <Center>
                                       <Box
