@@ -79,6 +79,7 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
       revalidateOnFocus: false,
     }
   );
+  console.log(data)
 
   var activityViewModel: ActivityViewModel = null;
   var scheduleViewModel: ShowScheduleViewModel = null;

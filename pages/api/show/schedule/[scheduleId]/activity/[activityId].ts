@@ -1,5 +1,4 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { fetchShowSchedule } from "@/lib/schedule";
 import rateLimit from "@/utils/rate-limit";
 import { fetchActivity } from "@/lib/activity";
 

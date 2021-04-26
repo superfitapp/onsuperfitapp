@@ -5,6 +5,7 @@ import {
   FIRInstructionSet,
   FIRScheduleMember,
   VisibilityStatus,
+  FIRProgressLog,
 } from "@superfitapp/superfitjs";
 import axios from "axios";
 import { fetchActivity } from "./activity";
@@ -24,6 +25,7 @@ export interface ShowFIRActivityResponse {
   schedule: ShowFIRSchedule;
   scheduleMember?: FIRScheduleMember;
   instructionSet?: FIRInstructionSet;
+  userLog?: FIRProgressLog
 }
 
 export async function getShowActivity(
