@@ -15,7 +15,6 @@ import { scheduleMemberSnap } from "./schedule-member";
 import { ShowFIRActivityResponse } from "./db-public";
 import { createShowSchedule } from "./schedule";
 import { progressLogSnap } from "./progress-log";
-import ActivityId from "pages/api/show/schedule/[scheduleId]/activity/[activityId]";
 import { hasValidMembership } from "./memberships";
 
 export async function fetchActivity(

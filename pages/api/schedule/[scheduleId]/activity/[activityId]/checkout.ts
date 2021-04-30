@@ -1,4 +1,4 @@
-import { withApiAuthRequired, getSession } from "@auth0/nextjs-auth0";
+import { getSession } from "@auth0/nextjs-auth0";
 import { db } from "@/lib/firebase-admin";
 import { CheckoutResponse } from "../../checkout_session";
 import { FIRActivity, FIRUser } from "@superfitapp/superfitjs";
@@ -8,6 +8,7 @@ import {
 } from "@/utils/stripe-server";
 import { fetchScheduleOwnerConnectData } from "@/lib/db-authed";
 import { CheckoutType } from "./CheckoutType";
+import { getPhotoUrl } from "@/utils/helpers";
 export default async function CheckoutActivity(req, res) {
   const userSession = getSession(req, res);
   const user = userSession?.user;
@@ -57,9 +58,18 @@ export default async function CheckoutActivity(req, res) {
       connectId
     );
   }
-  
+
   let unitAmount = 100;
   let fee = unitAmount * 0.05;
+
+  let description = `${activity.title}${
+    activity?.description ? `: ${activity?.description}` : ""
+  }`;
+
+  let images = [activity.photo ? getPhotoUrl(activity.photo) : null].filter(
+    (item) => item
+  );
+
   const session = await stripeNode.checkout.sessions.create(
     {
       customer: currentUserCustomerId,
@@ -81,8 +91,8 @@ export default async function CheckoutActivity(req, res) {
             unit_amount: unitAmount,
             product_data: {
               name: activity.title,
-              description: truncate(activity.description || "", 30),
-              // images: ["https://example.com/t-shirt.png"],
+              description: truncate(description, 200),
+              images: images,
             },
           },
           quantity: 1,
@@ -90,8 +100,8 @@ export default async function CheckoutActivity(req, res) {
       ],
       allow_promotion_codes: true,
       mode: "payment",
-      success_url: `https://superfitapp.com/s/${scheduleId}`,
-      cancel_url: `https://superfitapp.com/s/${scheduleId}`,
+      success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/s/${scheduleId}/a/${activityId}`,
+      cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/s/${scheduleId}/a/${activityId}`,
     },
     {
       stripeAccount: connectId,

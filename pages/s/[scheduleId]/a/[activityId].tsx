@@ -25,7 +25,7 @@ import {
   Circle,
   Link,
 } from "@chakra-ui/react";
-import { BiHeartCircle, BiRightArrowAlt } from "react-icons/bi";
+import { BiHeart, BiHeartCircle, BiRightArrowAlt } from "react-icons/bi";
 import * as React from "react";
 import { ListItem } from "@/partials/ListItem";
 import { List } from "@/partials/List";
@@ -49,7 +49,7 @@ import { useUser } from "@auth0/nextjs-auth0";
 import { useRouter } from "next/router";
 import { routerLoading } from "@/utils/router-loading";
 
-import { FaLock } from "react-icons/fa";
+import { FaHeartbeat, FaLock } from "react-icons/fa";
 import { createThemeFromSchedule } from "@/styles/theme";
 import { LoadingPlaceholder } from "@/partials/LoadingPlaceholder";
 import { NextSeo } from "next-seo";
@@ -79,7 +79,6 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
       revalidateOnFocus: false,
     }
   );
-  console.log(data)
 
   var activityViewModel: ActivityViewModel = null;
   var scheduleViewModel: ShowScheduleViewModel = null;
@@ -132,6 +131,17 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
   const activityPhotoUrl = activityViewModel?.photoUrl || null;
 
   const userTheme = createThemeFromSchedule(data.schedule);
+  const accessOptions = activityViewModel?.accessOptions;
+
+  function selectAccessOption(option: AccessLevel) {
+    switch (option) {
+      case (AccessLevel.members, AccessLevel.members):
+        router.push(`/s/${props.scheduleId}/join`);
+        break;
+      case AccessLevel.oneTimePurchase:
+        router.push(`/s/${props.scheduleId}/a/${props.activityId}/checkout`);
+    }
+  }
 
   return (
     <>
@@ -173,7 +183,7 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
           my={{ base: "2", md: "8" }}
           py={{ base: "8", md: "12" }}
           rounded="md"
-          bg={mode("gray.100", "gray.800")}
+          bg={mode("gray.50", "gray.800")}
         >
           <Box
             maxW={{ base: "xl", md: "7xl" }}
@@ -232,21 +242,32 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
                       align="center"
                       rounded="lg"
                     >
-                      <Box>
-                        <Img
-                          src={activityPhotoUrl}
-                          alt={`Activity image of ${activityTitle}`}
+                      {/* placeholder */}
+                      {!activityPhotoUrl && (
+                        <Box
+                          background="#f1f4f8"
+                          position="absolute"
                           w="full"
                           h="full"
-                          objectFit="cover"
-                          objectPosition="top bottom"
-                        />
-                        <Box position="absolute" w="full" h="full" />
-                      </Box>
+                        ></Box>
+                      )}
+
+                      {activityPhotoUrl && (
+                        <Box>
+                          <Img
+                            src={activityPhotoUrl}
+                            alt={`Activity image of ${activityTitle}`}
+                            w="full"
+                            h="full"
+                            objectFit="cover"
+                            objectPosition="top bottom"
+                          />
+                          <Box position="absolute" w="full" h="full" />
+                        </Box>
+                      )}
                     </Flex>
                   </Box>
                 </AspectRatio>
-
                 <Flex
                   mt="4"
                   align="stretch"
@@ -260,7 +281,10 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
                         // fontWeight="semibold"
                         color={mode("gray.500", "gray.200")}
                       >
-                        {scheduledDateString}
+                        {scheduledDateString}{" "}
+                        {/* {scheduledDateRelative && (
+                          <span>{`- (${scheduledDateRelative})`}</span>
+                        )} */}
                       </Text>
                     )}
                     <Text
@@ -283,7 +307,6 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
                     </Text>
                   </Center>
                 </Flex>
-
                 <ScheduleRow
                   mb={{ base: "4", md: "12" }}
                   mt={{ base: "2", md: "4" }}
@@ -295,71 +318,81 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
                   scheduleTitle={activityViewModel?.scheduleTitle}
                   arrowDirection={ArrowDirection.forward}
                 ></ScheduleRow>
-
-                {/* not a paid member and schedule allows joining and access level is public */}
-                {(!scheduleViewModel?.userIsPaidMember || false) &&
-                  scheduleViewModel?.joinSchedulePaidCta &&
-                  props?.data?.accessLevel != AccessLevel.all && (
-                    <Button
-                      loadingText="Loading Plans"
-                      isLoading={isLoading}
-                      size="lg"
-                      colorScheme="blue"
-                      minH="14"
-                      onClick={() => {
-                        router.push(`/s/${props.scheduleId}/join`);
-                      }}
-                      rightIcon={<BiRightArrowAlt />}
-                    >
-                      {scheduleViewModel?.joinSchedulePaidCta}
-                    </Button>
-                  )}
-
-                <Box
-                  rounded="lg"
-                  mt={{ base: "8", md: "12", lg: "16" }}
-                  as="blockquote"
-                  bg={{ md: mode("white", "gray.700") }}
-                  py={{ base: "4", md: "6" }}
-                  px={{ base: "0", md: "6" }}
-                >
-                  {scheduledDateRelative && (
+                {/* not a paid member and schedule allows joining */}
+                <HStack align="stretch" spacing="5">
+                  {accessOptions &&
+                    accessOptions.map((vm) => {
+                      return (
+                        <Button
+                          height="min-content"
+                          loadingText="Loading"
+                          isLoading={isLoading}
+                          size="lg"
+                          borderWidth="2px"
+                          py="4"
+                          px="6"
+                          borderColor="primaryAlpha.100"
+                          bgColor="primaryAlpha.100"
+                          _hover={{
+                            bg: mode("primary", "primaryAlpha.800"),
+                            textColor: "white",
+                          }}
+                          color="primary"
+                          variant="solid"
+                          onClick={() => selectAccessOption(vm.option)}
+                          rightIcon={<BiRightArrowAlt />}
+                        >
+                          <Text
+                            style={{
+                              whiteSpace: "normal",
+                            }}
+                          >
+                            {vm.cta}
+                          </Text>
+                        </Button>
+                      );
+                    })}
+                </HStack>
+                {activityAbout && (
+                  <Box
+                    rounded="lg"
+                    mt={{ base: "8", md: "12", lg: "16" }}
+                    as="blockquote"
+                    bg={{ md: mode("white", "gray.700") }}
+                    py={{ base: "4", md: "6" }}
+                    px={{ base: "0", md: "6" }}
+                  >
                     <Heading
                       as="h6"
                       size="sm"
                       color={mode("gray.500", "gray.200")}
                       pb="3"
                     >
-                      <Text textTransform="capitalize">
-                        {scheduledDateRelative}
-                      </Text>
+                      <Text textTransform="capitalize">Details</Text>
                     </Heading>
-                  )}
 
-                  <Text
-                    as="p"
-                    whiteSpace="pre-line"
-                    orientation="vertical"
-                    fontSize="md"
-                    fontWeight="regular"
-                  >
-                    {activityAbout}
-                  </Text>
-                </Box>
+                    <Text
+                      as="p"
+                      whiteSpace="pre-line"
+                      orientation="vertical"
+                      fontSize="md"
+                      fontWeight="regular"
+                    >
+                      {activityAbout}
+                    </Text>
+                  </Box>
+                )}
               </Box>
 
               <VStack spacing={{ base: "6", md: "8" }} align="stretch">
                 {props?.data?.accessLevel == AccessLevel.all && (
                   // feature is hidden
-                  <Flex hidden w="full" mx="auto" justifyContent="center">
+                  <Flex w="full" mx="auto" justifyContent="center">
                     <HStack
                       className="group"
-                      as="a"
-                      href={tipLink}
-                      ps="2"
-                      pr="4"
+                      px="3"
                       mt={{ base: "4", md: "0" }}
-                      py="1"
+                      py="2"
                       bg={mode(
                         "rgb(255, 255, 255, 0.7)",
                         "rgb(255, 255, 255, 0.4)"
@@ -368,15 +401,15 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
                       fontSize="sm"
                       display="inline-flex"
                     >
-                      <BiHeartCircle color="rgb(255, 78, 78)" size="30" />
+                      <BiHeart color="rgb(255, 78, 78, 0.8)" size="25" />
 
                       <Text>
                         This activity is{" "}
                         <Text as="span" fontWeight="medium">
-                          free of charge
+                          free for everyone.
                         </Text>
                       </Text>
-                      <Box
+                      {/* <Box
                         aria-hidden
                         transition="0.2s all"
                         _groupHover={{ transform: "translateX(2px)" }}
@@ -388,17 +421,40 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
                         fontWeight="semibold"
                       >
                         Send Tip
-                      </Text>
+                      </Text> */}
                     </HStack>
                   </Flex>
                 )}
 
-                {/* logic not complete yet, hide lock */}
-                <Flex hidden w="full" mx="auto" justifyContent="center">
+                {activityViewModel?.videoThumbnailUrl && (
+                  <>
+                    <Heading
+                      as="h6"
+                      size="sm"
+                      color={mode("gray.500", "gray.200")}
+                    >
+                      <Text textTransform="capitalize">Activity Preview</Text>
+                    </Heading>
+                    <BigMedia
+                      alt={`Workout video for ${activityViewModel?.title}`}
+                      src={activityViewModel?.videoThumbnailUrl}
+                      videoSrc={
+                        activityViewModel?.customMuxUrl ||
+                        activityViewModel?.youtubeLink
+                      }
+                    />
+                  </>
+                )}
+
+                {/* Content is locked */}
+                <Flex
+                  display={data.hasAccess ? "none" : "inherit"}
+                  w="full"
+                  mx="auto"
+                  justifyContent="center"
+                >
                   <HStack
                     className="group"
-                    as="a"
-                    href="#"
                     pr="3"
                     py="1"
                     mx="auto"
@@ -419,17 +475,6 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
                     <Box fontWeight="medium">Content is Locked</Box>
                   </HStack>
                 </Flex>
-
-                {activityViewModel?.videoThumbnailUrl && (
-                  <BigMedia
-                    alt={`Workout video for ${activityViewModel?.title}`}
-                    src={activityViewModel?.videoThumbnailUrl}
-                    videoSrc={
-                      activityViewModel?.customMuxUrl ||
-                      activityViewModel?.youtubeLink
-                    }
-                  />
-                )}
 
                 <Accordion allowToggle>
                   <Box>

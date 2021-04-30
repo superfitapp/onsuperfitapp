@@ -65,7 +65,6 @@ export default function CheckoutSchedule(
           .then(function (result) {
             // this.joinSchedulePaidLoading = false;
             // this.errorMessage = result.error.message;
-            console.log("result", result);
             if (result.error) {
               throw result.error;
             }

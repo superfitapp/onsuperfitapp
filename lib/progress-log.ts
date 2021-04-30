@@ -1,16 +1,8 @@
 import * as admin from "firebase-admin";
-import {
-  FIRSchedule,
-  FIRUser,
-  ScheduleRole,
-  FIRScheduleMember,
-  MemberStatus,
-  ConnectMembershipInfo,
-} from "@superfitapp/superfitjs";
 
 export async function progressLogSnap(data: {
-  activityId: string,
-  userId: string
+  activityId: string;
+  userId: string;
 }): Promise<
   FirebaseFirestore.DocumentSnapshot<FirebaseFirestore.DocumentData | undefined>
 > {

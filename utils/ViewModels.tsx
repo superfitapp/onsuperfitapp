@@ -8,6 +8,8 @@ import {
   isDark,
 } from "@/utils/helpers";
 import {
+  AccessLevel,
+  ActivityStatus,
   FIRActivity,
   FIRInstructionSet,
   FIRScheduleMember,
@@ -46,6 +48,7 @@ export interface ShowScheduleViewModel {
   links: WebLink[];
   joinSchedulePaidCta?: string;
   joinScheduleFreeCta?: string;
+  oneTimePurchaseCta?: string;
   premiumPriceTitle?: string;
   canSignUp: boolean;
   userIsScheduleMember: boolean;
@@ -64,7 +67,6 @@ export interface ActivityViewModel {
   customMuxUrl?: string;
   customVideoUrl?: string;
   youtubeLink?: string;
-
   color: string;
   colorGradient: string;
   textColor: string;
@@ -76,6 +78,13 @@ export interface ActivityViewModel {
   instructionSetViewModel?: InstructionSetViewModel;
   scheduledDateRelative?: string;
   scheduledDateString?: string;
+  hasAccess: boolean;
+  accessOptions: AccessOptionViewModel[];
+}
+
+export interface AccessOptionViewModel {
+  option: AccessLevel;
+  cta: string;
 }
 
 export function createShowScheduleViewModel(
@@ -216,16 +225,42 @@ export function createShowActivityViewModel(
   if (scheduledDateTimestamp) {
     const scheduledDate = new Date(scheduledDateTimestamp);
 
-    scheduledDateString = dayjs(scheduledDate).calendar(null, {
-      sameDay: "[Today at] h:mm A", // The same day ( Today at 2:30 AM )
-      nextDay: "[Tomorrow]", // The next day ( Tomorrow at 2:30 AM )
+    let scheduledDateDayJs = dayjs(scheduledDate)
+    
+    scheduledDateString = scheduledDateDayJs.calendar(null, {
+      sameDay: data.activity.allDay ? "[Today]" : "[Today at] h:mm A", // The same day ( Today at 2:30 AM )
+      nextDay: data.activity.allDay ? "[Tomorrow]" : "[Tomorrow at] h:mm A", // The next day ( Tomorrow at 2:30 AM )
       nextWeek: "dddd", // The next week ( Sunday at 2:30 AM )
-      lastDay: "[Yesterday]", // The day before ( Yesterday at 2:30 AM )
+      lastDay: data.activity.allDay ? "[Yesterday]" : "[Yesterday at] h:mm A", // The day before ( Yesterday at 2:30 AM )
       lastWeek: "[Last] dddd", // Last week ( Last Monday at 2:30 AM )
       sameElse: "MMMM DD, YYYY", // Everything else ( 7/10/2011 )
     });
-    scheduledDateRelative = dayjs(scheduledDate).fromNow();
+    scheduledDateRelative = scheduledDateDayJs.fromNow();
   }
+
+  var accessOptions: AccessOptionViewModel[] = data.accessOptions.map(
+    (option) => {
+      let cta: string;
+      switch (option) {
+        case AccessLevel.members:
+          cta = "Join Free";
+          break;
+        case AccessLevel.paidMembers:
+          cta = "Unlock Premium Membership";
+          break;
+        case AccessLevel.oneTimePurchase:
+          cta = `${activityActionWord(data.activity.type)} ${
+            data.activity.signupConfig.priceAmount / 100
+          } ${data.activity.signupConfig.priceCurrency.toUpperCase()}`;
+          break;
+      }
+      let vm: AccessOptionViewModel = {
+        option: AccessLevel[option],
+        cta: cta,
+      };
+      return vm;
+    }
+  );
 
   return {
     id: data.activity.id || null,
@@ -252,6 +287,8 @@ export function createShowActivityViewModel(
     schedulePhotoUrl: scheduleThumbnailUrl,
     scheduleOwnerDisplayName: scheduleOwnerDisplayName,
     instructionSetViewModel: instructionSetViewModel,
+    hasAccess: data.hasAccess,
+    accessOptions: accessOptions,
   };
 }
 
@@ -407,4 +444,21 @@ export function createInstructionViewModel(
   }
 
   return vm;
+}
+
+function activityActionWord(type: string): string {
+  switch (type) {
+    case ActivityType.event:
+      return "Sign up";
+    case ActivityType.workout:
+      return "Buy";
+    case ActivityType.meeting:
+      return "Sign up";
+  }
+}
+
+enum ActivityType {
+  event = "event",
+  workout = "workout",
+  meeting = "meeting",
 }

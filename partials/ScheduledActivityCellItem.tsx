@@ -59,6 +59,20 @@ export const ScheduledActivityCellItem = (props: ScheduledActivityProps) => {
           </AspectRatio>
         )}
 
+        {/* placeholder */}
+        {!vm.thumbnailUrl && (
+          <AspectRatio ratio={16 / 9} minW={{ base: "150px", md: "auto" }}>
+            <Box
+              borderRadius="sm"
+              w="auto"
+              h="auto"
+              layout="fill"
+              objectFit="cover"
+              background="#f1f4f8"
+            ></Box>
+          </AspectRatio>
+        )}
+
         <Box>
           {/* Tags */}
           <HStack align="baseline" mt={2} spacing="1">
