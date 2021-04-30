@@ -15,6 +15,8 @@ import { scheduleMemberSnap } from "./schedule-member";
 import { ShowFIRActivityResponse } from "./db-public";
 import { createShowSchedule } from "./schedule";
 import { progressLogSnap } from "./progress-log";
+import ActivityId from "pages/api/show/schedule/[scheduleId]/activity/[activityId]";
+import { hasValidMembership } from "./memberships";
 
 export async function fetchActivity(
   scheduleId: string,
@@ -75,16 +77,16 @@ export async function fetchActivity(
     throw Error("activity not found.");
   }
 
-  const accessOptions = accessOptionsForActivity({
+  const { accessOptions, hasAccess } = accessOptionsForActivity({
     activity: activity,
     member: scheduleMember,
     userLog: userLog,
   });
 
-  if (activity.access != AccessLevel.all && !scheduleMember) {
+  if (!hasAccess) {
     // not public activity, not a member
     return {
-      hasAccess: false,
+      hasAccess: hasAccess,
       accessOptions: accessOptions,
       schedule: showSchedule,
       scheduleMember: null,
@@ -112,8 +114,9 @@ export async function fetchActivity(
       instructionSet = instructionSetData;
     }
   }
+
   return {
-    hasAccess: true,
+    hasAccess: hasAccess,
     accessOptions: accessOptions,
     schedule: showSchedule,
     activity: activity,
@@ -123,18 +126,84 @@ export async function fetchActivity(
   };
 }
 
+interface WeightedAccessLevel {
+  level: AccessLevel;
+  weight: number;
+}
+
 function accessOptionsForActivity(data: {
   activity: FIRActivity;
   member?: FIRScheduleMember;
   userLog?: FIRProgressLog;
-}): ActivityAccessOption[] {
-  let options: ActivityAccessOption[] = [];
+}): {
+  accessOptions: AccessLevel[];
+  hasAccess: boolean;
+} {
+  var hasAccess = false;
 
-  return options;
-}
+  let activityLevel = data.activity.access || AccessLevel.all;
 
-export enum ActivityAccessOption {
-  member = "member",
-  paidMember = "paidMember",
-  oneTimePurchase = "oneTimePurchase",
+  if (activityLevel == AccessLevel.all) {
+    return {
+      accessOptions: [],
+      hasAccess: true,
+    };
+  }
+
+  const membersOnly: WeightedAccessLevel = {
+    level: AccessLevel.members,
+    weight: 1,
+  };
+
+  const paidMembersOnly: WeightedAccessLevel = {
+    level: AccessLevel.paidMembers,
+    weight: 2,
+  };
+
+  const oneTimePurchases: WeightedAccessLevel = {
+    level: AccessLevel.oneTimePurchase,
+    weight: 3,
+  };
+
+  // In the future, when owners can allows paid members
+  // access to by-pass otps, weights will change.
+  let levels: WeightedAccessLevel[] = [
+    membersOnly,
+    paidMembersOnly,
+    oneTimePurchases,
+  ];
+
+  let requiredAccessLevels: WeightedAccessLevel[] = levels.filter(
+    (weightedLevel) => weightedLevel.level == activityLevel
+  );
+
+  if (requiredAccessLevels.length == 0) {
+    throw Error("internal error: unhandled access level case");
+  }
+
+  // One Time Purchaser
+  if (data.userLog?.signupInfo?.signedUp == true) {
+    requiredAccessLevels = requiredAccessLevels.filter((x) => {
+      x.weight <= oneTimePurchases.weight;
+    });
+  }
+
+  if (data.member) {
+    // paid member
+    if (hasValidMembership(data.member)) {
+      requiredAccessLevels = requiredAccessLevels.filter((x) => {
+        x.weight <= paidMembersOnly.weight;
+      });
+    } else {
+      // free member
+      requiredAccessLevels = requiredAccessLevels.filter((x) => {
+        x.weight <= membersOnly.weight;
+      });
+    }
+  }
+
+  return {
+    accessOptions: requiredAccessLevels.map((x) => x.level),
+    hasAccess: requiredAccessLevels.length == 0,
+  };
 }

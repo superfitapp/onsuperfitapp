@@ -25,7 +25,7 @@ export interface ShowFIRActivityResponse {
   schedule: ShowFIRSchedule;
   scheduleMember?: FIRScheduleMember;
   instructionSet?: FIRInstructionSet;
-  userLog?: FIRProgressLog
+  userLog?: FIRProgressLog;
 }
 
 export async function getShowActivity(

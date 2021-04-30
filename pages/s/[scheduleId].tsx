@@ -18,7 +18,7 @@ import { SimpleGrid } from "@chakra-ui/react";
 import * as React from "react";
 import { BigMedia } from "../../partials/BigMedia";
 import { OwnerWithSocial } from "../../partials/OwnerWithSocial";
-import { ScheduledActivity } from "../../partials/ScheduledActivity";
+import { ScheduledActivityCellItem } from "../../partials/ScheduledActivityCellItem";
 import { ShowFIRScheduleResponse } from "../../lib/db-public";
 import {
   createShowScheduleViewModel,
@@ -309,11 +309,11 @@ function SchedulePage(props: ScheduleProps, notFound: boolean) {
             {activities &&
               activities?.map((activity) => {
                 return (
-                  <ScheduledActivity
+                  <ScheduledActivityCellItem
                     key={activity.id}
                     activity={activity}
                     schedule={schedule}
-                  ></ScheduledActivity>
+                  ></ScheduledActivityCellItem>
                 );
               })}
           </SimpleGrid>

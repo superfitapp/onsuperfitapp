@@ -15,7 +15,7 @@
     "@emotion/styled": "^11.1.5",
     "@popperjs/core": "^2.6.0",
     "@stripe/stripe-js": "^1.13.1",
-    "@superfitapp/superfitjs": "github:superfitapp/superfit-shared-js#3.0.3",
+    "@superfitapp/superfitjs": "github:superfitapp/superfit-shared-js#3.0.4",
     "@tryghost/content-api": "^1.4.11",
     "@types/analytics-node": "^3.1.4",
     "@types/intercom-client": "^2.11.10",
