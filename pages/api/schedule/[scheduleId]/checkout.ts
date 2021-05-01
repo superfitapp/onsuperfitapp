@@ -4,6 +4,7 @@ import { db } from "@/lib/firebase-admin";
 import { FIRSchedule, FIRUser } from "@superfitapp/superfitjs";
 import { fetchOrCreateStripeCustomerIdForConnectAccount } from "@/utils/stripe-server";
 import { CheckoutResponse } from "@/lib/checkout-response";
+import { CheckoutType } from "./activity/[activityId]/CheckoutType";
 
 export default withApiAuthRequired(async function CheckoutSession(req, res) {
   const userSession = getSession(req, res);
