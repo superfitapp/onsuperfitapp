@@ -16,7 +16,7 @@ import { ShowFIRScheduleResponse } from "@/lib/db-public";
 import useSWR from "swr";
 import fetcher from "@/utils/fetcher";
 import { withPageAuthRequired } from "@auth0/nextjs-auth0";
-import { CheckoutResponse } from "pages/api/schedule/[scheduleId]/checkout_session";
+import { CheckoutResponse } from "pages/api/schedule/[scheduleId]/checkout";
 import { JoinScheduleProps } from "./join";
 import { fetchShowSchedule } from "@/lib/schedule";
 
@@ -34,12 +34,8 @@ export default function CheckoutSchedule(
     }
   }
 
-  const {
-    data: response,
-    error,
-    isValidating,
-  } = useSWR<CheckoutResponse>(
-    `/api/schedule/${props.scheduleId}/checkout_session`,
+  const { data: response, error, isValidating } = useSWR<CheckoutResponse>(
+    `/api/schedule/${props.scheduleId}/checkout`,
     fetcher,
     {
       revalidateOnMount: true,

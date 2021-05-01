@@ -5,7 +5,7 @@ import { FIRSchedule, FIRUser } from "@superfitapp/superfitjs";
 import { fetchOrCreateStripeCustomerIdForConnectAccount } from "@/utils/stripe-server";
 import { CheckoutType } from "./activity/[activityId]/CheckoutType";
 
-export default withApiAuthRequired(async function ProtectedRoute(req, res) {
+export default withApiAuthRequired(async function CheckoutSession(req, res) {
   const userSession = getSession(req, res);
   const user = userSession?.user;
   const userId = user?.sub;

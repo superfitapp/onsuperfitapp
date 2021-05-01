@@ -1,6 +1,6 @@
 import { getSession } from "@auth0/nextjs-auth0";
 import { db } from "@/lib/firebase-admin";
-import { CheckoutResponse } from "../../checkout_session";
+import { CheckoutResponse } from "../../checkout";
 import { FIRActivity, FIRUser } from "@superfitapp/superfitjs";
 import {
   fetchOrCreateStripeCustomerIdForConnectAccount,
@@ -9,6 +9,7 @@ import {
 import { fetchScheduleOwnerConnectData } from "@/lib/db-authed";
 import { CheckoutType } from "./CheckoutType";
 import { getPhotoUrl } from "@/utils/helpers";
+
 export default async function CheckoutActivity(req, res) {
   const userSession = getSession(req, res);
   const user = userSession?.user;
@@ -51,6 +52,10 @@ export default async function CheckoutActivity(req, res) {
     throw Error("owner is not a commerce user.");
   }
 
+  if (!activity.signupConfig || !activity.signupConfig.priceAmount) {
+    throw Error("activity price is required.");
+  }
+
   let currentUserCustomerId: string | undefined;
   if (currentUser) {
     currentUserCustomerId = await fetchOrCreateStripeCustomerIdForConnectAccount(
@@ -59,7 +64,7 @@ export default async function CheckoutActivity(req, res) {
     );
   }
 
-  let unitAmount = 100;
+  let unitAmount = activity.signupConfig.priceAmount;
   let fee = unitAmount * 0.05;
 
   let description = `${activity.title}${

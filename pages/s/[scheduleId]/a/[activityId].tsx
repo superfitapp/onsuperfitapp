@@ -121,7 +121,6 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
     : `https://venmo.com/leojkwan`;
 
   var scheduledDateString = activityViewModel?.scheduledDateString || null;
-  var scheduledDateRelative = activityViewModel?.scheduledDateRelative || null;
 
   let instructionsBlockMap =
     activityViewModel?.instructionSetViewModel?.instructionsBlockMap || null;
@@ -276,15 +275,8 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
                 >
                   <VStack align="stretch" spacing="0">
                     {scheduledDateString && (
-                      <Text
-                        // fontSize="sm"
-                        // fontWeight="semibold"
-                        color={mode("gray.500", "gray.200")}
-                      >
-                        {scheduledDateString}{" "}
-                        {/* {scheduledDateRelative && (
-                          <span>{`- (${scheduledDateRelative})`}</span>
-                        )} */}
+                      <Text color={mode("gray.500", "gray.200")}>
+                        {scheduledDateString}
                       </Text>
                     )}
                     <Text
@@ -307,6 +299,7 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
                     </Text>
                   </Center>
                 </Flex>
+
                 <ScheduleRow
                   mb={{ base: "4", md: "12" }}
                   mt={{ base: "2", md: "4" }}
@@ -318,6 +311,7 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
                   scheduleTitle={activityViewModel?.scheduleTitle}
                   arrowDirection={ArrowDirection.forward}
                 ></ScheduleRow>
+
                 {/* not a paid member and schedule allows joining */}
                 <HStack align="stretch" spacing="5">
                   {accessOptions &&
@@ -327,7 +321,7 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
                           height="min-content"
                           loadingText="Loading"
                           isLoading={isLoading}
-                          size="lg"
+                          size="md"
                           borderWidth="2px"
                           py="4"
                           px="6"

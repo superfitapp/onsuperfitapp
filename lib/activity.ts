@@ -138,8 +138,6 @@ function accessOptionsForActivity(data: {
   accessOptions: AccessLevel[];
   hasAccess: boolean;
 } {
-  var hasAccess = false;
-
   let activityLevel = data.activity.access || AccessLevel.all;
 
   if (activityLevel == AccessLevel.all) {
@@ -151,17 +149,17 @@ function accessOptionsForActivity(data: {
 
   const membersOnly: WeightedAccessLevel = {
     level: AccessLevel.members,
-    weight: 1,
+    weight: 10,
   };
 
   const paidMembersOnly: WeightedAccessLevel = {
     level: AccessLevel.paidMembers,
-    weight: 2,
+    weight: 20,
   };
 
   const oneTimePurchases: WeightedAccessLevel = {
     level: AccessLevel.oneTimePurchase,
-    weight: 3,
+    weight: 30,
   };
 
   // In the future, when owners can allows paid members
@@ -183,7 +181,7 @@ function accessOptionsForActivity(data: {
   // One Time Purchaser
   if (data.userLog?.signupInfo?.signedUp == true) {
     requiredAccessLevels = requiredAccessLevels.filter((x) => {
-      x.weight <= oneTimePurchases.weight;
+      return x.weight > oneTimePurchases.weight;
     });
   }
 
@@ -191,12 +189,12 @@ function accessOptionsForActivity(data: {
     // paid member
     if (hasValidMembership(data.member)) {
       requiredAccessLevels = requiredAccessLevels.filter((x) => {
-        x.weight <= paidMembersOnly.weight;
+        return x.weight > paidMembersOnly.weight;
       });
     } else {
       // free member
       requiredAccessLevels = requiredAccessLevels.filter((x) => {
-        x.weight <= membersOnly.weight;
+        return x.weight > membersOnly.weight;
       });
     }
   }
