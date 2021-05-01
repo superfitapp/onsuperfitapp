@@ -8,7 +8,7 @@ import { getSession } from "@auth0/nextjs-auth0";
 import { GetServerSidePropsContext } from "next";
 import useSWR from "swr";
 import fetcher from "@/utils/fetcher";
-import { CheckoutResponse } from "pages/api/schedule/[scheduleId]/checkout_session";
+import { CheckoutResponse } from "@/lib/checkout-response";
 
 export interface CheckoutActivityProps {
   scheduleId: string;

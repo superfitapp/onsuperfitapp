@@ -16,8 +16,7 @@ import { ShowFIRScheduleResponse } from "@/lib/db-public";
 import useSWR from "swr";
 import fetcher from "@/utils/fetcher";
 import { withPageAuthRequired } from "@auth0/nextjs-auth0";
-import { CheckoutResponse } from "pages/api/schedule/[scheduleId]/checkout";
-import { JoinScheduleProps } from "./join";
+import { CheckoutResponse } from "@/lib/checkout-response";
 import { fetchShowSchedule } from "@/lib/schedule";
 
 export interface CheckoutScheduleProps {
