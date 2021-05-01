@@ -3,7 +3,7 @@ import { stripeNode } from "@/utils/stripe-server";
 import { db } from "@/lib/firebase-admin";
 import { FIRSchedule, FIRUser } from "@superfitapp/superfitjs";
 import { fetchOrCreateStripeCustomerIdForConnectAccount } from "@/utils/stripe-server";
-import { CheckoutType } from "./activity/[activityId]/CheckoutType";
+import { CheckoutResponse } from "@/lib/checkout-response";
 
 export default withApiAuthRequired(async function CheckoutSession(req, res) {
   const userSession = getSession(req, res);
@@ -107,11 +107,3 @@ export default withApiAuthRequired(async function CheckoutSession(req, res) {
 
   res.json(response);
 });
-
-export interface CheckoutResponse {
-  type: string;
-  message?: string;
-  sessionId?: string;
-  connectStripeAccountId?: string;
-  customerEmail?: string;
-}

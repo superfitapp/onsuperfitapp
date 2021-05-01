@@ -1,6 +1,6 @@
 import { getSession } from "@auth0/nextjs-auth0";
 import { db } from "@/lib/firebase-admin";
-import { CheckoutResponse } from "../../checkout";
+import { CheckoutResponse } from "@/lib/checkout-response";
 import { FIRActivity, FIRUser } from "@superfitapp/superfitjs";
 import {
   fetchOrCreateStripeCustomerIdForConnectAccount,
