@@ -62,14 +62,6 @@ function Footer({ user, loading, footerSectionClassList, footerClassList }) {
                     Blog
                   </a>
                 </li>
-                {/* <li className="mb-3">
-                  <a
-                    href="https://headwayapp.co/superfit-updates"
-                    className="text-reset"
-                  >
-                    Changelog
-                  </a>
-                </li> */}
               </ul>
             </div>
 

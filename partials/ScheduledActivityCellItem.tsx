@@ -18,16 +18,21 @@ import { FIRActivity, ShowFIRSchedule } from "@superfitapp/superfitjs";
 import { createShowActivityViewModel } from "@/utils/ViewModels";
 import { ShowFIRActivityResponse } from "@/lib/db-public";
 import NextImage from "./NextImage";
+
 interface ScheduledActivityProps extends StackProps {
   activity: FIRActivity;
   schedule: ShowFIRSchedule;
 }
 
-export const ScheduledActivity = (props: ScheduledActivityProps) => {
+export const ScheduledActivityCellItem = (props: ScheduledActivityProps) => {
   const x: ShowFIRActivityResponse = {
     activity: props.activity,
     schedule: props.schedule,
+    hasAccess: false, // does not matter
+    accessOptions: [],
   };
+
+  // In the future create a separate viewModel for ScheduleActivityCellItem
   const vm = createShowActivityViewModel(x);
   const scheduleId = props.activity.scheduleInfo.id;
   const path = `/s/${scheduleId}/a/${props.activity.id}`;
@@ -51,6 +56,20 @@ export const ScheduledActivity = (props: ScheduledActivityProps) => {
               layout="fill"
               objectFit="cover"
             />
+          </AspectRatio>
+        )}
+
+        {/* placeholder */}
+        {!vm.thumbnailUrl && (
+          <AspectRatio ratio={16 / 9} minW={{ base: "150px", md: "auto" }}>
+            <Box
+              borderRadius="sm"
+              w="auto"
+              h="auto"
+              layout="fill"
+              objectFit="cover"
+              background="#f1f4f8"
+            ></Box>
           </AspectRatio>
         )}
 

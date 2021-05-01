@@ -33,8 +33,6 @@ export default function CheckoutActivity(
     }
   );
 
-  console.log(response?.customerEmail);
-
   if (
     // false &&
     response &&

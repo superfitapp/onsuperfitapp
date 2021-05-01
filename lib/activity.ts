@@ -4,16 +4,20 @@ import {
   AccessLevel,
   FIRActivity,
   FIRInstructionSet,
+  FIRProgressLog,
   FIRSchedule,
   FIRScheduleMember,
+  FIRUser,
   ShowFIRSchedule,
   VisibilityStatus,
 } from "@superfitapp/superfitjs";
 import { scheduleMemberSnap } from "./schedule-member";
 import { ShowFIRActivityResponse } from "./db-public";
 import { createShowSchedule } from "./schedule";
+import { progressLogSnap } from "./progress-log";
+import { hasValidMembership } from "./memberships";
 
-export async function fetchShowActivity(
+export async function fetchActivity(
   scheduleId: string,
   activityId: string,
   userId?: string
@@ -31,37 +35,30 @@ export async function fetchShowActivity(
   if (!currentSchedule) {
     throw Error("schedule not found.");
   }
-  let showSchedule: ShowFIRSchedule = createShowSchedule(currentSchedule);
 
-  var scheduleMember: FIRScheduleMember | undefined = null;
+  // not public schedule.
+  if (currentSchedule.visibilityStatus == VisibilityStatus.Archived) {
+    throw Error("activity no longer available");
+  }
+
+  let showSchedule: ShowFIRSchedule = createShowSchedule(currentSchedule);
+  let scheduleMember: FIRScheduleMember | undefined = null;
+  let userLog: FIRProgressLog | undefined = null;
+
   if (userId) {
     try {
       const snap = await scheduleMemberSnap(userId, scheduleId);
       if (snap && snap.data()) {
         scheduleMember = snap.data() as FIRScheduleMember;
+
+        let logSnap = await progressLogSnap({
+          activityId: activityId,
+          userId: userId,
+        });
+
+        userLog = logSnap?.data() as FIRProgressLog;
       }
     } catch {}
-  }
-
-  // not public schedule.
-  if (currentSchedule.visibilityStatus != VisibilityStatus.Public) {
-    if (!userId) {
-      // and not a user
-      return {
-        schedule: currentSchedule,
-        activity: null,
-      };
-    } else {
-      // not public, not a member
-      if (!scheduleMember) {
-        return {
-          schedule: currentSchedule,
-          activity: null,
-        };
-      } else {
-        // is a member
-      }
-    }
   }
 
   // is a public schedule
@@ -79,9 +76,17 @@ export async function fetchShowActivity(
     throw Error("activity not found.");
   }
 
-  if (activity.access != AccessLevel.all && !scheduleMember) {
+  const { accessOptions, hasAccess } = accessOptionsForActivity({
+    activity: activity,
+    member: scheduleMember,
+    userLog: userLog,
+  });
+
+  if (!hasAccess) {
     // not public activity, not a member
     return {
+      hasAccess: hasAccess,
+      accessOptions: accessOptions,
       schedule: showSchedule,
       scheduleMember: null,
       activity: activity,
@@ -108,11 +113,94 @@ export async function fetchShowActivity(
       instructionSet = instructionSetData;
     }
   }
+
   return {
+    hasAccess: hasAccess,
+    accessOptions: accessOptions,
     schedule: showSchedule,
     activity: activity,
     instructionSet: instructionSet,
     scheduleMember: scheduleMember,
     accessLevel: activity.access,
+  };
+}
+
+interface WeightedAccessLevel {
+  level: AccessLevel;
+  weight: number;
+}
+
+function accessOptionsForActivity(data: {
+  activity: FIRActivity;
+  member?: FIRScheduleMember;
+  userLog?: FIRProgressLog;
+}): {
+  accessOptions: AccessLevel[];
+  hasAccess: boolean;
+} {
+  let activityLevel = data.activity.access || AccessLevel.all;
+
+  if (activityLevel == AccessLevel.all) {
+    return {
+      accessOptions: [],
+      hasAccess: true,
+    };
+  }
+
+  const membersOnly: WeightedAccessLevel = {
+    level: AccessLevel.members,
+    weight: 10,
+  };
+
+  const paidMembersOnly: WeightedAccessLevel = {
+    level: AccessLevel.paidMembers,
+    weight: 20,
+  };
+
+  const oneTimePurchases: WeightedAccessLevel = {
+    level: AccessLevel.oneTimePurchase,
+    weight: 30,
+  };
+
+  // In the future, when owners can allows paid members
+  // access to by-pass otps, weights will change.
+  let levels: WeightedAccessLevel[] = [
+    membersOnly,
+    paidMembersOnly,
+    oneTimePurchases,
+  ];
+
+  let requiredAccessLevels: WeightedAccessLevel[] = levels.filter(
+    (weightedLevel) => weightedLevel.level == activityLevel
+  );
+
+  if (requiredAccessLevels.length == 0) {
+    throw Error("internal error: unhandled access level case");
+  }
+
+  // One Time Purchaser
+  if (data.userLog?.signupInfo?.signedUp == true) {
+    requiredAccessLevels = requiredAccessLevels.filter((x) => {
+      return x.weight > oneTimePurchases.weight;
+    });
+  }
+
+  if (data.member) {
+    // paid member
+    if (hasValidMembership(data.member)) {
+      requiredAccessLevels = requiredAccessLevels.filter((x) => {
+        return x.weight > paidMembersOnly.weight;
+      });
+    } else {
+      // free member
+      requiredAccessLevels = requiredAccessLevels.filter((x) => {
+        return x.weight > membersOnly.weight;
+      });
+    }
+  }
+
+  return {
+    accessOptions: requiredAccessLevels.map((x) => x.level),
+    hasAccess: requiredAccessLevels.length == 0,
   };
 }
