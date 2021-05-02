@@ -1,4 +1,4 @@
-import { FIRScheduleMember } from "@superfitapp/superfitjs";
+import { FIRScheduleMember, SubscriptionStatus } from "@superfitapp/superfitjs";
 
 export function hasValidMembership(member: FIRScheduleMember): boolean {
   if (!member.membershipInfo) {
@@ -18,15 +18,4 @@ export function hasValidMembership(member: FIRScheduleMember): boolean {
   }
 
   return true;
-}
-
-// to do, move shared js
-enum SubscriptionStatus {
-  active = "active",
-  past_due = "past_due",
-  unpaid = "unpaid",
-  canceled = "canceled",
-  incomplete = "incomplete",
-  incomplete_expired = "incomplete_expired",
-  trialing = "trialing",
 }
