@@ -39,6 +39,10 @@ export default withApiAuthRequired(async function CheckoutSession(req, res) {
     throw Error("schedule not found.");
   }
 
+  if (!currentSchedule.stripeProductId) {
+    throw Error("membership payments not enabled for schedule.");
+  }
+
   let stripePrice =
     currentSchedule.stripeCurrentOneTimePrice ||
     currentSchedule.stripeCurrentMonthlyPrice ||
@@ -71,8 +75,15 @@ export default withApiAuthRequired(async function CheckoutSession(req, res) {
   const session = await stripeNode.checkout.sessions.create(
     {
       payment_method_types: ["card"],
-      metadata: {
-        checkoutType: CheckoutType.Schedule,
+      payment_intent_data: {
+        metadata: {
+          checkoutType: CheckoutType.Schedule,
+          productId: currentSchedule.stripeProductId,
+          priceId: stripePrice.priceId,
+          ownerId: scheduleOwner.userId,
+          userId: userId,
+          scheduleId: scheduleId,
+        },
       },
       line_items: [
         {
@@ -89,7 +100,7 @@ export default withApiAuthRequired(async function CheckoutSession(req, res) {
       subscription_data:
         currentSchedule.stripeCurrentOneTimePrice == undefined
           ? {
-              application_fee_percent: 2,
+              application_fee_percent: 5,
             }
           : undefined,
       success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/s/${scheduleSnap.id}/checklist`,

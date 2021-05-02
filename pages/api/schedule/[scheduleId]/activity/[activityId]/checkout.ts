@@ -79,15 +79,15 @@ export default async function CheckoutActivity(req, res) {
     {
       customer: currentUserCustomerId,
       payment_method_types: ["card"],
-      metadata: {
-        checkoutType: CheckoutType.Activity,
-        ownerId: owner.userId,
-        userId: userId,
-        activityId: activityId,
-        scheduleId: scheduleId,
-      },
       payment_intent_data: {
         application_fee_amount: fee,
+        metadata: {
+          checkoutType: CheckoutType.Activity,
+          ownerId: owner.userId,
+          userId: userId,
+          activityId: activityId,
+          scheduleId: scheduleId,
+        },
       },
       line_items: [
         {
