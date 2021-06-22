@@ -5,7 +5,6 @@ import AngleTop from "@/partials/shapes/angles/angle-top.svg";
 import Image from "next/image";
 import { useEffect } from "react";
 import PersonalPro from "@/components/prices/personal-pro";
-import Commerce from "@/components/prices/commerce";
 import Free from "@/components/prices/free";
 import { NextSeo } from "next-seo";
 import { useRouter } from "next/router";
@@ -48,14 +47,12 @@ export default function Home() {
               <div className="col-12 col-md-10 col-lg-8 text-center">
                 {/* Headin */}
                 <h1 className="display-3 fw-bold">
-                  SuperFit is{" "}
-                  <span className="text-primary">zero-commission </span>
-                  class booking & workout-builder software.
+                  SuperFit helps solo trainers build workouts programs and
+                  organize their fitness clients & groups.
                 </h1>
-                {/* <p className="lead text-muted mb-6">
-                  Powerful workout builder. Simple client app. Built-in signup
-                  forms. Integrated subscription billing.
-                </p> */}
+                <p className="lead text-muted mb-6">
+                  Works seamlessly across your iPhone, iPad and Mac.
+                </p>
                 <p className="mb-7 mb-md-9">
                   <a
                     target="_blank"
@@ -517,8 +514,8 @@ export default function Home() {
                     .
                   </p>
                   <a
-                  hidden
-                    href="https://superfitapp.com/pro?recurringInterval=month"
+                    hidden
+                    href="https://itunes.apple.com/us/app/superfit-sports-workouts/id1225772126"
                     className="btn  btn-rounded btn-success shadow lift mt-4"
                   >
                     <span className="h6 text-uppercase fw-bold">
@@ -605,14 +602,9 @@ export default function Home() {
                 <div className="col-12 col-md-6">
                   <Free />
                 </div>
-
-                <div className="col-12 col-md-6  ms-md-n3">
+                <div className="col-12 col-md-6 ms-md-n3">
                   <PersonalPro />
                 </div>
-
-                {/* <div className="col-12 col-md-4 ms-md-n3">
-                  <Commerce />
-                </div> */}
               </div>
             </div>
           </section>

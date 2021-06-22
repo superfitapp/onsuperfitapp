@@ -7,7 +7,6 @@ import Blur3 from "@/partials/shapes/blurs/blur-3.svg";
 import Image from "next/image";
 import { useEffect } from "react";
 import PersonalPro from "@/components/prices/personal-pro";
-import Commerce from "@/components/prices/commerce";
 import Free from "@/components/prices/free";
 import { NextSeo } from "next-seo";
 
@@ -91,16 +90,13 @@ export default function Pricing() {
 
           {/* PRICING */}
           <section className="mt-n12 mt-md-n14">
-            <div className="container-fluid d-flex justify-content-around">
-              <div className="row gx-0">
-                <div className="col-12 col-md-4">
+            <div className="container-fluid justify-content-center">
+              <div className="row gx-4 px-2 px-lg-8">
+                <div className="col-12 col-md-6">
                   <Free />
                 </div>
-                <div className="col-12 col-md-4">
+                <div className="col-12 col-md-6">
                   <PersonalPro />
-                </div>
-                <div className="col-12 col-md-4">
-                  <Commerce />
                 </div>
               </div>{" "}
               {/* / .row */}

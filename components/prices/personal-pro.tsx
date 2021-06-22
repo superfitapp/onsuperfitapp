@@ -64,14 +64,45 @@ export default function PersonalPro() {
               </div>
               <p>Longer video upload limit (30 minutes)</p>
             </div>
+            <div className="d-flex">
+              {/* Check */}
+              <div className="badge badge-rounded-circle bg-primary-soft mt-1 me-4">
+                <i className="fe fe-check" />
+              </div>
+              <p>Integrated billing with Stripe</p>
+            </div>
+            <div className="d-flex">
+              {/* Check */}
+              <div className="badge badge-rounded-circle bg-primary-soft mt-1 me-4">
+                <i className="fe fe-check" />
+              </div>
+              <p>Offer memberships & one-time purchases</p>
+            </div>
+            <div className="d-flex">
+              {/* Check */}
+              <div className="badge badge-rounded-circle bg-primary-soft mt-1 me-4">
+                <i className="fe fe-check" />
+              </div>
+              <p>
+                5% Platform Fee
+                <a
+                  target="_blank"
+                  className="text-gray-800 fw-bold"
+                  href="https://www.patreon.com/product/pricing"
+                >
+                  {" "}
+                  (vs. Patreon's ~10%)
+                </a>
+              </p>
+            </div>
           </div>
         </div>
       </div>
       <a
-        href="https://superfitapp.com/pro?recurringInterval=month"
+        href="https://itunes.apple.com/us/app/superfit-sports-workouts/id1225772126"
         className="card-btn btn w-100 btn-lg btn-success"
       >
-        Get Personal Pro
+        Upgrade on iOS
       </a>
     </div>
   );

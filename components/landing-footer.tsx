@@ -58,7 +58,10 @@ function Footer({ user, loading, footerSectionClassList, footerClassList }) {
                   </a>
                 </li>
                 <li className="mb-3">
-                  <a href="/blog" className="text-reset">
+                  <a
+                    href="https://blog.superfitapp.com"
+                    className="text-reset"
+                  >
                     Blog
                   </a>
                 </li>

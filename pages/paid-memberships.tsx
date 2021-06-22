@@ -23,8 +23,7 @@ export default function PaidMemberships() {
     const calendly = window["Calendly"];
 
     calendly.initPopupWidget({
-      url:
-        "https://calendly.com/superfit/commerce?back=1&month=2020-12text_color=20232a&primary_color=1f4975",
+      url: "https://calendly.com/superfit/commerce?back=1&month=2020-12text_color=20232a&primary_color=1f4975",
     });
 
     return false; // old browsers, may not be needed
@@ -86,7 +85,7 @@ export default function PaidMemberships() {
                       onClick={openCalendly}
                       className="btn btn-primary-desat shadow lift"
                     >
-                      Upgrade to Commerce
+                      Upgrade to Personal Pro
                       <i className="fe fe-arrow-right ms-3" />
                     </a>
                   </p>
@@ -211,13 +210,13 @@ export default function PaidMemberships() {
                   <div className="col-12 col-md-7 order-md-1">
                     {/* Heading */}
                     <h2 className="text-white" style={{ maxWidth: "450px" }}>
-                      Get Started with Commerce.
+                      Get Started with Payments.
                     </h2>
                     {/* Text */}
                     <div className="lead text-muted-80 mb-0">
-                      Setting up secure payments with Stripe can be cumbersome.
-                      That's why we personally onboard every customer on our
-                      Commerce plan (required for paid memberships).
+                      We partner with Stripe, an industry-leading payments
+                      platform. If you need help connecting your profile with
+                      Stripe, live-chat with us in the SuperFit app.
                     </div>
                   </div>
                 </div>
@@ -248,9 +247,8 @@ export default function PaidMemberships() {
                         <h3 className="text-white">Sign up for Personal Pro</h3>
                         {/* Text */}
                         <p className="text-muted-80 mb-6 mb-md-0">
-                          Accepting Payments is an add-on to our Personal Pro
-                          plan. Don't worry, you can try our free tier first
-                          before upgrading.
+                          Download any of our iOS apps free on iOS, iPad and Mac
+                          App Store
                         </p>
                       </div>
                     </div>{" "}
@@ -279,13 +277,12 @@ export default function PaidMemberships() {
                       </div>
                       <div className="col col-md-12 ms-n5 ms-md-0">
                         {/* Heading */}
-                        <h3 className="text-white">Onboarding Call</h3>
+                        <h3 className="text-white">Sign up for Personal Pro</h3>
                         {/* Text */}
                         <p className="text-muted-80 mb-6 mb-md-0">
-                          After upgrading, schedule a personal 45-minute Zoom
-                          call to get set up your Commerce account. We'll also
-                          walk you through best practices for building fitness
-                          memberships.
+                          Creating payment options is available on our Personal
+                          Pro plan. You can use our basic free tier before
+                          deciding.
                         </p>
                       </div>
                     </div>{" "}
@@ -310,12 +307,12 @@ export default function PaidMemberships() {
                       </div>
                       <div className="col col-md-12 ms-n5 ms-md-0">
                         {/* Heading */}
-                        <h3 className="text-white">Start Charging 💸</h3>
+                        <h3 className="text-white">Connect with Stripe</h3>
                         {/* Text */}
                         <p className="text-muted-80 mb-0">
-                          Once complete, you can start charging a monthly
-                          subscription or a lifetime membership for access to
-                          your workout schedules.
+                          Follow the 10 minute in-app onboarding to connect your
+                          business info (if applicable) and payout details
+                          (where Stripe sends your earnings).
                         </p>
                       </div>
                     </div>{" "}
@@ -385,11 +382,19 @@ export default function PaidMemberships() {
                   <div className="card h-100 bg-dark rounded-3">
                     <div className="card-body p-5">
                       {/* Heading */}
-                      <h3 className="fw-bold text-white">Calendar View</h3>
+                      <h3 className="fw-bold text-white">App Clip support</h3>
                       {/* Text */}
                       <p className="text-muted mb-0">
-                        Manage your paying clients and groups in one simple
-                        view.
+                        When sharing SuperFit workout links, recipients on iOS
+                        can open the link them as an{" "}
+                        <a
+                          target="javascript:(void);"
+                          href="https://developer.apple.com/app-clips/"
+                          className="text-info"
+                        >
+                          app
+                        </a>
+                        .
                       </p>
                     </div>
                   </div>
@@ -449,7 +454,7 @@ export default function PaidMemberships() {
                       {/* Text */}
                       <p className="text-muted mb-0">
                         One price for unlimited clients and schedules. We
-                        receive 2% revenue share.
+                        receive 5% revenue share.
                       </p>
                     </div>
                   </div>
@@ -518,7 +523,8 @@ export default function PaidMemberships() {
                     onClick={openCalendly}
                     className="btn btn-info lift"
                   >
-                    Upgrade to Commerce <i className="fe fe-arrow-right ms-2" />
+                    Upgrade to Personal Pro
+                    <i className="fe fe-arrow-right ms-2" />
                   </a>
                 </div>
               </div>{" "}

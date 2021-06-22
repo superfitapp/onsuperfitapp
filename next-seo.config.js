@@ -1,5 +1,5 @@
 const title = "SuperFit – where workouts are built.";
-const description = "0% Commission Class Booking & Workout Builder Software";
+const description = "Build workouts programs and organize their fitness clients & groups.";
 const SEO = {
   title,
   description,

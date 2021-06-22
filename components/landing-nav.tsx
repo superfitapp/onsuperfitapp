@@ -74,7 +74,7 @@ function LandingNav({ user, loading, containerClass, navClassList }: NavInit) {
             </button>
             {/* Navigation */}
             <ul className="navbar-nav ms-auto">
-              {/* <li className="nav-item dropdown">
+              <li className="nav-item dropdown">
                 <a
                   className="nav-link dropdown-toggle"
                   id="navbarFeatures"
@@ -91,19 +91,17 @@ function LandingNav({ user, loading, containerClass, navClassList }: NavInit) {
                 >
                   <div className="list-group list-group-flush">
                     <a href={`/paid-memberships`} className="list-group-item">
-
                       <div className="icon icon-sm text-primary">
                         <Dollar />
                       </div>
 
                       <div className="ms-4">
-
                         <h6 className="fw-bold text-uppercase text-primary mb-0">
-                          Paid Memberships
+                          Payments!
                         </h6>
 
                         <p className="font-size-sm text-gray-700 mb-0">
-                          Collect client payments
+                          Create memberships & 1-time purchases
                         </p>
                       </div>
 
@@ -116,13 +114,11 @@ function LandingNav({ user, loading, containerClass, navClassList }: NavInit) {
                       target="_blank"
                       href="https://itunes.apple.com/us/app/superfit-sports-workouts/id1225772126"
                     >
-
                       <div className="icon icon-sm text-primary">
                         <Clipboard />
                       </div>
 
                       <div className="ms-4">
-
                         <p className="fw-bold text-uppercase text-primary mb-0">
                           Workout Builder
                         </p>
@@ -134,7 +130,7 @@ function LandingNav({ user, loading, containerClass, navClassList }: NavInit) {
                     </a>
                   </div>
                 </div>
-              </li> */}
+              </li>
 
               <li className="nav-item">
                 <a href="/pricing" className="nav-link">
@@ -143,12 +139,11 @@ function LandingNav({ user, loading, containerClass, navClassList }: NavInit) {
                 {/* </Link> */}
               </li>
 
-              <li className="nav-item">
-                {/* <Link href="/blog"> */}
-                <a href="/blog" className="nav-link">
+              {/* <li className="nav-item">
+                <a href="https://blog.superfitapp.com" className="nav-link">
                   Blog
                 </a>
-              </li>
+              </li> */}
             </ul>
             {/* Button */}
             <a
@@ -156,7 +151,7 @@ function LandingNav({ user, loading, containerClass, navClassList }: NavInit) {
               href="https://itunes.apple.com/us/app/superfit-sports-workouts/id1225772126"
               target="_blank"
             >
-              Try SuperFit Free
+              Get SuperFit Free
             </a>
           </div>
         </div>
