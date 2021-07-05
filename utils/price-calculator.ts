@@ -1,4 +1,7 @@
 import { AccessLevel, FIRActivity } from "@superfitapp/superfitjs";
+/**
+ * NOTE: This file is copied from cloud-functions.
+ */
 
 export class PriceCalculator {
   static isTipEnabled(activity: FIRActivity): boolean {

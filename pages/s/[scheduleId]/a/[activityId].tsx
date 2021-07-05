@@ -76,48 +76,6 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
         amount * 100
       }`
     );
-    // const {
-    //   data: response,
-    //   error,
-    //   isValidating,
-    // } = useSWR<CheckoutResponse>(
-    //   `/api/schedule/${props.scheduleId}/activity/${
-    //     props.activityId
-    //   }/checkout?tipAmount=${amount * 100}`,
-    //   fetcher,
-    //   {
-    //     revalidateOnMount: true,
-    //   }
-    // );
-
-    // if (
-    //   response &&
-    //   response.type == "checkout" &&
-    //   response.sessionId &&
-    //   response.connectStripeAccountId
-    // ) {
-    //   getStripe(response.connectStripeAccountId)
-    //     .then((stripe) => {
-    //       stripe
-    //         .redirectToCheckout({
-    //           // Make the id field from the Checkout Session creation API response
-    //           // available to this file, so you can provide it as argument here
-    //           // instead of the {{CHECKOUT_SESSION_ID}} placeholder.
-    //           sessionId: response.sessionId,
-    //         })
-    //         .then(function (result) {
-    //           if (result.error) {
-    //             throw result.error;
-    //           }
-    //           // If `redirectToCheckout` fails due to a browser or network
-    //           // error, display the localized error message to your customer
-    //           // using `result.error.message`.
-    //         });
-    //     })
-    //     .catch((error) => {
-    //       return <Error statusCode={404} />;
-    //     });
-    // }
   }
 
   const { user } = useUser();
