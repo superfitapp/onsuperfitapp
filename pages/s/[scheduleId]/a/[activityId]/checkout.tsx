@@ -13,6 +13,7 @@ import { CheckoutResponse } from "@/lib/checkout-response";
 export interface CheckoutActivityProps {
   scheduleId: string;
   activityId: string;
+  tipAmount?: string;
 }
 
 export default function CheckoutActivity(
@@ -25,8 +26,14 @@ export default function CheckoutActivity(
     }
   }
 
-  const { data: response, error, isValidating } = useSWR<CheckoutResponse>(
-    `/api/schedule/${props.scheduleId}/activity/${props.activityId}/checkout`,
+  const {
+    data: response,
+    error,
+    isValidating,
+  } = useSWR<CheckoutResponse>(
+    props.tipAmount
+      ? `/api/schedule/${props.scheduleId}/activity/${props.activityId}/checkout?tipAmount=${props.tipAmount}`
+      : `/api/schedule/${props.scheduleId}/activity/${props.activityId}/checkout`,
     fetcher,
     {
       revalidateOnMount: true,
@@ -34,7 +41,6 @@ export default function CheckoutActivity(
   );
 
   if (
-    // false &&
     response &&
     response.type == "checkout" &&
     response.sessionId &&
@@ -92,6 +98,7 @@ export async function getServerSideProps({
   params,
   req,
   res,
+  query,
 }: GetServerSidePropsContext) {
   {
     const session = getSession(req, res);
@@ -107,6 +114,7 @@ export async function getServerSideProps({
     var props: CheckoutActivityProps = {
       scheduleId: scheduleId as string,
       activityId: activityId as string,
+      tipAmount: (query.tipAmount as string) || null,
     };
 
     return {

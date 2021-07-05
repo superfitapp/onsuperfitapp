@@ -9,6 +9,7 @@ import {
 import { fetchScheduleOwnerConnectData } from "@/lib/db-authed";
 import { CheckoutType } from "./CheckoutType";
 import { getPhotoUrl } from "@/utils/helpers";
+import { PriceCalculator } from "@/utils/price-calculator";
 
 export default async function CheckoutActivity(req, res) {
   const userSession = getSession(req, res);
@@ -18,6 +19,7 @@ export default async function CheckoutActivity(req, res) {
   let activityId = req.query["activityId"];
   let scheduleId = req.query["scheduleId"];
   let currency = req.query["currency"] || "usd";
+  let tipAmount = req.query["tipAmount"];
 
   if (!activityId || !scheduleId) {
     throw Error("activity id and schedule id required.");
@@ -52,20 +54,30 @@ export default async function CheckoutActivity(req, res) {
     throw Error("owner is not a commerce user.");
   }
 
-  if (!activity.signupConfig || !activity.signupConfig.priceAmount) {
-    throw Error("activity price is required.");
+  let configuredForPurchase =
+    activity.signupConfig && activity.signupConfig.priceAmount;
+
+  let configuredForGift =
+    tipAmount && activity.tipConfig && activity.tipConfig?.tipEnabled;
+
+  if (!configuredForPurchase && !configuredForGift) {
+    throw Error("checkout not configured for activity");
   }
 
   let currentUserCustomerId: string | undefined;
   if (currentUser) {
-    currentUserCustomerId = await fetchOrCreateStripeCustomerIdForConnectAccount(
-      currentUser,
-      connectId
-    );
+    currentUserCustomerId =
+      await fetchOrCreateStripeCustomerIdForConnectAccount(
+        currentUser,
+        connectId
+      );
   }
 
-  let unitAmount = activity.signupConfig.priceAmount;
-  let fee = unitAmount * 0.05;
+  let { amount, fee } = PriceCalculator.calculatePrice({
+    activity: activity,
+    appFeePercent: 0.05,
+    tipAmount: tipAmount,
+  });
 
   let description = `${activity.title}${
     activity?.description ? `: ${activity?.description}` : ""
@@ -74,6 +86,8 @@ export default async function CheckoutActivity(req, res) {
   let images = [activity.photo ? getPhotoUrl(activity.photo) : null].filter(
     (item) => item
   );
+
+  const giftNote = PriceCalculator.isTipEnabled(activity) ? "[GIFT]" : "";
 
   const session = await stripeNode.checkout.sessions.create(
     {
@@ -93,10 +107,10 @@ export default async function CheckoutActivity(req, res) {
         {
           price_data: {
             currency: currency,
-            unit_amount: unitAmount,
+            unit_amount: amount,
             product_data: {
-              name: activity.title,
-              description: truncate(description, 200),
+              name: `${giftNote} ${activity.title}`,
+              description: `${giftNote} ${truncate(description, 200)}`,
               images: images,
             },
           },

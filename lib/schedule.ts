@@ -27,9 +27,8 @@ export async function fetchShowSchedule({
 
   let scheduleSnap = await db.collection("schedules").doc(scheduleId).get();
 
-  const currentSchedule:
-    | FIRSchedule
-    | undefined = scheduleSnap.data() as FIRSchedule;
+  const currentSchedule: FIRSchedule | undefined =
+    scheduleSnap.data() as FIRSchedule;
 
   if (!currentSchedule) {
     throw Error("schedule not found.");
@@ -62,7 +61,7 @@ export async function fetchShowSchedule({
     let activitiesSnap = await db
       .collectionGroup("activities")
       .orderBy("scheduledDate", "desc")
-      .limit(10)
+      .limit(50)
       .where("status", "==", ActivityStatus.Published)
       .where("scheduleInfo.id", "==", scheduleSnap.id)
       .get();

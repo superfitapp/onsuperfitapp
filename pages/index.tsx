@@ -655,10 +655,9 @@ export default function Home() {
                           >
                             <div className="py-5 py-mb-6">
                               <p>
-                                We offer a generous free tier that's much better
-                                than a free trial! You can add as many workouts
-                                and clients into one workout "schedule" for
-                                free.
+                                Currently, we don't offer a free trial. With the
+                                basic free tier, you can add unlimited workouts
+                                and clients to one workout schedule.
                               </p>
                             </div>
                           </div>

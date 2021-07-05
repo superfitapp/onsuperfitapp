@@ -64,7 +64,7 @@ export default withApiAuthRequired(async function CheckoutSession(req, res) {
     !scheduleOwner.billingInfo.stripe.connectId
   ) {
     console.log("schedule owner is not a commerce user", userId);
-    throw Error("user is not a commerce user.");
+    throw Error("owner is not a commerce user.");
   }
 
   let currentUserCustomerId = await fetchOrCreateStripeCustomerIdForConnectAccount(
