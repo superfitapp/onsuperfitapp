@@ -84,7 +84,7 @@ export const ScheduleRow = ({
           align="start"
           noOfLines={{ base: 1, sm: 2 }}
         >
-          From @{scheduleOwnerDisplayName}
+          From {scheduleOwnerDisplayName}
         </Text>
       )}
     </Flex>

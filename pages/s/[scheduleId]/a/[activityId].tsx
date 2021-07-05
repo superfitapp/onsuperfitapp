@@ -48,14 +48,78 @@ import fetcher from "@/utils/fetcher";
 import { useUser } from "@auth0/nextjs-auth0";
 import { useRouter } from "next/router";
 import { routerLoading } from "@/utils/router-loading";
-
-import { FaHeartbeat, FaLock } from "react-icons/fa";
+import { CustomSelect } from "@/partials/dropdown-select/CustomSelect";
+import { FaLock } from "react-icons/fa";
 import { createThemeFromSchedule } from "@/styles/theme";
 import { LoadingPlaceholder } from "@/partials/LoadingPlaceholder";
 import { NextSeo } from "next-seo";
+import { Option } from "@/partials/dropdown-select/Option";
+import { CheckoutResponse } from "@/lib/checkout-response";
+import getStripe from "@/utils/stripe";
+
+enum HighFive {
+  One = "1 🙌",
+  Two = "2 🙌 ",
+  Three = "3 🙌",
+  Four = "4 🙌",
+}
 
 function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
   const router = useRouter();
+  const [selectedTipOption, setSelectedTipOption] = React.useState<
+    string | null | undefined
+  >(HighFive.One);
+
+  function sendTipGift(amount: number) {
+    router.push(
+      `/s/${props.scheduleId}/a/${props.activityId}/checkout?tipAmount=${
+        amount * 100
+      }`
+    );
+    // const {
+    //   data: response,
+    //   error,
+    //   isValidating,
+    // } = useSWR<CheckoutResponse>(
+    //   `/api/schedule/${props.scheduleId}/activity/${
+    //     props.activityId
+    //   }/checkout?tipAmount=${amount * 100}`,
+    //   fetcher,
+    //   {
+    //     revalidateOnMount: true,
+    //   }
+    // );
+
+    // if (
+    //   response &&
+    //   response.type == "checkout" &&
+    //   response.sessionId &&
+    //   response.connectStripeAccountId
+    // ) {
+    //   getStripe(response.connectStripeAccountId)
+    //     .then((stripe) => {
+    //       stripe
+    //         .redirectToCheckout({
+    //           // Make the id field from the Checkout Session creation API response
+    //           // available to this file, so you can provide it as argument here
+    //           // instead of the {{CHECKOUT_SESSION_ID}} placeholder.
+    //           sessionId: response.sessionId,
+    //         })
+    //         .then(function (result) {
+    //           if (result.error) {
+    //             throw result.error;
+    //           }
+    //           // If `redirectToCheckout` fails due to a browser or network
+    //           // error, display the localized error message to your customer
+    //           // using `result.error.message`.
+    //         });
+    //     })
+    //     .catch((error) => {
+    //       return <Error statusCode={404} />;
+    //     });
+    // }
+  }
+
   const { user } = useUser();
   const {
     isLoading,
@@ -140,6 +204,22 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
       case AccessLevel.oneTimePurchase:
         router.push(`/s/${props.scheduleId}/a/${props.activityId}/checkout`);
     }
+  }
+
+  let highFiveAmount = 5;
+  switch (selectedTipOption) {
+    case HighFive.One:
+      highFiveAmount = 5;
+      break;
+    case HighFive.Two:
+      highFiveAmount = 10;
+      break;
+    case HighFive.Three:
+      highFiveAmount = 15;
+      break;
+    case HighFive.Four:
+      highFiveAmount = 20;
+      break;
   }
 
   return (
@@ -287,9 +367,8 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
                       {activityTitle}
                     </Text>
                   </VStack>
-                  <Center rounded="lg" bg="rgba(0,0,0,0.05)">
+                  {/* <Center rounded="lg" bg="rgba(0,0,0,0.05)">
                     <Text
-                      hidden
                       py="1"
                       px="2"
                       fontSize="lg"
@@ -297,7 +376,7 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
                     >
                       $50
                     </Text>
-                  </Center>
+                  </Center> */}
                 </Flex>
 
                 <ScheduleRow
@@ -382,41 +461,87 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
                 {props?.data?.accessLevel == AccessLevel.all && (
                   // feature is hidden
                   <Flex w="full" mx="auto" justifyContent="center">
-                    <HStack
-                      className="group"
-                      px="3"
+                    <VStack
+                      alignItems="start"
+                      // className="group"
                       mt={{ base: "4", md: "0" }}
-                      py="2"
-                      bg={mode(
-                        "rgb(255, 255, 255, 0.7)",
-                        "rgb(255, 255, 255, 0.4)"
-                      )}
-                      rounded="full"
+                      py="6"
+                      px="12"
+                      borderColor={mode("primaryAlpha.400", "primaryAlpha.100")}
+                      bgColor="white"
+                      borderWidth="2px"
+                      rounded="xl"
                       fontSize="sm"
                       display="inline-flex"
+                      spacing="5"
                     >
-                      <BiHeart color="rgb(255, 78, 78, 0.8)" size="25" />
-
-                      <Text>
-                        This activity is{" "}
-                        <Text as="span" fontWeight="medium">
-                          free for everyone.
-                        </Text>
-                      </Text>
-                      {/* <Box
-                        aria-hidden
-                        transition="0.2s all"
-                        _groupHover={{ transform: "translateX(2px)" }}
-                        as={BiRightArrowAlt}
-                        display="inline-block"
-                      />
                       <Text
-                        textColor={mode("rgb(255, 78, 78)", "rgb(255, 78, 78)")}
-                        fontWeight="semibold"
+                        as="h3"
+                        fontSize="md"
+                        fontWeight="medium"
+                        textColor="gray.500"
                       >
-                        Send Tip
-                      </Text> */}
-                    </HStack>
+                        Support me and{" "}
+                        <Link
+                          color="primary"
+                          href={`${process.env.NEXT_PUBLIC_BASE_URL}/s/${props.scheduleId}`}
+                        >
+                          {scheduleViewModel.scheduleTitle}
+                        </Link>
+                      </Text>
+
+                      <HStack fontSize="lg" display="inline-flex">
+                        <CustomSelect
+                          fontSize="lg"
+                          textColor="primaryAlpha.800"
+                          name="Fruit"
+                          value={selectedTipOption}
+                          placeholder="Gift a High-Five 🙌"
+                          onChange={setSelectedTipOption}
+                        >
+                          <Option value={HighFive.One} />
+                          <Option value={HighFive.Two} />
+                          <Option value={HighFive.Three} />
+                          <Option value={HighFive.Four} />
+                        </CustomSelect>
+
+                        <Box
+                          aria-hidden
+                          transition="0.2s all"
+                          _groupHover={{ transform: "translateX(2px)" }}
+                          as={BiRightArrowAlt}
+                          display="inline-block"
+                        />
+
+                        <Button
+                          height="min-content"
+                          loadingText="Loading"
+                          isLoading={isLoading}
+                          size="md"
+                          borderWidth="2px"
+                          rounded="full"
+                          py="4"
+                          px="8"
+                          borderColor="primaryAlpha.100"
+                          // bgColor="primaryAlpha.100"
+                          _hover={{
+                            bg: mode("primary", "primaryAlpha.500"),
+                            textColor: "white",
+                          }}
+                          color="secondary"
+                          variant="outline"
+                          onClick={() => sendTipGift(highFiveAmount)}
+                        >
+                          <Text
+                            style={{
+                              whiteSpace: "normal",
+                            }}
+                          >
+                            Gift ${highFiveAmount}
+                          </Text>
+                        </Button>
+                      </HStack>
+                    </VStack>
                   </Flex>
                 )}
 
