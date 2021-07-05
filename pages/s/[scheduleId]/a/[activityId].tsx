@@ -415,16 +415,15 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
                 )}
               </Box>
 
-              <VStack spacing={{ base: "6", md: "8" }} align="stretch">
+              <VStack spacing={{ base: "2", md: "8" }} align="stretch">
                 {props?.data?.accessLevel == AccessLevel.all && (
-                  // feature is hidden
                   <Flex w="full" mx="auto" justifyContent="center">
                     <VStack
-                      alignItems="start"
-                      // className="group"
+                      // alignItems="start"
                       mt={{ base: "4", md: "0" }}
-                      py="6"
-                      px="12"
+                      mb={{ base: "4", md: "0" }}
+                      py={{ base: "4", sm: "6" }}
+                      px={{ base: "6", sm: "12" }}
                       borderColor={mode("primaryAlpha.400", "primaryAlpha.100")}
                       bgColor="white"
                       borderWidth="2px"
@@ -479,9 +478,8 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
                           borderWidth="2px"
                           rounded="full"
                           py="4"
-                          px="8"
+                          px={{ base: "4", md: "8" }}
                           borderColor="primaryAlpha.100"
-                          // bgColor="primaryAlpha.100"
                           _hover={{
                             bg: mode("primary", "primaryAlpha.500"),
                             textColor: "white",

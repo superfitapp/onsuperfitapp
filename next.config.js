@@ -40,11 +40,21 @@ module.exports = {
   },
   webpack(config, { isServer }) {
     // Fixes npm packages that depend on `fs` module
-    // if (!isServer) {
-    //   config.node = {
-    //     fs: "empty",
-    //   };
-    // }
+
+    if (!isServer) {
+      config.resolve.fallback = {
+        fs: false,
+        tls: false,
+        net: false,
+        path: false,
+        zlib: false,
+        http: false,
+        https: false,
+        stream: false,
+        os: false,
+        crypto: false,
+      };
+    }
 
     config.module.rules.push({
       test: /\.svg$/,
