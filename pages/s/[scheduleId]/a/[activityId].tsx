@@ -416,7 +416,7 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
               </Box>
 
               <VStack spacing={{ base: "2", md: "8" }} align="stretch">
-                {props?.data?.accessLevel == AccessLevel.all && (
+                {activityViewModel && activityViewModel.isTipEnabled && (
                   <Flex w="full" mx="auto" justifyContent="center">
                     <VStack
                       // alignItems="start"

@@ -79,6 +79,7 @@ export interface ActivityViewModel {
   scheduledDateRelative?: string;
   scheduledDateString?: string;
   hasAccess: boolean;
+  isTipEnabled: boolean;
   accessOptions: AccessOptionViewModel[];
 }
 
@@ -225,8 +226,8 @@ export function createShowActivityViewModel(
   if (scheduledDateTimestamp) {
     const scheduledDate = new Date(scheduledDateTimestamp);
 
-    let scheduledDateDayJs = dayjs(scheduledDate)
-    
+    let scheduledDateDayJs = dayjs(scheduledDate);
+
     scheduledDateString = scheduledDateDayJs.calendar(null, {
       sameDay: data.activity.allDay ? "[Today]" : "[Today at] h:mm A", // The same day ( Today at 2:30 AM )
       nextDay: data.activity.allDay ? "[Tomorrow]" : "[Tomorrow at] h:mm A", // The next day ( Tomorrow at 2:30 AM )
@@ -262,6 +263,10 @@ export function createShowActivityViewModel(
     }
   );
 
+  const isTipEnabled =
+    data.activity.tipConfig?.tipEnabled == true &&
+    data.activity.access == AccessLevel.all;
+
   return {
     id: data.activity.id || null,
     scheduleId: data.activity?.scheduleInfo?.id,
@@ -288,6 +293,7 @@ export function createShowActivityViewModel(
     scheduleOwnerDisplayName: scheduleOwnerDisplayName,
     instructionSetViewModel: instructionSetViewModel,
     hasAccess: data.hasAccess,
+    isTipEnabled: isTipEnabled,
     accessOptions: accessOptions,
   };
 }
@@ -310,9 +316,8 @@ export function createInstructionSetViewModel(
     var instructionBlocks = [];
     for (var key in instructionSet.instructionBlocks) {
       let instructionBlock = instructionSet.instructionBlocks[key];
-      instructionsBlockMap[
-        instructionBlock.uniqueId
-      ] = sortInstructionsForBlock(instructionBlock);
+      instructionsBlockMap[instructionBlock.uniqueId] =
+        sortInstructionsForBlock(instructionBlock);
       instructionBlocks.push(instructionBlock);
     }
 

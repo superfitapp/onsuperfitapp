@@ -31,9 +31,8 @@ export default withApiAuthRequired(async function CheckoutSession(req, res) {
   }
 
   let scheduleSnap = await db.collection("schedules").doc(scheduleId).get();
-  const currentSchedule:
-    | FIRSchedule
-    | undefined = scheduleSnap.data() as FIRSchedule;
+  const currentSchedule: FIRSchedule | undefined =
+    scheduleSnap.data() as FIRSchedule;
 
   if (!currentSchedule) {
     throw Error("schedule not found.");
@@ -67,23 +66,22 @@ export default withApiAuthRequired(async function CheckoutSession(req, res) {
     throw Error("owner is not a commerce user.");
   }
 
-  let currentUserCustomerId = await fetchOrCreateStripeCustomerIdForConnectAccount(
-    currentUser,
-    scheduleOwner.billingInfo.stripe.connectId
-  );
+  let currentUserCustomerId =
+    await fetchOrCreateStripeCustomerIdForConnectAccount(
+      currentUser,
+      scheduleOwner.billingInfo.stripe.connectId
+    );
 
   const session = await stripeNode.checkout.sessions.create(
     {
       payment_method_types: ["card"],
-      payment_intent_data: {
-        metadata: {
-          checkoutType: CheckoutType.Schedule,
-          productId: currentSchedule.stripeProductId,
-          priceId: stripePrice.priceId,
-          ownerId: scheduleOwner.userId,
-          userId: userId,
-          scheduleId: scheduleId,
-        },
+      metadata: {
+        checkoutType: CheckoutType.Schedule,
+        productId: currentSchedule.stripeProductId,
+        priceId: stripePrice.priceId,
+        ownerId: scheduleOwner.userId,
+        userId: userId,
+        scheduleId: scheduleId,
       },
       line_items: [
         {
