@@ -187,7 +187,7 @@ export default function Home() {
                 <div className="col-12 col-md-4 my-2" data-aos="fade-up">
                   <div className="card h-80 shadow-light-lg mb-6 mb-md-0 lift lift-lg">
                     <Image
-                      src="/img/photos/functional-strength-weekly.jpeg"
+                      src="/img/photos/workout_with_me_teigan.jpg"
                       alt="In the Living Room"
                       className="card-img-top"
                       height="300"
@@ -212,15 +212,14 @@ export default function Home() {
                         </span>
                       </div>
                       {/* Heading */}
-                      <h3>'Functional Strength Weekly'</h3>
+                      <h3>Workout With Me</h3>
                       <p className="text-muted">
-                        Prepare for daily tasks with exclusive functional
-                        workouts.
+                        Athletic gym & home workouts with Teigan Schentrup
                       </p>
                       {/* Link */}
                       <a
                         target="_blank"
-                        href="/s/l8CQBXXd9QrRat7mcHnd"
+                        href="/s/JEdei0mWkw9BLhCCkcFo"
                         className="fw-bold text-decoration-none"
                       >
                         View Schedule <i className="fe fe-arrow-right ms-3" />
@@ -264,10 +263,9 @@ export default function Home() {
                         </span>
                       </div>
                       {/* Heading */}
-                      <h3>'In The Living Room'</h3>
+                      <h3>In The Living Room</h3>
                       <p className="text-muted">
-                        Bring a full body fitness training routine to your
-                        living room.
+                        Full body at-home fitness with Iyoha Agho
                       </p>
                       {/* Link */}
                       <a
@@ -314,7 +312,7 @@ export default function Home() {
                         </span>
                       </div>
                       {/* Heading */}
-                      <h3>'Elite Sports Performance'</h3>
+                      <h3>Elite Sports Performance</h3>
                       <p className="text-muted">
                         Athletic workouts to help you decrease risk of injury,
                         develop strength and build confidence.
@@ -360,7 +358,7 @@ export default function Home() {
                         </span>
                       </div>
                       {/* Heading */}
-                      <h3>'SuperFit Examples'</h3>
+                      <h3>SuperFit Examples</h3>
                       <p className="text-muted">
                         Share individual workout plans with each of your private
                         clients.
@@ -411,7 +409,7 @@ export default function Home() {
                         </span>
                       </div>
                       {/* Heading */}
-                      <h3>'Leo's Morning Workout'</h3>
+                      <h3>Leo's Morning Workout</h3>
                       <p className="text-muted">
                         Start your mornings with an easy-to-follow basketball,
                         strength and run workout.
