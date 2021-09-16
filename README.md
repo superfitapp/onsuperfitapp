@@ -1,3 +1,15 @@
+<img width="1431" alt="landing-page" src="https://user-images.githubusercontent.com/10264891/133540583-2a48b7ef-977f-475d-8ece-c0abd3fc85f9.png">
+<img width="743" alt="schedule-page" src="https://user-images.githubusercontent.com/10264891/133540585-e870b7f8-e9b4-4677-b138-b5edbeaa9a8f.png">
+
+
+## Technologies, UI & Stack
+- Vercel
+- Chakra UI
+- Next.js (ISR: Incremental Static Regeneration, SWR: stale-while-revalidate)
+- Auth0
+- Stripe
+- [Bootstrap Theme Template](https://themes.getbootstrap.com/product/leap-multipurpose-bootstrap-theme/)
+
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started
