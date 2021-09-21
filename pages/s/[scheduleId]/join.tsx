@@ -94,7 +94,7 @@ function JoinSchedule(props: JoinScheduleProps, notFound: boolean) {
   if (vm.canSignUp) {
     if (vm.joinSchedulePaidCta && vm.premiumPriceTitle) {
       options.push({
-        label: `Premium membership`,
+        label: `Premium Member`,
         description: `${vm.premiumPriceTitle} - cancel anytime`,
         icon: <HiOutlineStar />,
         value: "premium",
@@ -121,10 +121,16 @@ function JoinSchedule(props: JoinScheduleProps, notFound: boolean) {
   >(defaultValue);
 
   const userTheme = createThemeFromSchedule(props.data?.schedule);
+  const canJoinScheduleCta = vm?.joinSchedulePaidCta || vm?.joinScheduleFreeCta;
 
   return (
     <>
-      <Layout scheduleId={null} hideHeaderMobile={true} userTheme={userTheme}>
+      <Layout
+        canJoin={canJoinScheduleCta != undefined}
+        scheduleId={null}
+        hideHeaderMobile={true}
+        userTheme={userTheme}
+      >
         <Box
           as="section"
           my={{ base: "2", md: "8" }}

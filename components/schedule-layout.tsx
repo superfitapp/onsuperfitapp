@@ -5,6 +5,7 @@ import { FIRScheduleMember } from "@superfitapp/superfitjs";
 import createTheme, { SFThemeProps } from "@/styles/theme";
 
 interface ScheduleLayoutProps {
+  canJoin: boolean;
   scheduleId?: string;
   hideHeaderMobile?: boolean;
   scheduleMember?: FIRScheduleMember;
@@ -13,6 +14,7 @@ interface ScheduleLayoutProps {
 }
 
 function ScheduleLayout({
+  canJoin,
   scheduleId,
   hideHeaderMobile = false,
   scheduleMember,
@@ -27,6 +29,7 @@ function ScheduleLayout({
         py={{ base: "4", md: "6" }}
       >
         <GuestHeaderNav
+          canJoin={canJoin}
           hideHeaderMobile={hideHeaderMobile}
           scheduleId={scheduleId}
           scheduleMember={scheduleMember}

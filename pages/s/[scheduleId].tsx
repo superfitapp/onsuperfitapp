@@ -93,7 +93,7 @@ function SchedulePage(props: ScheduleProps, notFound: boolean) {
     }
 
     return (
-      <ScheduleLayout scheduleId={props.scheduleId}>
+      <ScheduleLayout canJoin={false} scheduleId={props.scheduleId}>
         <Box
           as="section"
           my={{ base: "2", md: "8" }}
@@ -159,6 +159,7 @@ function SchedulePage(props: ScheduleProps, notFound: boolean) {
     ownerDisplayName = data.schedule?.ownerDisplayName;
   }
 
+  const canJoinScheduleCta = vm?.joinSchedulePaidCta || vm?.joinScheduleFreeCta;
   const userTheme = createThemeFromSchedule(data.schedule);
 
   return (
@@ -186,6 +187,7 @@ function SchedulePage(props: ScheduleProps, notFound: boolean) {
         }}
       />
       <ScheduleLayout
+        canJoin={canJoinScheduleCta != undefined}
         scheduleId={props?.scheduleId}
         scheduleMember={data?.scheduleMember}
         userTheme={userTheme}
@@ -252,7 +254,7 @@ function SchedulePage(props: ScheduleProps, notFound: boolean) {
                 </Box>
 
                 <Fade in={!isValidating}>
-                  {(!vm.userIsPaidMember || false) && vm?.joinSchedulePaidCta && (
+                  {canJoinScheduleCta && (
                     <Button
                       my="3"
                       loadingText="Loading Plans"
@@ -273,7 +275,7 @@ function SchedulePage(props: ScheduleProps, notFound: boolean) {
                       }}
                       rightIcon={<BiRightArrowAlt />}
                     >
-                      {vm?.joinSchedulePaidCta}
+                      {canJoinScheduleCta}
                     </Button>
                   )}
                 </Fade>

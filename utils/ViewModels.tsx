@@ -13,7 +13,7 @@ import {
   FIRActivity,
   FIRInstructionSet,
   FIRScheduleMember,
-  FIRUser,
+  ScheduleSignUpType,
   Instruction,
   InstructionBlock,
   ShowFIRSchedule,
@@ -98,6 +98,13 @@ export function createShowScheduleViewModel(
   const secondaryColorLightRGBA = hexToRGB(secondaryColor, 0.15) || null;
   const anyoneCanSignup = schedule.signupType == "anyoneCanSignUp";
 
+  let userIsPaidMember = false;
+  const userIsFreeMember = scheduleMember != undefined;
+
+  if (scheduleMember) {
+    userIsPaidMember = isPayingMember(scheduleMember);
+  }
+
   const currentPrice: StripePrice | undefined =
     schedule.stripeCurrentOneTimePrice ||
     schedule.stripeCurrentMonthlyPrice ||
@@ -106,25 +113,23 @@ export function createShowScheduleViewModel(
   const premiumPriceTitle = currentPrice?.priceDisplayName || null;
 
   const joinSchedulePaidCta =
-    anyoneCanSignup && schedule.enableSubscription && currentPrice
-      ? "Become a Member"
+    anyoneCanSignup &&
+    schedule.enableSubscription &&
+    !userIsPaidMember &&
+    currentPrice
+      ? "Become Premium Member"
       : null;
 
   const joinScheduleFreeCta =
     anyoneCanSignup &&
     !schedule.payToJoin &&
-    schedule.enableSubscription &&
-    currentPrice
+    !userIsPaidMember &&
+    !userIsFreeMember &&
+    schedule.signupType == ScheduleSignUpType.anyoneCanSignUp
       ? joinSchedulePaidCta
         ? "Start for Free"
         : "Join for Free"
       : null;
-
-  let userIsPaidMember = false;
-
-  if (scheduleMember) {
-    userIsPaidMember = isPayingMember(scheduleMember);
-  }
 
   var links: WebLink[] = [];
   for (var key in schedule.profile?.links) {

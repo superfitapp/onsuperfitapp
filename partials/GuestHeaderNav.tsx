@@ -23,12 +23,14 @@ import { useUser } from "@auth0/nextjs-auth0";
 import { FIRScheduleMember } from "@superfitapp/superfitjs";
 
 interface GuestHeaderNavProps {
+  canJoin: boolean;
   scheduleId?: string;
   hideHeaderMobile: boolean;
   scheduleMember?: FIRScheduleMember;
 }
 
 export const GuestHeaderNav = ({
+  canJoin,
   scheduleId,
   hideHeaderMobile = false,
   scheduleMember,
@@ -96,7 +98,7 @@ export const GuestHeaderNav = ({
               >
                 Log in
               </Button>
-              {scheduleId && !scheduleMember && (
+              {canJoin && (
                 <Button
                   display={{ base: "none", md: "block" }}
                   onClick={() => {
