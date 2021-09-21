@@ -61,16 +61,10 @@ export default function ScheduleChecklist(
   const { user } = useUser();
   const router = useRouter();
   var steps: ScheduleChecklistItem[] = [];
-  const {
-    nextStep,
-    prevStep,
-    reset,
-    activeStep,
-    showLoading,
-    isLoading,
-  } = useSteps({
-    initialStep: 0,
-  });
+  const { nextStep, prevStep, reset, activeStep, showLoading, isLoading } =
+    useSteps({
+      initialStep: 0,
+    });
   const [confettiShown, setConfetti] = useBoolean(false);
   const { data } = useSWR<ShowFIRScheduleResponse>(
     `/api/schedule/${props.scheduleId}`,
@@ -127,7 +121,7 @@ export default function ScheduleChecklist(
       }
 
       return (
-        <ScheduleLayout scheduleId={props.scheduleId}>
+        <ScheduleLayout canJoin={false} scheduleId={props.scheduleId}>
           <Box
             as="section"
             my={{ base: "2", md: "8" }}
@@ -150,6 +144,7 @@ export default function ScheduleChecklist(
     }
   }
 
+  const canJoinScheduleCta = vm?.joinSchedulePaidCta || vm?.joinScheduleFreeCta;
   const scheduleTitle = vm?.scheduleTitle;
   const schedulePhotoUrl = vm?.photoUrl;
   const scheduleId = vm?.scheduleId;
@@ -177,7 +172,11 @@ export default function ScheduleChecklist(
 
   return (
     <>
-      <Layout scheduleId={null} hideHeaderMobile={true}>
+      <Layout
+        canJoin={canJoinScheduleCta != undefined}
+        scheduleId={null}
+        hideHeaderMobile={true}
+      >
         <Box as="section" py={{ base: "2", md: "8" }}>
           <Box
             rounded={{ lg: "lg" }}

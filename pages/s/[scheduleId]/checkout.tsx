@@ -33,7 +33,11 @@ export default function CheckoutSchedule(
     }
   }
 
-  const { data: response, error, isValidating } = useSWR<CheckoutResponse>(
+  const {
+    data: response,
+    error,
+    isValidating,
+  } = useSWR<CheckoutResponse>(
     `/api/schedule/${props.scheduleId}/checkout`,
     fetcher,
     {
@@ -76,7 +80,7 @@ export default function CheckoutSchedule(
 
   return (
     <>
-      <Layout scheduleId={null} hideHeaderMobile={true}>
+      <Layout canJoin={false} scheduleId={null} hideHeaderMobile={true}>
         <Box
           as="section"
           my={{ base: "2", md: "8" }}

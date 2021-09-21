@@ -121,7 +121,7 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
               },
             ]}
           ></NextSeo>
-          <Layout scheduleId={props.scheduleId}>
+          <Layout canJoin={false} scheduleId={props.scheduleId}>
             <LoadingPlaceholder></LoadingPlaceholder>
           </Layout>
         </>
@@ -142,7 +142,11 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
     ? `venmo://paycharge?txn=pay&recipients=leojkwan&amount=9.99&note=Just%20Testing%20heh`
     : `https://venmo.com/leojkwan`;
 
-  var scheduledDateString = activityViewModel?.scheduledDateString || null;
+  const canJoinScheduleCta =
+    scheduleViewModel?.joinSchedulePaidCta ||
+    scheduleViewModel?.joinScheduleFreeCta;
+
+  const scheduledDateString = activityViewModel?.scheduledDateString || null;
 
   let instructionsBlockMap =
     activityViewModel?.instructionSetViewModel?.instructionsBlockMap || null;
@@ -211,6 +215,7 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
         }}
       />
       <Layout
+        canJoin={canJoinScheduleCta != undefined}
         scheduleId={activityViewModel?.scheduleId}
         scheduleMember={data.scheduleMember}
         userTheme={userTheme}

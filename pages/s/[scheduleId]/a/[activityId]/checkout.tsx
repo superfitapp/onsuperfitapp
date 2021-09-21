@@ -71,7 +71,7 @@ export default function CheckoutActivity(
 
   return (
     <>
-      <Layout scheduleId={null} hideHeaderMobile={true}>
+      <Layout canJoin={false} scheduleId={null} hideHeaderMobile={true}>
         <Box
           as="section"
           my={{ base: "2", md: "8" }}
