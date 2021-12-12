@@ -7,7 +7,6 @@ import {
   FIRProgressLog,
   FIRSchedule,
   FIRScheduleMember,
-  FIRUser,
   ShowFIRSchedule,
   VisibilityStatus,
 } from "@superfitapp/superfitjs";

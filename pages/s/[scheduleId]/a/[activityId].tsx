@@ -117,7 +117,7 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
               {
                 name: "apple-itunes-app",
                 content:
-                  "app-clip-bundle-id=com.superfit.superfit.Clip,app-id=GXS8378HLM",
+                  "app-clip-bundle-id=com.superfit.superfit.Clip,app-id=GXS8378HLM,app-clip-display=card",
               },
             ]}
           ></NextSeo>
@@ -195,7 +195,7 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
           {
             name: "apple-itunes-app",
             content:
-              "app-clip-bundle-id=com.superfit.superfit.Clip,app-id=GXS8378HLM",
+              "app-clip-bundle-id=com.superfit.superfit.Clip,app-id=GXS8378HLM,app-clip-display=card",
           },
         ]}
         openGraph={{

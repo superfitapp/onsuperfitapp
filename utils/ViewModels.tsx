@@ -9,8 +9,6 @@ import {
 } from "@/utils/helpers";
 import {
   AccessLevel,
-  ActivityStatus,
-  FIRActivity,
   FIRInstructionSet,
   FIRScheduleMember,
   ScheduleSignUpType,
