@@ -20,43 +20,6 @@ export async function createSetupIntent(user: FIRUser): Promise<any> {
   });
 }
 
-export async function createOrUpdateScheduleMember(data: {
-  productId: string;
-  customerUser: FIRUser;
-  membershipInfo?: ConnectMembershipInfo;
-}) {
-  const { schedule, scheduleSnap } = await fetchScheduleForProductId(
-    data.productId
-  );
-
-  let currentMemberSnap = await scheduleMemberSnap(
-    data.customerUser.userId,
-    scheduleSnap.id
-  );
-
-  let currentMember:
-    | FIRScheduleMember
-    | undefined = currentMemberSnap?.data() as FIRScheduleMember;
-
-  if (currentMemberSnap && currentMember) {
-    if (data.membershipInfo) {
-      await currentMemberSnap.ref.set(
-        {
-          membershipInfo: data.membershipInfo,
-        },
-        { merge: true }
-      );
-    }
-  } else {
-    await addUserToSchedule(
-      schedule,
-      scheduleSnap,
-      data.customerUser,
-      data.membershipInfo
-    );
-  }
-}
-
 export async function fetchScheduleForProductId(
   productId: string
 ): Promise<{

@@ -32,36 +32,77 @@ export async function addUserToSchedule(
   user: FIRUser,
   membershipInfo?: ConnectMembershipInfo
 ): Promise<any> {
-  let scheduleMemberSnap = await this.scheduleMemberSnap(
+  const memberSnap = await this.scheduleMemberSnap(
     user.userId,
     scheduleSnap.id
   );
 
+  const scheduleMember = memberSnap.data();
+
   // redundant check
-  if (scheduleMemberSnap && scheduleMemberSnap.data()) {
+  if (scheduleMemberSnap && scheduleMember) {
     throw Error("already a member in schedule.");
   }
 
+  const memberStatus = scheduleMember?.status || MemberStatus.Active;
+
+  if (scheduleMember) {
+    if (memberStatus == MemberStatus.Removed) {
+      await memberSnap.ref.set(
+        {
+          status: MemberStatus.Active,
+        },
+        { merge: true }
+      );
+    } else if (memberStatus == MemberStatus.Blocked) {
+      throw Error("Blocked from joining schedule.");
+    } else {
+      throw Error("Already a member in schedule.");
+    }
+  } else {
+    // add member
+    const joinedTimestamp: FirebaseFirestore.Timestamp =
+      admin.firestore.Timestamp.now();
+
+    let member: FIRScheduleMember = {
+      userId: user.userId,
+      username: user.username,
+      name: user.name,
+      memberRole: ScheduleRole.Member,
+      scheduleTitle: scheduleToJoin.title,
+      scheduleId: scheduleSnap.id,
+      joined: joinedTimestamp,
+      status: MemberStatus.Active,
+      membershipInfo: membershipInfo,
+    };
+
+    await admin
+      .firestore()
+      .collection("schedules")
+      .doc(scheduleSnap.id)
+      .collection("schedule_members")
+      .add(member);
+  }
+
   // add member
-  const joinedTimestamp: FirebaseFirestore.Timestamp = admin.firestore.Timestamp.now();
+  // const joinedTimestamp: FirebaseFirestore.Timestamp = admin.firestore.Timestamp.now();
 
-  let member: FIRScheduleMember = {
-    userId: user.userId,
-    username: user.username,
-    name: user.name,
-    memberRole: ScheduleRole.Member,
-    scheduleTitle: scheduleToJoin.title,
-    scheduleId: scheduleSnap.id,
-    joined: joinedTimestamp,
-    status: MemberStatus.Active,
-    membershipInfo: membershipInfo,
-  };
+  // let member: FIRScheduleMember = {
+  //   userId: user.userId,
+  //   username: user.username,
+  //   name: user.name,
+  //   memberRole: ScheduleRole.Member,
+  //   scheduleTitle: scheduleToJoin.title,
+  //   scheduleId: scheduleSnap.id,
+  //   joined: joinedTimestamp,
+  //   status: MemberStatus.Active,
+  //   membershipInfo: membershipInfo,
+  // };
 
-  await admin
-    .firestore()
-    .collection("schedules")
-    .doc(scheduleSnap.id)
-    .collection("schedule_members")
-    .add(member);
+  // await admin
+  //   .firestore()
+  //   .collection("schedules")
+  //   .doc(scheduleSnap.id)
+  //   .collection("schedule_members")
+  //   .add(member);
 }
-
