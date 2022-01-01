@@ -83,26 +83,4 @@ export async function addUserToSchedule(
       .collection("schedule_members")
       .add(member);
   }
-
-  // add member
-  // const joinedTimestamp: FirebaseFirestore.Timestamp = admin.firestore.Timestamp.now();
-
-  // let member: FIRScheduleMember = {
-  //   userId: user.userId,
-  //   username: user.username,
-  //   name: user.name,
-  //   memberRole: ScheduleRole.Member,
-  //   scheduleTitle: scheduleToJoin.title,
-  //   scheduleId: scheduleSnap.id,
-  //   joined: joinedTimestamp,
-  //   status: MemberStatus.Active,
-  //   membershipInfo: membershipInfo,
-  // };
-
-  // await admin
-  //   .firestore()
-  //   .collection("schedules")
-  //   .doc(scheduleSnap.id)
-  //   .collection("schedule_members")
-  //   .add(member);
 }
