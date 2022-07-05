@@ -5,6 +5,7 @@ import { FIRSchedule, FIRUser } from "@superfitapp/superfitjs";
 import { fetchOrCreateStripeCustomerIdForConnectAccount } from "@/utils/stripe-server";
 import { CheckoutResponse } from "@/lib/checkout-response";
 import { CheckoutType } from "./activity/[activityId]/CheckoutType";
+import { fetchScheduleOwnerConnectData } from "@/lib/db-authed";
 
 export default withApiAuthRequired(async function CheckoutSession(req, res) {
   const userSession = getSession(req, res);
@@ -30,46 +31,28 @@ export default withApiAuthRequired(async function CheckoutSession(req, res) {
     throw Error("Authenticated user not found.");
   }
 
-  let scheduleSnap = await db.collection("schedules").doc(scheduleId).get();
-  const currentSchedule: FIRSchedule | undefined =
-    scheduleSnap.data() as FIRSchedule;
-
-  if (!currentSchedule) {
-    throw Error("schedule not found.");
-  }
-
-  if (!currentSchedule.stripeProductId) {
-    throw Error("membership payments not enabled for schedule.");
-  }
+  const { schedule, connectId, owner } = await fetchScheduleOwnerConnectData({
+    scheduleId: scheduleId,
+  });
 
   let stripePrice =
-    currentSchedule.stripeCurrentOneTimePrice ||
-    currentSchedule.stripeCurrentMonthlyPrice ||
-    currentSchedule.stripeCurrentYearlyPrice;
+    schedule.stripeCurrentOneTimePrice ||
+    schedule.stripeCurrentMonthlyPrice ||
+    schedule.stripeCurrentYearlyPrice;
 
-  if (!currentSchedule || !stripePrice) {
-    throw Error("schedule or price not found.");
-  }
+    const currency = stripePrice.currency || "usd"
 
-  let scheduleOwnerSnap = await db
-    .collection("users")
-    .doc(currentSchedule.ownerId)
-    .get();
-  const scheduleOwner: FIRUser = scheduleOwnerSnap.data() as FIRUser;
-
-  if (
-    !scheduleOwner.billingInfo ||
-    !scheduleOwner.billingInfo.stripe ||
-    !scheduleOwner.billingInfo.stripe.connectId
-  ) {
-    console.log("schedule owner is not a commerce user", userId);
-    throw Error("owner is not a commerce user.");
+  if (!schedule || !stripePrice || !schedule.stripeProductId) {
+    throw Error(
+      "schedule or price/product not found."
+    );
   }
 
   let currentUserCustomerId =
     await fetchOrCreateStripeCustomerIdForConnectAccount(
       currentUser,
-      scheduleOwner.billingInfo.stripe.connectId
+      connectId,
+      currency
     );
 
   const session = await stripeNode.checkout.sessions.create(
@@ -77,9 +60,9 @@ export default withApiAuthRequired(async function CheckoutSession(req, res) {
       payment_method_types: ["card"],
       metadata: {
         checkoutType: CheckoutType.Schedule,
-        productId: currentSchedule.stripeProductId,
+        productId: schedule.stripeProductId,
         priceId: stripePrice.priceId,
-        ownerId: scheduleOwner.userId,
+        ownerId: owner.userId,
         userId: userId,
         scheduleId: scheduleId,
       },
@@ -92,27 +75,27 @@ export default withApiAuthRequired(async function CheckoutSession(req, res) {
       customer: currentUserCustomerId,
       allow_promotion_codes: true,
       mode:
-        currentSchedule.stripeCurrentOneTimePrice == undefined
+      schedule.stripeCurrentOneTimePrice == undefined
           ? "subscription"
           : "payment",
       subscription_data:
-        currentSchedule.stripeCurrentOneTimePrice == undefined
+      schedule.stripeCurrentOneTimePrice == undefined
           ? {
-              application_fee_percent: 5,
-            }
+            application_fee_percent: 5,
+          }
           : undefined,
-      success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/s/${scheduleSnap.id}/checklist`,
-      cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/s/${scheduleSnap.id}/checklist`,
+      success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/s/${scheduleId}/checklist`,
+      cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/s/${scheduleId}/checklist`,
     },
     {
-      stripeAccount: scheduleOwner.billingInfo.stripe.connectId,
+      stripeAccount: connectId,
     }
   );
 
   let response: CheckoutResponse = {
     type: "checkout",
     sessionId: session.id,
-    connectStripeAccountId: scheduleOwner.billingInfo.stripe.connectId,
+    connectStripeAccountId: connectId,
   };
 
   res.json(response);

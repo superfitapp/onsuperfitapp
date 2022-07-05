@@ -18,7 +18,6 @@ export default async function CheckoutActivity(req, res) {
 
   let activityId = req.query["activityId"];
   let scheduleId = req.query["scheduleId"];
-  let currency = req.query["currency"] || "usd";
   let tipAmount = req.query["tipAmount"];
 
   if (!activityId || !scheduleId) {
@@ -33,6 +32,7 @@ export default async function CheckoutActivity(req, res) {
     .get();
 
   const activity: FIRActivity | undefined = activitySnap.data() as FIRActivity;
+  const currency = activity.signupConfig?.priceCurrency || "usd"
 
   if (!activity) {
     throw Error("activity id and schedule id required.");
@@ -69,7 +69,8 @@ export default async function CheckoutActivity(req, res) {
     currentUserCustomerId =
       await fetchOrCreateStripeCustomerIdForConnectAccount(
         currentUser,
-        connectId
+        connectId,
+        currency
       );
   }
 

@@ -146,22 +146,29 @@ export async function fetchUserForConnectAccount(data: {
 
 export async function fetchOrCreateStripeCustomerIdForConnectAccount(
   user: FIRUser,
-  connectedAccountId: string
+  connectedAccountId: string,
+  currency: string
 ): Promise<string> {
-  // create customer
+  var ownerConnectAccountByCurrency = connectedAccountId
+  if (currency != "usd") {
+    // if currency is not usd, hash account with custom currency
+    ownerConnectAccountByCurrency = `${connectedAccountId}-${currency}`
+  }
+
   if (
     !user.billingInfo ||
     !user.billingInfo.stripe ||
     !user.billingInfo.stripe.connectCustomerIds ||
-    !user.billingInfo.stripe.connectCustomerIds[connectedAccountId]
+    !user.billingInfo.stripe.connectCustomerIds[ownerConnectAccountByCurrency]
   ) {
-    const customer = await createCustomerForConnectAccount(
-      user,
-      connectedAccountId
-    );
+    // add customer to hash
+    const customer = await this.createCustomerForConnectAccount({
+      userEmail: user.email,
+      connectedAccountId: ownerConnectAccountByCurrency,
+    });
 
     let update: { [key: string]: any } = {};
-    update[connectedAccountId] = customer.id;
+    update[ownerConnectAccountByCurrency] = customer.id;
 
     await db
       .collection("users")
