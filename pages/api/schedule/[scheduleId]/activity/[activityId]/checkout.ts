@@ -3,9 +3,9 @@ import { db } from "@/lib/firebase-admin";
 import { CheckoutResponse } from "@/lib/checkout-response";
 import { FIRActivity, FIRUser } from "@superfitapp/superfitjs";
 import {
-  fetchOrCreateStripeCustomerIdForConnectAccount,
+  StripeService,
   stripeNode,
-} from "@/utils/stripe-server";
+} from "@/utils/StripeService";
 import { fetchScheduleOwnerConnectData } from "@/lib/db-authed";
 import { CheckoutType } from "./CheckoutType";
 import { getPhotoUrl } from "@/utils/helpers";
@@ -67,7 +67,7 @@ export default async function CheckoutActivity(req, res) {
   let currentUserCustomerId: string | undefined;
   if (currentUser) {
     currentUserCustomerId =
-      await fetchOrCreateStripeCustomerIdForConnectAccount(
+      await StripeService.fetchOrCreateStripeCustomerIdForConnectAccount(
         currentUser,
         connectId,
         currency

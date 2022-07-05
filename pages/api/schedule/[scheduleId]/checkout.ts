@@ -1,8 +1,8 @@
 import { withApiAuthRequired, getSession } from "@auth0/nextjs-auth0";
-import { stripeNode } from "@/utils/stripe-server";
+import { stripeNode } from "@/utils/StripeService";
 import { db } from "@/lib/firebase-admin";
-import { FIRSchedule, FIRUser } from "@superfitapp/superfitjs";
-import { fetchOrCreateStripeCustomerIdForConnectAccount } from "@/utils/stripe-server";
+import { FIRUser } from "@superfitapp/superfitjs";
+import { StripeService } from "@/utils/StripeService";
 import { CheckoutResponse } from "@/lib/checkout-response";
 import { CheckoutType } from "./activity/[activityId]/CheckoutType";
 import { fetchScheduleOwnerConnectData } from "@/lib/db-authed";
@@ -40,7 +40,7 @@ export default withApiAuthRequired(async function CheckoutSession(req, res) {
     schedule.stripeCurrentMonthlyPrice ||
     schedule.stripeCurrentYearlyPrice;
 
-    const currency = stripePrice.currency || "usd"
+  const currency = stripePrice.currency || "usd"
 
   if (!schedule || !stripePrice || !schedule.stripeProductId) {
     throw Error(
@@ -49,7 +49,7 @@ export default withApiAuthRequired(async function CheckoutSession(req, res) {
   }
 
   let currentUserCustomerId =
-    await fetchOrCreateStripeCustomerIdForConnectAccount(
+    await StripeService.fetchOrCreateStripeCustomerIdForConnectAccount(
       currentUser,
       connectId,
       currency
@@ -75,11 +75,11 @@ export default withApiAuthRequired(async function CheckoutSession(req, res) {
       customer: currentUserCustomerId,
       allow_promotion_codes: true,
       mode:
-      schedule.stripeCurrentOneTimePrice == undefined
+        schedule.stripeCurrentOneTimePrice == undefined
           ? "subscription"
           : "payment",
       subscription_data:
-      schedule.stripeCurrentOneTimePrice == undefined
+        schedule.stripeCurrentOneTimePrice == undefined
           ? {
             application_fee_percent: 5,
           }
