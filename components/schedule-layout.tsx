@@ -2,7 +2,6 @@ import { Box } from "@chakra-ui/react";
 import { GuestHeaderNav } from "../partials/GuestHeaderNav";
 import { ChakraProvider } from "@chakra-ui/react";
 import { FIRScheduleMember } from "@superfitapp/superfitjs";
-import createTheme, { SFThemeProps } from "@/styles/theme";
 
 interface ScheduleLayoutProps {
   canJoin: boolean;

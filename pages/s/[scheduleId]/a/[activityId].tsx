@@ -1,6 +1,5 @@
 import Error from "next/error";
-import Layout from "@/components/schedule-layout";
-import { isIOS, osVersion } from "react-device-detect";
+import ScheduleLayout from "@/components/schedule-layout";
 import {
   Box,
   Text,
@@ -20,15 +19,14 @@ import {
   AccordionPanel,
   AccordionIcon,
   AccordionButton,
-  ExpandedIndex,
   Badge,
-  Circle,
   Link,
 } from "@chakra-ui/react";
-import { BiHeart, BiHeartCircle, BiRightArrowAlt } from "react-icons/bi";
+import { BiRightArrowAlt } from "react-icons/bi";
 import * as React from "react";
 import { ListItem } from "@/partials/ListItem";
 import { List } from "@/partials/List";
+import { useUser } from '@auth0/nextjs-auth0';
 
 import { getShowActivity, ShowFIRActivityResponse } from "@/lib/db-public";
 import ReactPlayer from "react-player/lazy";
@@ -44,8 +42,6 @@ import { BigMedia } from "@/partials/BigMedia";
 import { ArrowDirection, ScheduleRow } from "@/partials/ScheduleRow";
 import { AccessLevel } from "@superfitapp/superfitjs";
 import useSWR from "swr";
-import fetcher from "@/utils/fetcher";
-import { useUser } from "@auth0/nextjs-auth0";
 import { useRouter } from "next/router";
 import { routerLoading } from "@/utils/router-loading";
 import { CustomSelect } from "@/partials/dropdown-select/CustomSelect";
@@ -56,6 +52,8 @@ import { NextSeo } from "next-seo";
 import { Option } from "@/partials/dropdown-select/Option";
 import { CheckoutResponse } from "@/lib/checkout-response";
 import getStripe from "@/utils/stripe";
+import fetcher from "@/utils/fetcher";
+
 
 enum HighFive {
   One = "1 🙌",
@@ -72,13 +70,12 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
 
   function sendTipGift(amount: number) {
     router.push(
-      `/s/${props.scheduleId}/a/${props.activityId}/checkout?tipAmount=${
-        amount * 100
-      }`
+      `/s/${props.scheduleId}/a/${props.activityId}/checkout?tipAmount=${amount * 100}`
     );
   }
 
-  const { user } = useUser();
+  const { user, error } = useUser();
+
   const {
     isLoading,
     effect: routerEffect,
@@ -92,55 +89,37 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
     };
   }, []);
 
-  const { data } = useSWR<ShowFIRActivityResponse>(
-    `/api/schedule/${props.scheduleId}/activity/${props.activityId}`,
-    fetcher,
-    {
-      initialData: props.data,
-      revalidateOnMount: user != undefined,
-      revalidateOnFocus: false,
-    }
-  );
 
+  const key = user
+  ? `/api/schedule/${props.scheduleId}/activity/${props.activityId}`
+  : `/api/show/schedule/${props.scheduleId}/activity/${props.activityId}`
+
+
+  const options = {
+    initialData: props.data,
+    revalidateOnMount: user != undefined,
+    revalidateOnFocus: false,
+  }
+
+  const { data } = useSWR<ShowFIRActivityResponse>(
+    key,
+    fetcher,
+    options
+  );
+  // const activityData = props.data
+  const activityData = data || props.data
+    
   var activityViewModel: ActivityViewModel = null;
   var scheduleViewModel: ShowScheduleViewModel = null;
 
-  if (!props.data) {
-    if (notFound == true) {
-      return <Error statusCode={404} />;
-    } else {
-      return (
-        <>
-          <NextSeo
-            canonical={`${process.env.NEXT_PUBLIC_BASE_URL}/s/${props.scheduleId}/a/${props.activityId}`}
-            additionalMetaTags={[
-              {
-                name: "apple-itunes-app",
-                content:
-                  "app-clip-bundle-id=com.superfit.superfit.Clip,app-id=GXS8378HLM,app-clip-display=card",
-              },
-            ]}
-          ></NextSeo>
-          <Layout canJoin={false} scheduleId={props.scheduleId}>
-            <LoadingPlaceholder></LoadingPlaceholder>
-          </Layout>
-        </>
-      );
-    }
-  }
-
-  if (data && data.schedule) {
-    activityViewModel = createShowActivityViewModel(data);
+  if (activityData && activityData.schedule) {
+    activityViewModel = createShowActivityViewModel(activityData);
     scheduleViewModel = createShowScheduleViewModel(
       props.scheduleId,
-      data.schedule,
-      data.scheduleMember
+      activityData.schedule,
+      activityData.scheduleMember
     );
   }
-
-  const tipLink = isIOS
-    ? `venmo://paycharge?txn=pay&recipients=leojkwan&amount=9.99&note=Just%20Testing%20heh`
-    : `https://venmo.com/leojkwan`;
 
   const canJoinScheduleCta =
     scheduleViewModel?.joinSchedulePaidCta ||
@@ -155,14 +134,15 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
   const activityAbout = activityViewModel?.description || null;
   const activityPhotoUrl = activityViewModel?.photoUrl || null;
 
-  const userTheme = createThemeFromSchedule(data.schedule);
+  const userTheme = createThemeFromSchedule(activityData?.schedule);
   const accessOptions = activityViewModel?.accessOptions;
 
   function selectAccessOption(option: AccessLevel) {
     switch (option) {
-      case (AccessLevel.members, AccessLevel.members):
+      case AccessLevel.paidMembers:
+      case AccessLevel.members:
         router.push(`/s/${props.scheduleId}/join`);
-        break;
+        break
       case AccessLevel.oneTimePurchase:
         router.push(`/s/${props.scheduleId}/a/${props.activityId}/checkout`);
     }
@@ -182,6 +162,30 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
     case HighFive.Four:
       highFiveAmount = 20;
       break;
+  }
+
+  if (!props.data) {
+    if (notFound == true) {
+      return <Error statusCode={404} />;
+    } else {
+      return (
+        <>
+          <NextSeo
+            canonical={`${process.env.NEXT_PUBLIC_BASE_URL}/s/${props.scheduleId}/a/${props.activityId}`}
+            additionalMetaTags={[
+              {
+                name: "apple-itunes-app",
+                content:
+                  "app-clip-bundle-id=com.superfit.superfit.Clip,app-id=GXS8378HLM,app-clip-display=card",
+              },
+            ]}
+          ></NextSeo>
+          <ScheduleLayout canJoin={false} scheduleId={props.scheduleId}>
+            <LoadingPlaceholder></LoadingPlaceholder>
+          </ScheduleLayout>
+        </>
+      );
+    }
   }
 
   return (
@@ -209,15 +213,15 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
               url: activityPhotoUrl,
               width: 800,
               height: 500,
-              alt: `Image of ${activityTitle} from ${scheduleViewModel.scheduleTitle}`,
+              alt: `Image of ${activityTitle} from ${scheduleViewModel?.scheduleTitle}`,
             },
           ],
         }}
       />
-      <Layout
+      <ScheduleLayout
         canJoin={canJoinScheduleCta != undefined}
         scheduleId={activityViewModel?.scheduleId}
-        scheduleMember={data.scheduleMember}
+        scheduleMember={activityData?.scheduleMember}
         userTheme={userTheme}
       >
         <Box
@@ -293,7 +297,6 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
                           h="full"
                         ></Box>
                       )}
-
                       {activityPhotoUrl && (
                         <Box>
                           <Img
@@ -330,16 +333,6 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
                       {activityTitle}
                     </Text>
                   </VStack>
-                  {/* <Center rounded="lg" bg="rgba(0,0,0,0.05)">
-                    <Text
-                      py="1"
-                      px="2"
-                      fontSize="lg"
-                      fontWeight="medium"
-                    >
-                      $50
-                    </Text>
-                  </Center> */}
                 </Flex>
 
                 <ScheduleRow
@@ -528,7 +521,7 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
 
                 {/* Content is locked */}
                 <Flex
-                  display={data.hasAccess ? "none" : "inherit"}
+                  display={activityData?.hasAccess ? "none" : "inherit"}
                   w="full"
                   mx="auto"
                   justifyContent="center"
@@ -612,21 +605,21 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
                                                         >
                                                           {viewModel.instruction
                                                             .exercise.title && (
-                                                            <Text
-                                                              textAlign="start"
-                                                              fontSize="md"
-                                                              color="gray.800"
-                                                              fontStyle="medium"
-                                                              fontWeight="medium"
-                                                            >
-                                                              {
-                                                                viewModel
-                                                                  .instruction
-                                                                  .exercise
-                                                                  .title
-                                                              }
-                                                            </Text>
-                                                          )}
+                                                              <Text
+                                                                textAlign="start"
+                                                                fontSize="md"
+                                                                color="gray.800"
+                                                                fontStyle="medium"
+                                                                fontWeight="medium"
+                                                              >
+                                                                {
+                                                                  viewModel
+                                                                    .instruction
+                                                                    .exercise
+                                                                    .title
+                                                                }
+                                                              </Text>
+                                                            )}
 
                                                           {viewModel.instructionPrompt && (
                                                             <Text
@@ -710,7 +703,7 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
             </Grid>
           </Box>
         </Box>
-      </Layout>
+      </ScheduleLayout>
     </>
   );
 }

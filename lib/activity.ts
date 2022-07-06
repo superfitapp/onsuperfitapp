@@ -14,7 +14,7 @@ import { scheduleMemberSnap } from "./schedule-member";
 import { ShowFIRActivityResponse } from "./db-public";
 import { createShowSchedule } from "./schedule";
 import { progressLogSnap } from "./progress-log";
-import { hasValidMembership } from "./memberships";
+import { isPayingMember } from "@/utils/schedule-member";
 
 export async function fetchActivity(
   scheduleId: string,
@@ -32,7 +32,15 @@ export async function fetchActivity(
     | undefined = scheduleSnap.data() as FIRSchedule;
 
   if (!currentSchedule) {
-    throw Error("schedule not found.");
+    return {
+      hasAccess: false,
+      accessOptions: [AccessLevel.all],
+      schedule: null,
+      activity: null,
+      instructionSet: null,
+      scheduleMember: null,
+      accessLevel: AccessLevel.all,
+    }
   }
 
   // not public schedule.
@@ -49,7 +57,6 @@ export async function fetchActivity(
       const snap = await scheduleMemberSnap(userId, scheduleId);
       if (snap && snap.data()) {
         scheduleMember = snap.data() as FIRScheduleMember;
-
         let logSnap = await progressLogSnap({
           activityId: activityId,
           userId: userId,
@@ -57,10 +64,10 @@ export async function fetchActivity(
 
         userLog = logSnap?.data() as FIRProgressLog;
       }
-    } catch {}
+    } catch { }
   }
 
-  // is a public schedule
+  // This is a public schedule.
   let activitySnap = await db
     .collection("schedules")
     .doc(scheduleId)
@@ -87,7 +94,7 @@ export async function fetchActivity(
       hasAccess: hasAccess,
       accessOptions: accessOptions,
       schedule: showSchedule,
-      scheduleMember: null,
+      scheduleMember: scheduleMember,
       activity: activity,
       accessLevel: activity.access,
     };
@@ -185,8 +192,9 @@ function accessOptionsForActivity(data: {
   }
 
   if (data.member) {
+    
     // paid member
-    if (hasValidMembership(data.member)) {
+    if (isPayingMember(data.member)) {
       requiredAccessLevels = requiredAccessLevels.filter((x) => {
         return x.weight > paidMembersOnly.weight;
       });

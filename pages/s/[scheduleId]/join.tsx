@@ -8,7 +8,6 @@ import {
   Flex,
   Stack,
   StackDivider,
-  Text,
   useColorModeValue as mode,
 } from "@chakra-ui/react";
 
@@ -35,7 +34,7 @@ export interface JoinScheduleProps {
 
 function JoinSchedule(props: JoinScheduleProps, notFound: boolean) {
   const router = useRouter();
-
+  
   if (!props.data && notFound == true) {
     if (notFound) {
       return <Error statusCode={404} />;

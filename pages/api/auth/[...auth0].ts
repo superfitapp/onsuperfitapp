@@ -14,7 +14,7 @@ const afterCallback = async (req, res, session: Session, state) => {
       useFetchUser({ required: true });
     }
   } catch (error) {
-    // don't throw attempt for firebase token
+    // Don't throw attempt for firebase token.
   }
   return session;
 };
