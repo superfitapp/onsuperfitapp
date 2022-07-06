@@ -23,14 +23,6 @@ export default function Home() {
     require("@/public/js/pricing");
   }, []);
 
-  if (typeof window !== "undefined") {
-    const returnTo = localStorage.getItem("returnTo");
-    if (returnTo) {
-      localStorage.removeItem("returnTo");
-      router.push(returnTo);
-    }
-  }
-
   return (
     <>
       <NextSeo canonical="https://superfitapp.com" />

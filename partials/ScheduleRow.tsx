@@ -55,7 +55,6 @@ export const ScheduleRow = ({
     {schedulePhotoUrl && (
       <Avatar
         display={{ base: hideTitleOnSmall ? "none" : "inherit", sm: "inherit" }}
-        alt="{author}"
         width="12"
         height="12"
         rounded="full"
@@ -70,7 +69,8 @@ export const ScheduleRow = ({
           color={mode("gray.700", "gray.600")}
           fontSize="md"
           fontWeight="medium"
-          align="start"
+          // align="start"
+          alignContent="start"
           noOfLines={{ base: 1, sm: 2 }}
         >
           {scheduleTitle}

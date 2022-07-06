@@ -31,7 +31,11 @@ export async function fetchShowSchedule({
     scheduleSnap.data() as FIRSchedule;
 
   if (!currentSchedule) {
-    throw Error("schedule not found.");
+    return {
+      schedule: null,
+      activities: [],
+      scheduleMember: null,
+    };
   }
 
   let showSchedule: ShowFIRSchedule = createShowSchedule(currentSchedule);
@@ -44,7 +48,7 @@ export async function fetchShowSchedule({
       if (snap && snap.data()) {
         scheduleMember = snap.data() as FIRScheduleMember;
       }
-    } catch {}
+    } catch { }
   }
 
   if (currentSchedule.visibilityStatus != VisibilityStatus.Public) {

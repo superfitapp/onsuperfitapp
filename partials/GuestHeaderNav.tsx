@@ -21,6 +21,7 @@ import { NavLink } from "./NavLink";
 import { useRouter } from "next/router";
 import { useUser } from "@auth0/nextjs-auth0";
 import { FIRScheduleMember } from "@superfitapp/superfitjs";
+import { isPayingMember } from "@/utils/schedule-member";
 
 interface GuestHeaderNavProps {
   canJoin: boolean;
@@ -42,14 +43,21 @@ export const GuestHeaderNav = ({
     try {
       if (typeof window !== "undefined") {
         if (router.asPath != "/") {
-          localStorage.setItem("returnTo", router.asPath);
+          router.push(`/api/auth/login?returnTo=${router.asPath}`);
+          return
         }
       }
+      // default
       router.push("/api/auth/login");
     } catch (error) {
       //
     }
   };
+
+  var memberStatus = "Test"
+  if (scheduleMember) {
+    memberStatus = isPayingMember(scheduleMember) ? "Premium" : scheduleMember.memberRole
+  }
 
   return (
     <Box
@@ -139,7 +147,7 @@ export const GuestHeaderNav = ({
                         color={mode("gray.600", "gray.200")}
                       >
                         <Text textTransform="uppercase" size="xs">
-                          {scheduleMember.memberRole}
+                          {memberStatus}
                         </Text>
                       </Badge>
                     )}
@@ -150,11 +158,6 @@ export const GuestHeaderNav = ({
                     <MenuItem>My Account</MenuItem>
                     <MenuItem
                       onClick={() => {
-                        if (typeof window !== "undefined") {
-                          if (router.asPath != "/") {
-                            localStorage.setItem("returnTo", router.asPath);
-                          }
-                        }
                         router.push("/api/auth/logout");
                       }}
                     >

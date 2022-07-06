@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { getSession, withApiAuthRequired } from "@auth0/nextjs-auth0";
 import { fetchActivity } from "@/lib/activity";
 
-export default withApiAuthRequired(async function fetch(
+export default withApiAuthRequired(async function showActivity(
   req: NextApiRequest,
   res: NextApiResponse
 ) {

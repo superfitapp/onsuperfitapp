@@ -1,4 +1,4 @@
-import { FIRScheduleMember } from "@superfitapp/superfitjs";
+import { FIRScheduleMember, SubscriptionStatus } from "@superfitapp/superfitjs";
 
 // TODO:// this should be tested
 export function isPayingMember(scheduleMember: FIRScheduleMember): boolean {
@@ -11,17 +11,14 @@ export function isPayingMember(scheduleMember: FIRScheduleMember): boolean {
   const subscriptionStatus = info?.subscriptionStatus;
   const endedAtTimeStamp = info?.subscriptionEndedAt;
 
-  function statusIsActive(subscriptionStatus: string): boolean {
-    return (
-      subscriptionStatus == "active" ||
-      subscriptionStatus == "trialing" ||
-      subscriptionStatus == "canceled"
-    );
-  }
+  let isActive =
+    subscriptionStatus == SubscriptionStatus.active ||
+    subscriptionStatus == SubscriptionStatus.trialing ||
+    subscriptionStatus == SubscriptionStatus.canceled;
 
-  if (info.subscriptionStatus && endedAtTimeStamp && subscriptionStatus) {
+  if (endedAtTimeStamp && isActive ) {
     let endDate = new Date(endedAtTimeStamp * 1000);
-    return statusIsActive(subscriptionStatus) && endDate > new Date();
+    return endDate > new Date();
   } else if (!subscriptionStatus && !info.invoiceStatus) {
     // Lifetime membership
     return true;

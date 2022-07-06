@@ -11,7 +11,7 @@ import axios from "axios";
 import { fetchActivity } from "./activity";
 
 export interface ShowFIRScheduleResponse {
-  schedule: ShowFIRSchedule;
+  schedule?: ShowFIRSchedule;
   currentUser?: FIRUser;
   activities: FIRActivity[];
   scheduleMember?: FIRScheduleMember;
@@ -22,7 +22,7 @@ export interface ShowFIRActivityResponse {
   hasAccess: boolean;
   accessOptions: string[];
   activity?: FIRActivity;
-  schedule: ShowFIRSchedule;
+  schedule?: ShowFIRSchedule;
   scheduleMember?: FIRScheduleMember;
   instructionSet?: FIRInstructionSet;
   userLog?: FIRProgressLog;

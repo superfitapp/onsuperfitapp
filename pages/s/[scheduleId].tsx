@@ -40,53 +40,65 @@ export interface ScheduleProps {
   data: ShowFIRScheduleResponse;
 }
 
-export async function getStaticProps({ params }) {
-  const { scheduleId } = params;
-  var props: ScheduleProps | undefined = {
-    scheduleId: scheduleId,
-    data: null,
-  };
-
-  if (!scheduleId) {
-    return {
-      props: props,
-      notFound: true,
-      revalidate: 1,
-    };
-  }
-
-  var data = await fetchShowSchedule({
-    scheduleId: scheduleId,
-    fetchRecentActivities: true,
-  });
-
-  if (!data) {
-    return {
-      props: props,
-      notFound: true,
-    };
-  }
-
-  props = {
-    scheduleId: scheduleId,
-    data: data,
-  };
-
-  return {
-    props: props,
-    // Next.js will attempt to re-generate the page:
-    // - When a request comes in
-    // - At most once every second
-    revalidate: 1, // In seconds
-  };
-}
-
 function SchedulePage(props: ScheduleProps, notFound: boolean) {
-  const schedule = props?.data?.schedule;
-
   const router = useRouter();
   const { user } = useUser();
 
+  const {
+    isLoading,
+    effect: routerEffect,
+    onDestroy: routerOnDestroy,
+  } = routerLoading(router);
+  
+  const key = user
+    ? `/api/schedule/${props.scheduleId}?fetchRecentActivities=true`
+    : `/api/show/schedule/${props.scheduleId}?fetchRecentActivities=true`
+
+  const options = {
+    initialData: props.data,
+    revalidateOnMount: user != undefined,
+    revalidateOnFocus: false,
+  }
+
+  const { data, isValidating } = useSWR<ShowFIRScheduleResponse>(
+    key,
+    fetcher,
+    options
+  );
+
+  React.useEffect(() => {
+    routerEffect();
+    return () => {
+      routerOnDestroy();
+    };
+  }, []);
+
+  var activities: FIRActivity[] = props.data?.activities || [];
+  var schedule = data?.schedule || props?.data?.schedule
+  var scheduleTitle = schedule?.title;
+  const scheduleAbout = schedule?.profile?.about;
+  var schedulePhotoUrl: string = null;
+  var ownerDisplayName: string = null;
+
+  var scheduleMember = data?.scheduleMember || props?.data?.scheduleMember
+  var vm: ShowScheduleViewModel = null
+
+  if (schedule) {
+    vm = createShowScheduleViewModel(
+      props.scheduleId,
+      schedule,
+      scheduleMember
+    );
+  }
+
+  schedulePhotoUrl = vm?.photoUrl;
+  ownerDisplayName = schedule?.ownerDisplayName;
+  const canJoinScheduleCta = vm?.joinSchedulePaidCta || vm?.joinScheduleFreeCta;
+  const userTheme = createThemeFromSchedule(data?.schedule);
+
+  /*
+   *  Empty State
+   */
   if (!props.scheduleId || !schedule) {
     if (notFound == true) {
       return <Error statusCode={404} />;
@@ -114,53 +126,6 @@ function SchedulePage(props: ScheduleProps, notFound: boolean) {
       </ScheduleLayout>
     );
   }
-
-  const {
-    isLoading,
-    effect: routerEffect,
-    onDestroy: routerOnDestroy,
-  } = routerLoading(router);
-
-  const { data, isValidating } = useSWR<ShowFIRScheduleResponse>(
-    user
-      ? `/api/schedule/${props.scheduleId}?fetchRecentActivities=true`
-      : `/api/show/schedule/${props.scheduleId}?fetchRecentActivities=true`,
-    fetcher,
-    {
-      initialData: props.data,
-      revalidateOnMount: user != undefined,
-      revalidateOnFocus: false,
-    }
-  );
-
-  React.useEffect(() => {
-    routerEffect();
-    return () => {
-      routerOnDestroy();
-    };
-  }, []);
-
-  var activities: FIRActivity[] = props.data?.activities || [];
-  var scheduleTitle = schedule?.title;
-  const scheduleAbout = schedule?.profile?.about;
-  var schedulePhotoUrl: string = null;
-  var ownerDisplayName: string = null;
-
-  let vm: ShowScheduleViewModel = null;
-
-  if (data) {
-    vm = createShowScheduleViewModel(
-      props.scheduleId,
-      data.schedule,
-      data.scheduleMember
-    );
-
-    schedulePhotoUrl = vm?.photoUrl;
-    ownerDisplayName = data.schedule?.ownerDisplayName;
-  }
-
-  const canJoinScheduleCta = vm?.joinSchedulePaidCta || vm?.joinScheduleFreeCta;
-  const userTheme = createThemeFromSchedule(data.schedule);
 
   return (
     <>
@@ -287,7 +252,7 @@ function SchedulePage(props: ScheduleProps, notFound: boolean) {
                       mt="8"
                       name={ownerDisplayName}
                       profile={schedule.profile}
-                      iconColor={vm.socialIconsColor}
+                      iconColor={vm?.socialIconsColor}
                     ></OwnerWithSocial>
                   </Box>
                 )}
@@ -325,13 +290,54 @@ function SchedulePage(props: ScheduleProps, notFound: boolean) {
   );
 }
 
-// This function gets called at build time
+export default SchedulePage;
+
+// This function gets called at build time.
 export async function getStaticPaths() {
-  // don't prerender any schedule pages
+  // Don't prerender any schedule pages.
   return {
     paths: [],
     fallback: true,
   };
 }
 
-export default SchedulePage;
+export async function getStaticProps({ params }) {
+  const { scheduleId } = params;
+  var props: ScheduleProps | undefined = {
+    scheduleId: scheduleId,
+    data: null,
+  };
+
+  if (!scheduleId) {
+    return {
+      props: props,
+      notFound: true,
+      revalidate: 1,
+    };
+  }
+
+  var data = await fetchShowSchedule({
+    scheduleId: scheduleId,
+    fetchRecentActivities: true,
+  });
+
+  if (!data) {
+    return {
+      props: props,
+      notFound: true,
+    };
+  }
+
+  props = {
+    scheduleId: scheduleId,
+    data: data,
+  };
+
+  return {
+    props: props,
+    // Next.js will attempt to re-generate the page:
+    // - When a request comes in
+    // - At most once every second
+    revalidate: 1, // In seconds
+  };
+}

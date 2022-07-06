@@ -11,12 +11,9 @@ class MyDocument extends Document {
           {/* Simple Analytics script */}
           <script
             async
-            defer
-            src="https://sa.superfitapp.com/latest.js"
+            src="https://scripts.simpleanalyticscdn.com/latest.js"
           ></script>
-          <noscript>
-            <img src="https://sa.superfitapp.com/noscript.gif" alt="" />
-          </noscript>
+          <noscript><img src="https://queue.simpleanalyticscdn.com/noscript.gif" alt="" referrerPolicy="no-referrer-when-downgrade" /></noscript>
 
           <script
             dangerouslySetInnerHTML={{

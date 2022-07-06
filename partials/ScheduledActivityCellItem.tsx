@@ -66,7 +66,7 @@ export const ScheduledActivityCellItem = (props: ScheduledActivityProps) => {
               borderRadius="sm"
               w="auto"
               h="auto"
-              layout="fill"
+              // layout="fill"
               objectFit="cover"
               background="#f1f4f8"
             ></Box>
