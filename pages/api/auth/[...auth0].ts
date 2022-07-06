@@ -4,13 +4,18 @@ import {
   handleLogout,
   Session,
 } from "@auth0/nextjs-auth0";
-import { auth } from "@/lib/firebase-admin";
+import * as Sentry from '@sentry/nextjs';
 import { useFetchUser } from "@/lib/firUser";
 import firebase from "@/lib/firebase";
 
 const afterCallback = async (req, res, session: Session, state) => {
   try {
     if (session.accessToken && session.user?.sub) {
+      // Set user information, as well as tags and further extras
+      Sentry.configureScope(scope => {
+        Sentry.captureMessage(`User logged in: ${session.user.sub}`);
+        scope.setUser(session.user);
+      });
       useFetchUser({ required: true });
     }
   } catch (error) {
@@ -30,5 +35,9 @@ export default handleAuth({
   async logout(req, res) {
     await firebase.auth().signOut();
     await handleLogout(req, res);
+    Sentry.configureScope(scope => {
+      Sentry.captureMessage(`User signed out.`);
+      scope.clear();
+    });
   },
 });

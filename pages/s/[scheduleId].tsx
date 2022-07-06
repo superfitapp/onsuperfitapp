@@ -49,7 +49,7 @@ function SchedulePage(props: ScheduleProps, notFound: boolean) {
     effect: routerEffect,
     onDestroy: routerOnDestroy,
   } = routerLoading(router);
-  
+
   const key = user
     ? `/api/schedule/${props.scheduleId}?fetchRecentActivities=true`
     : `/api/show/schedule/${props.scheduleId}?fetchRecentActivities=true`
@@ -129,6 +129,11 @@ function SchedulePage(props: ScheduleProps, notFound: boolean) {
 
   return (
     <>
+      <button type="button" onClick={() => {
+        throw new TypeError("Sentry Frontend Error");
+      }}>
+        Throw error
+      </button>
       <NextSeo
         title={scheduleTitle}
         description={scheduleAbout}
