@@ -49,7 +49,7 @@ function SchedulePage(props: ScheduleProps, notFound: boolean) {
     effect: routerEffect,
     onDestroy: routerOnDestroy,
   } = routerLoading(router);
-  
+
   const key = user
     ? `/api/schedule/${props.scheduleId}?fetchRecentActivities=true`
     : `/api/show/schedule/${props.scheduleId}?fetchRecentActivities=true`

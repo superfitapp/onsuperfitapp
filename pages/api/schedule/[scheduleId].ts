@@ -7,9 +7,6 @@ export default withApiAuthRequired(withSentry(async function showSchedule(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-
-  throw new Error("API throw error test")
-  return res.status(200)
   const { user } = getSession(req, res);
   const fetchRecentActivities = req.query?.fetchRecentActivities;
 
@@ -19,5 +16,5 @@ export default withApiAuthRequired(withSentry(async function showSchedule(
     userId: user.sub,
   });
 
-  res.status(200).json(response);
+  return res.status(200).json(response);
 }));
