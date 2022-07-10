@@ -15,5 +15,6 @@ export default withApiAuthRequired(withSentry(async function showActivity(
     user.sub
   );
 
-  res.status(200).json(response);
+  res.json(response)
+  res.status(200).end()
 }));

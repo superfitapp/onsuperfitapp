@@ -242,7 +242,19 @@ export function createShowActivityViewModel(
     scheduledDateRelative = scheduledDateDayJs.fromNow();
   }
 
-  var accessOptions: AccessOptionViewModel[] = data.accessOptions.map(
+  var accessOptions: AccessOptionViewModel[] = data.accessOptions
+  .filter((option)=> {
+    // Edge case: if schedule is invite only, do no show members only cta.
+    // We should be porting cta logic from iOS to web.
+    const scheduleInviteRequired = data.schedule.signupType == ScheduleSignUpType.inviteOnly
+    const userIsScheduleMember = data.scheduleMember
+
+    if (option == AccessLevel.members && !userIsScheduleMember && scheduleInviteRequired) {
+      return false
+    }
+    return true
+  })
+  .map(
     (option) => {
       let cta: string;
       switch (option) {

@@ -1,5 +1,4 @@
 import { db } from "@/lib/firebase-admin";
-import { getSession } from "@auth0/nextjs-auth0";
 import {
   AccessLevel,
   FIRActivity,
@@ -7,6 +6,7 @@ import {
   FIRProgressLog,
   FIRSchedule,
   FIRScheduleMember,
+  ScheduleSignUpType,
   ShowFIRSchedule,
   VisibilityStatus,
 } from "@superfitapp/superfitjs";
@@ -84,6 +84,7 @@ export async function fetchActivity(
 
   const { accessOptions, hasAccess } = accessOptionsForActivity({
     activity: activity,
+    schedule: currentSchedule,
     member: scheduleMember,
     userLog: userLog,
   });
@@ -138,6 +139,7 @@ interface WeightedAccessLevel {
 
 function accessOptionsForActivity(data: {
   activity: FIRActivity;
+  schedule: FIRSchedule;
   member?: FIRScheduleMember;
   userLog?: FIRProgressLog;
 }): {
@@ -192,7 +194,7 @@ function accessOptionsForActivity(data: {
   }
 
   if (data.member) {
-    
+
     // paid member
     if (isPayingMember(data.member)) {
       requiredAccessLevels = requiredAccessLevels.filter((x) => {

@@ -91,8 +91,8 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
 
 
   const key = user
-  ? `/api/schedule/${props.scheduleId}/activity/${props.activityId}`
-  : `/api/show/schedule/${props.scheduleId}/activity/${props.activityId}`
+    ? `/api/schedule/${props.scheduleId}/activity/${props.activityId}`
+    : `/api/show/schedule/${props.scheduleId}/activity/${props.activityId}`
 
 
   const options = {
@@ -108,7 +108,7 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
   );
   // const activityData = props.data
   const activityData = data || props.data
-    
+
   var activityViewModel: ActivityViewModel = null;
   var scheduleViewModel: ShowScheduleViewModel = null;
 
@@ -121,10 +121,11 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
     );
   }
 
+
   const canJoinScheduleCta =
     scheduleViewModel?.joinSchedulePaidCta ||
     scheduleViewModel?.joinScheduleFreeCta;
-
+  console.log("canJoinScheduleCta", canJoinScheduleCta);
   const scheduledDateString = activityViewModel?.scheduledDateString || null;
 
   let instructionsBlockMap =

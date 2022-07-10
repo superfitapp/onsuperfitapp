@@ -16,5 +16,6 @@ export default withApiAuthRequired(withSentry(async function showSchedule(
     userId: user.sub,
   });
 
-  return res.status(200).json(response);
+  res.json(response)
+  res.status(200).end()
 }));

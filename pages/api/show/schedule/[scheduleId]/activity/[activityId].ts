@@ -14,8 +14,10 @@ export default withSentry(async function (req: NextApiRequest, res: NextApiRespo
     const scheduleId = req.query.scheduleId as string;
     const activityId = req.query.activityId as string;
     const response = await fetchActivity(scheduleId, activityId);
-    res.status(200).json(response);
+    res.json(response)
+    res.status(200).end()
   } catch {
-    res.status(429).json({ error: "Rate limit exceeded" });
+    res.json({ error: 'Rate limit exceeded' })
+    res.status(429).end()
   }
 })
