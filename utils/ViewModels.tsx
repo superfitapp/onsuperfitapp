@@ -46,8 +46,6 @@ export interface ShowScheduleViewModel {
   ownerDisplayName?: string;
   linksBackgroundColor: string;
   links: WebLink[];
-  joinSchedulePaidCta?: string;
-  joinScheduleFreeCta?: string;
   showScheduleCta?: string;
   oneTimePurchaseCta?: string;
   premiumPriceTitle?: string;
@@ -109,44 +107,28 @@ export function createShowScheduleViewModel(
     schedule.stripeCurrentYearlyPrice;
 
   const premiumPriceTitle = currentPrice?.priceDisplayName || null;
+  const scheduleInviteRequired = schedule.signupType == ScheduleSignUpType.inviteOnly
 
-  let canJoinAsFreeMember = anyoneCanSignup && !(schedule.payToJoin ?? false) && !userIsScheduleMember
-  let userIsOwner = scheduleMember?.memberRole == ScheduleRole.Owner
-  let scheduleInviteRequired = schedule.signupType == ScheduleSignUpType.inviteOnly
+  const canJoinAsFreeMember = anyoneCanSignup &&
+    !(schedule.payToJoin ?? false) &&
+    !scheduleInviteRequired &&
+    !userIsScheduleMember
 
-  // const joinSchedulePaidCta =
-  //   anyoneCanSignup &&
-  //     schedule.enableSubscription &&
-  //     !userIsPaidMember &&
-  //     currentPrice
-  //     ? "Become Premium Member"
-  //     : null;
-
-  // const joinScheduleFreeCta =
-  //   anyoneCanSignup &&
-  //     !schedule.payToJoin &&
-  //     !userIsPaidMember &&
-  //     !userIsFreeMember &&
-  //     schedule.signupType == ScheduleSignUpType.anyoneCanSignUp
-  //     ? joinSchedulePaidCta
-  //       ? "Start for Free"
-  //       : "Join for Free"
-  //     : null;
-
-  var links: WebLink[] = [];
-  for (var key in schedule.profile?.links) {
-    const link = schedule.profile?.links[key];
-    links.push(link);
-  }
-
-
+  const userIsOwner = scheduleMember?.memberRole == ScheduleRole.Owner
 
   const canUpgradeToPaidMember: boolean =
     anyoneCanSignup &&
     (schedule.enableSubscription ?? false) &&
     !userIsPaidMember &&
     !userIsOwner &&
+    !scheduleInviteRequired &&
     (currentPrice != undefined)
+
+  var links: WebLink[] = [];
+  for (var key in schedule.profile?.links) {
+    const link = schedule.profile?.links[key];
+    links.push(link);
+  }
 
   let accessOption: ScheduleAccessOption
 
@@ -159,6 +141,8 @@ export function createShowScheduleViewModel(
 
     if (canJoinAsFreeMember) {
       accessOption = new ScheduleAccessOption(ScheduleAccessOptionEnum.joinFree)
+    } else if (canUpgradeToPaidMember) {
+      accessOption = new ScheduleAccessOption(ScheduleAccessOptionEnum.joinPaid)
     } else if (scheduleInviteRequired) {
       if (latestInviteRequest) {
         switch (latestInviteRequest.status) {
@@ -183,46 +167,7 @@ export function createShowScheduleViewModel(
     }
   }
 
-  var showScheduleCta: string | undefined = null
-
-  switch (accessOption.option) {
-    case "inviteRequired":
-      showScheduleCta = "Request Invite"
-      break
-    case "invitePending":
-      showScheduleCta = "Request Pending"
-      break
-    case "joinFree":
-      showScheduleCta = "Join for Free"
-      break
-    case "joinPaid":
-      showScheduleCta = "Upgrade to Premium"
-      break
-    case "alreadyMember":
-      if (!userIsScheduleMember) {
-        showScheduleCta = null
-        break
-      }
-
-      switch (scheduleMember.memberRole) {
-        case "member":
-          showScheduleCta = `View ${userIsPaidMember ? 'Premium' : 'Free'} Membership`
-          break
-        case "owner":
-          showScheduleCta = "View Settings"
-          break
-        case "guest":
-          showScheduleCta = "Join SuperFit Free"
-          break
-      }
-      break
-    case "invitedMustPay":
-      showScheduleCta = "You're Invited"
-      break
-    case "unknown":
-      showScheduleCta = "View Website"
-      break
-  }
+  const showScheduleCta: string | undefined = accessOption.scheduleCta(scheduleMember)
 
   let vm: ShowScheduleViewModel = {
     scheduleTitle: schedule.title,
@@ -238,10 +183,8 @@ export function createShowScheduleViewModel(
     ownerDisplayName: schedule.ownerDisplayName || null,
     premiumPriceTitle: premiumPriceTitle,
     links: links.sort((x, y) => x.order - y.order),
-    joinSchedulePaidCta: "joinSchedulePaidCta",
-    joinScheduleFreeCta: "joinScheduleFreeCta",
     showScheduleCta: showScheduleCta,
-    canSignUp: showScheduleCta != null,
+    canSignUp: canUpgradeToPaidMember || canJoinAsFreeMember,
     userIsScheduleMember: scheduleMember != undefined || false,
     userIsPaidMember: userIsPaidMember,
     scheduleId: scheduleId,
@@ -582,16 +525,6 @@ enum ScheduleAccessOptionEnum {
   alreadyMember = "alreadyMember",
   invitedMustPay = "invitedMustPay",
   unknown = "unknown" // redirect to website
-
-  // // An action that warrants visual attention.
-  // public var isCta: Bool {
-  //   switch self {
-  //   case .inviteRequired, .joinFree, .joinPaid, .invitedMustPay:
-  //     return true
-  //   default:
-  //     return false
-  //   }
-  // }
 }
 
 class ScheduleAccessOption {
@@ -613,6 +546,39 @@ class ScheduleAccessOption {
         return true
       default:
         return false
+    }
+  }
+
+  scheduleCta(member?: FIRScheduleMember): string | undefined {
+    const userIsScheduleMember = member != undefined;
+    const userIsPaidMember = userIsScheduleMember ? isPayingMember(member) : false
+
+    switch (this.option) {
+      case "inviteRequired":
+        return "Request Invite"
+      case "invitePending":
+        return "Request Pending"
+      case "joinFree":
+        return "Join for Free"
+      case "joinPaid":
+        return "Upgrade to Premium"
+      case "alreadyMember":
+        if (!member) {
+          return null
+        }
+
+        switch (member.memberRole) {
+          case "member":
+            return `View ${userIsPaidMember ? 'Premium' : 'Free'} Membership`
+          case "owner":
+            return "View Settings"
+          case "guest":
+            return "Join SuperFit Free"
+        }
+      case "invitedMustPay":
+        return "You're Invited"
+      case "unknown":
+        return null
     }
   }
 }

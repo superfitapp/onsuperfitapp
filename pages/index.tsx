@@ -399,7 +399,7 @@ export default function Home() {
                       <LinkOverlay target="_blank"
                         href="/s/dPY6hrVvc9RJCAFz36v3"
                         className="fw-bold text-decoration-none">
-                          View Schedule <i className="fe fe-arrow-right ms-3" />
+                        View Schedule <i className="fe fe-arrow-right ms-3" />
                       </LinkOverlay>
                     </div>
                   </div>

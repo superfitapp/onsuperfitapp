@@ -34,14 +34,14 @@ export interface JoinScheduleProps {
 
 function JoinSchedule(props: JoinScheduleProps, notFound: boolean) {
   const router = useRouter();
-  
+
   if (!props.data && notFound == true) {
     if (notFound) {
       return <Error statusCode={404} />;
     }
   }
 
-  var vm: ShowScheduleViewModel = null;
+  var vm: ShowScheduleViewModel | undefined = null;
 
   if (props.data) {
     vm = createShowScheduleViewModel(
@@ -90,18 +90,18 @@ function JoinSchedule(props: JoinScheduleProps, notFound: boolean) {
   let defaultValue: string = null;
 
   // move code to view model
-  if (vm.canSignUp) {
-    if (vm.joinSchedulePaidCta && vm.premiumPriceTitle) {
+  if (vm?.canSignUp) {
+    if (vm?.showScheduleCta && vm?.premiumPriceTitle) {
       options.push({
         label: `Premium Member`,
-        description: `${vm.premiumPriceTitle} - cancel anytime`,
+        description: `${vm?.premiumPriceTitle} - cancel anytime`,
         icon: <HiOutlineStar />,
         value: "premium",
       });
       defaultValue = "premium";
     }
 
-    if (vm.joinScheduleFreeCta) {
+    if (vm?.showScheduleCta) {
       options.push({
         label: "Free Member",
         description: "No credit card required",
@@ -120,12 +120,11 @@ function JoinSchedule(props: JoinScheduleProps, notFound: boolean) {
   >(defaultValue);
 
   const userTheme = createThemeFromSchedule(props.data?.schedule);
-  const canJoinScheduleCta = vm?.joinSchedulePaidCta || vm?.joinScheduleFreeCta;
 
   return (
     <>
       <Layout
-        canJoin={canJoinScheduleCta != undefined}
+        canJoin={vm?.showScheduleCta != undefined}
         scheduleId={null}
         hideHeaderMobile={true}
         userTheme={userTheme}
@@ -224,7 +223,7 @@ export async function getServerSideProps({
     data.scheduleMember
   );
 
-  if (vm.userIsPaidMember) {
+  if (vm?.userIsPaidMember) {
     return {
       props: {},
       redirect: {
