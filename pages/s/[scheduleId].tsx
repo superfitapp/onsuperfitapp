@@ -22,6 +22,7 @@ import { ScheduledActivityCellItem } from "../../partials/ScheduledActivityCellI
 import { ShowFIRScheduleResponse } from "../../lib/db-public";
 import {
   createShowScheduleViewModel,
+  ScheduleAccessOptionEnum,
   ShowScheduleViewModel,
 } from "../../utils/ViewModels";
 import { useUser } from "@auth0/nextjs-auth0";
@@ -80,20 +81,22 @@ function SchedulePage(props: ScheduleProps, notFound: boolean) {
   var schedulePhotoUrl: string = null;
   var ownerDisplayName: string = null;
 
-  var scheduleMember = data?.scheduleMember || props?.data?.scheduleMember
+  const scheduleMember = data?.scheduleMember || props?.data?.scheduleMember
+  const latestInviteRequest = data?.latestInviteRequest || props?.data?.latestInviteRequest
   var vm: ShowScheduleViewModel = null
 
   if (schedule) {
     vm = createShowScheduleViewModel(
       props.scheduleId,
       schedule,
-      scheduleMember
+      scheduleMember,
+      latestInviteRequest
     );
   }
 
   schedulePhotoUrl = vm?.photoUrl;
   ownerDisplayName = schedule?.ownerDisplayName;
-  const canJoinScheduleCta = vm?.joinSchedulePaidCta || vm?.joinScheduleFreeCta;
+  // const canJoinScheduleCta = vm?.joinSchedulePaidCta || vm?.joinScheduleFreeCta;
   const userTheme = createThemeFromSchedule(data?.schedule);
 
   /*
@@ -152,7 +155,7 @@ function SchedulePage(props: ScheduleProps, notFound: boolean) {
         }}
       />
       <ScheduleLayout
-        canJoin={canJoinScheduleCta != undefined}
+        canJoin={!vm?.accessOption.isCta()}
         scheduleId={props?.scheduleId}
         scheduleMember={data?.scheduleMember}
         userTheme={userTheme}
@@ -219,13 +222,14 @@ function SchedulePage(props: ScheduleProps, notFound: boolean) {
                 </Box>
 
                 <Fade in={!isValidating}>
-                  {canJoinScheduleCta && (
+                  {vm?.showScheduleCta && (
                     <Button
                       my="3"
                       loadingText="Loading Plans"
                       isLoading={isLoading}
                       borderWidth="2px"
                       p="6"
+                      isDisabled={!vm?.accessOption.isCta()}
                       borderColor="primaryAlpha.100"
                       bgColor="primaryAlpha.100"
                       _hover={{
@@ -236,11 +240,17 @@ function SchedulePage(props: ScheduleProps, notFound: boolean) {
                       variant="solid"
                       minH={{ base: "10", md: "12" }}
                       onClick={() => {
-                        router.push(`/s/${props.scheduleId}/join`);
+                        switch (vm?.accessOption.option) {
+                          case ScheduleAccessOptionEnum.inviteRequired:
+                            router.push(`/s/${props.scheduleId}/request_invite`);
+                            break
+                          default:
+                            router.push(`/s/${props.scheduleId}/join`);
+                        }
                       }}
-                      rightIcon={<BiRightArrowAlt />}
+                      rightIcon={vm?.accessOption.isCta() ? <BiRightArrowAlt /> : null}
                     >
-                      {canJoinScheduleCta}
+                      {vm?.showScheduleCta}
                     </Button>
                   )}
                 </Fade>

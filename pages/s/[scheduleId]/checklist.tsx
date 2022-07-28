@@ -142,28 +142,26 @@ export default function ScheduleChecklist(
     }
   }
 
-  const canJoinScheduleCta = vm?.joinSchedulePaidCta || vm?.joinScheduleFreeCta;
   const scheduleTitle = vm?.scheduleTitle;
   const schedulePhotoUrl = vm?.photoUrl;
   const scheduleId = vm?.scheduleId;
   const scheduleOwnerDisplayName = vm?.ownerDisplayName;
 
   // can sign up
-  if (vm.canSignUp) {
-    if (!vm.userIsScheduleMember) {
-      if (vm.joinScheduleFreeCta) {
-        // can join free
-        steps.push(ScheduleChecklistItem.ConfirmMembership);
-      } else if (vm.joinSchedulePaidCta) {
-        // can join paying
-        steps.push(ScheduleChecklistItem.UpgradeToPremium);
-      }
-    } else {
+  if (vm?.canSignUp) {
+    if (vm?.userIsScheduleMember) {
       // can join paying
-      steps.push(ScheduleChecklistItem.YouAreMember);
+      steps.push(ScheduleChecklistItem.UpgradeToPremium);
+    } else {
+      // can join free
+      steps.push(ScheduleChecklistItem.ConfirmMembership);
     }
   } else {
-    steps.push(ScheduleChecklistItem.InviteOnly);
+    if (vm?.userIsScheduleMember) {
+      steps.push(ScheduleChecklistItem.YouAreMember);
+    } else {
+      steps.push(ScheduleChecklistItem.InviteOnly);
+    }
   }
 
   steps.push(ScheduleChecklistItem.DownloadApp);
@@ -171,7 +169,7 @@ export default function ScheduleChecklist(
   return (
     <>
       <Layout
-        canJoin={canJoinScheduleCta != undefined}
+        canJoin={vm?.canSignUp}
         scheduleId={null}
         hideHeaderMobile={true}
       >
@@ -219,7 +217,7 @@ export default function ScheduleChecklist(
                   switch (step) {
                     case ScheduleChecklistItem.InviteOnly:
                       return (
-                        <Step title={`${vm.scheduleTitle} is invite-only.`}>
+                        <Step title={`${vm?.scheduleTitle} is invite-only.`}>
                           <StepContent>
                             <Stack shouldWrapChildren spacing="4">
                               <HStack>
@@ -246,7 +244,7 @@ export default function ScheduleChecklist(
                               <Text>
                                 Unlock{" "}
                                 <Text fontWeight="medium" as="span">
-                                  {vm.scheduleTitle} Premium
+                                  {vm?.scheduleTitle} Premium
                                 </Text>{" "}
                                 for all members-only content.
                               </Text>
@@ -333,7 +331,7 @@ export default function ScheduleChecklist(
                               <Text>
                                 Join{" "}
                                 <Text fontWeight="medium" as="span">
-                                  {vm.scheduleTitle}
+                                  {vm?.scheduleTitle}
                                 </Text>{" "}
                                 and unlock members-only content.
                               </Text>

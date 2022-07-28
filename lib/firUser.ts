@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import fetcher from "@/utils/fetcher";
 import firebase from "@/lib/firebase";
-import { useUser } from "@auth0/nextjs-auth0";
 
 export async function fetchUser() {
   const currentFirUser = await firebase.auth().currentUser;

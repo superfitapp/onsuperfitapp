@@ -1,4 +1,5 @@
 import Curves from "@/partials/shapes/curves/curve-1.svg";
+import { LinkBox, LinkOverlay } from '@chakra-ui/react'
 import Layout from "@/components/landing-layout";
 import AngleBottom from "@/partials/shapes/angles/angle-bottom.svg";
 import AngleTop from "@/partials/shapes/angles/angle-top.svg";
@@ -8,7 +9,6 @@ import PersonalPro from "@/components/prices/personal-pro";
 import Free from "@/components/prices/free";
 import { NextSeo } from "next-seo";
 import { useRouter } from "next/router";
-import { MemberStatus, PrivacyStatus } from "@superfitapp/superfitjs";
 
 export type ReadingTypes = "some" | "variants" | "of" | "strings";
 
@@ -176,7 +176,7 @@ export default function Home() {
               </div>
 
               <div className="row d-flex align-items-stretch">
-                <div className="col-12 col-md-4 my-2" data-aos="fade-up">
+                <LinkBox as='div' className="col-12 col-md-4 my-2" data-aos="fade-up">
                   <div className="card h-80 shadow-light-lg mb-6 mb-md-0 lift lift-lg">
                     <Image
                       src="/img/photos/workout_with_me_teigan.jpg"
@@ -209,18 +209,16 @@ export default function Home() {
                         Athletic gym & home workouts with Teigan Schentrup
                       </p>
                       {/* Link */}
-                      <a
-                        target="_blank"
+                      <LinkOverlay target="_blank"
                         href="/s/JEdei0mWkw9BLhCCkcFo"
-                        className="fw-bold text-decoration-none"
-                      >
+                        className="fw-bold text-decoration-none">
                         View Schedule <i className="fe fe-arrow-right ms-3" />
-                      </a>
+                      </LinkOverlay>
                     </div>
                   </div>
-                </div>
+                </LinkBox>
 
-                <div
+                <LinkBox as='div'
                   className="col-12 col-md-4 my-2"
                   data-aos-delay="100"
                   data-aos="fade-up"
@@ -259,19 +257,16 @@ export default function Home() {
                       <p className="text-muted">
                         Full body at-home fitness with Iyoha Agho
                       </p>
-                      {/* Link */}
-                      <a
-                        target="_blank"
+                      <LinkOverlay target="_blank"
                         href="/s/gs5WICdat2WLXw3EYS3g"
-                        className="fw-bold text-decoration-none"
-                      >
+                        className="fw-bold text-decoration-none">
                         View Schedule <i className="fe fe-arrow-right ms-3" />
-                      </a>
+                      </LinkOverlay>
                     </div>
                   </div>
-                </div>
+                </LinkBox>
 
-                <div
+                <LinkBox as='div'
                   className="col-12 col-md-4 my-2"
                   data-aos="fade-up"
                   data-aos-delay={200}
@@ -309,23 +304,21 @@ export default function Home() {
                         Athletic workouts to help you decrease risk of injury,
                         develop strength and build confidence.
                       </p>
-                      {/* Link */}
-                      <a
-                        target="_blank"
+                      <LinkOverlay target="_blank"
                         href="/s/603dbrFWGk5V2bZYHm0W"
-                        className="fw-bold text-decoration-none"
-                      >
+                        className="fw-bold text-decoration-none">
                         View Schedule <i className="fe fe-arrow-right ms-3" />
-                      </a>
+                      </LinkOverlay>
                     </div>
                   </div>
-                </div>
+                </LinkBox>
 
-                <div className="col-12 col-md-4 my-2" data-aos="fade-up">
+                <LinkBox as='div'
+                  className="col-12 col-md-4 my-2" data-aos="fade-up">
                   <div className="card h-80 shadow-light-lg mb-6 mb-md-0 lift lift-lg">
                     <Image
-                      src="/img/photos/personal-training.jpg"
-                      alt="In the Living Room"
+                      src="/img/photos/train_with_teigs.jpg"
+                      alt="Train with Teigs Premium"
                       className="card-img-top"
                       height="300"
                       width="500"
@@ -350,24 +343,21 @@ export default function Home() {
                         </span>
                       </div>
                       {/* Heading */}
-                      <h3>SuperFit Examples</h3>
+                      <h3>Train with Teigs Premium</h3>
                       <p className="text-muted">
                         Share individual workout plans with each of your private
                         clients.
                       </p>
-                      {/* Link */}
-                      <a
-                        target="_blank"
-                        href="/s/dxghJOyCnAeePABPEAXx"
-                        className="fw-bold text-decoration-none"
-                      >
+                      <LinkOverlay target="_blank"
+                        href="/s/AoA7hDV14dGnasteaS4M"
+                        className="fw-bold text-decoration-none">
                         View Schedule <i className="fe fe-arrow-right ms-3" />
-                      </a>
+                      </LinkOverlay>
                     </div>
                   </div>
-                </div>
+                </LinkBox>
 
-                <div
+                <LinkBox as='div'
                   className="col-12 col-md-4 my-2"
                   data-aos="fade-up"
                   data-aos-delay={100}
@@ -406,19 +396,16 @@ export default function Home() {
                         Start your mornings with an easy-to-follow basketball,
                         strength and run workout.
                       </p>
-                      {/* Link */}
-                      <a
-                        target="_blank"
+                      <LinkOverlay target="_blank"
                         href="/s/dPY6hrVvc9RJCAFz36v3"
-                        className="fw-bold text-decoration-none"
-                      >
+                        className="fw-bold text-decoration-none">
                         View Schedule <i className="fe fe-arrow-right ms-3" />
-                      </a>
+                      </LinkOverlay>
                     </div>
                   </div>
-                </div>
+                </LinkBox>
 
-                <div
+                <LinkBox as='div'
                   className="col-12 col-md-4 my-2"
                   data-aos="fade-up"
                   data-aos-delay={200}
@@ -454,17 +441,14 @@ export default function Home() {
                       <p className="text-muted">
                         The next workout schedule is waiting on your ideas.
                       </p>
-                      {/* Link */}
-                      <a
-                        target="_blank"
+                      <LinkOverlay target="_blank"
                         href="https://itunes.apple.com/us/app/superfit-sports-workouts/id1225772126"
-                        className="fw-bold text-decoration-none"
-                      >
+                        className="fw-bold text-decoration-none">
                         Get Started <i className="fe fe-arrow-right ms-3" />
-                      </a>
+                      </LinkOverlay>
                     </div>
                   </div>
-                </div>
+                </LinkBox>
               </div>
             </div>
           </section>
@@ -718,7 +702,7 @@ export default function Home() {
             </div>
           </div>
         </div>
-      </Layout>
+      </Layout >
     </>
   );
 }

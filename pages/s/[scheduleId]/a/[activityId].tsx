@@ -121,11 +121,6 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
     );
   }
 
-
-  const canJoinScheduleCta =
-    scheduleViewModel?.joinSchedulePaidCta ||
-    scheduleViewModel?.joinScheduleFreeCta;
-  console.log("canJoinScheduleCta", canJoinScheduleCta);
   const scheduledDateString = activityViewModel?.scheduledDateString || null;
 
   let instructionsBlockMap =
@@ -220,7 +215,7 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
         }}
       />
       <ScheduleLayout
-        canJoin={canJoinScheduleCta != undefined}
+        canJoin={!scheduleViewModel?.accessOption.isCta()}
         scheduleId={activityViewModel?.scheduleId}
         scheduleMember={activityData?.scheduleMember}
         userTheme={userTheme}

@@ -17,6 +17,8 @@ import {
   ShowFIRSchedule,
   StripePrice,
   WebLink,
+  ScheduleRole,
+  FIRScheduleInvite
 } from "@superfitapp/superfitjs";
 import InstructionBuilder from "./InstructionBuilder";
 import dayjs from "dayjs";
@@ -44,8 +46,8 @@ export interface ShowScheduleViewModel {
   ownerDisplayName?: string;
   linksBackgroundColor: string;
   links: WebLink[];
-  joinSchedulePaidCta?: string;
-  joinScheduleFreeCta?: string;
+  accessOption: ScheduleAccessOption,
+  showScheduleCta?: string;
   oneTimePurchaseCta?: string;
   premiumPriceTitle?: string;
   canSignUp: boolean;
@@ -89,19 +91,16 @@ export interface AccessOptionViewModel {
 export function createShowScheduleViewModel(
   scheduleId: string,
   schedule: ShowFIRSchedule,
-  scheduleMember?: FIRScheduleMember
+  scheduleMember?: FIRScheduleMember,
+  latestInviteRequest?: FIRScheduleInvite
 ): ShowScheduleViewModel {
   const primaryColor = schedule.color || "#303030";
   const secondaryColor = schedule.secondaryColor || null;
   const secondaryColorLightRGBA = hexToRGB(secondaryColor, 0.15) || null;
   const anyoneCanSignup = schedule.signupType == "anyoneCanSignUp";
 
-  let userIsPaidMember = false;
-  const userIsFreeMember = scheduleMember != undefined;
-
-  if (scheduleMember) {
-    userIsPaidMember = isPayingMember(scheduleMember);
-  }
+  const userIsScheduleMember = scheduleMember != undefined;
+  const userIsPaidMember = userIsScheduleMember ? isPayingMember(scheduleMember) : false
 
   const currentPrice: StripePrice | undefined =
     schedule.stripeCurrentOneTimePrice ||
@@ -109,31 +108,71 @@ export function createShowScheduleViewModel(
     schedule.stripeCurrentYearlyPrice;
 
   const premiumPriceTitle = currentPrice?.priceDisplayName || null;
+  const scheduleInviteRequired = schedule.signupType == ScheduleSignUpType.inviteOnly
 
-  const joinSchedulePaidCta =
-    anyoneCanSignup &&
-    schedule.enableSubscription &&
-    !userIsPaidMember &&
-    currentPrice
-      ? "Become Premium Member"
-      : null;
+  const canJoinAsFreeMember = anyoneCanSignup &&
+    !(schedule.payToJoin ?? false) &&
+    !scheduleInviteRequired &&
+    !userIsScheduleMember
 
-  const joinScheduleFreeCta =
+  const userIsOwner = scheduleMember?.memberRole == ScheduleRole.Owner
+
+  const canUpgradeToPaidMember: boolean =
     anyoneCanSignup &&
-    !schedule.payToJoin &&
+    (schedule.enableSubscription ?? false) &&
     !userIsPaidMember &&
-    !userIsFreeMember &&
-    schedule.signupType == ScheduleSignUpType.anyoneCanSignUp
-      ? joinSchedulePaidCta
-        ? "Start for Free"
-        : "Join for Free"
-      : null;
+    !userIsOwner &&
+    !scheduleInviteRequired &&
+    (currentPrice != undefined)
 
   var links: WebLink[] = [];
   for (var key in schedule.profile?.links) {
     const link = schedule.profile?.links[key];
     links.push(link);
   }
+
+  let accessOption: ScheduleAccessOption
+
+  if (scheduleMember) {
+    accessOption = canUpgradeToPaidMember ? new ScheduleAccessOption(ScheduleAccessOptionEnum.joinPaid) : new ScheduleAccessOption(ScheduleAccessOptionEnum.alreadyMember)
+  } else {
+    /*
+     * not a member.
+     */
+
+    if (canJoinAsFreeMember) {
+      accessOption = new ScheduleAccessOption(ScheduleAccessOptionEnum.joinFree)
+    } else if (canUpgradeToPaidMember) {
+      accessOption = new ScheduleAccessOption(ScheduleAccessOptionEnum.joinPaid)
+    } else if (scheduleInviteRequired) {
+      if (latestInviteRequest) {
+        switch (latestInviteRequest.status) {
+          case "accepted":
+            if (schedule.payToJoin ?? false) {
+              accessOption = new ScheduleAccessOption(ScheduleAccessOptionEnum.invitedMustPay)
+              break
+            } else {
+              // weird state: accepted but not member
+              // either server problem or kicked out of schedule.
+              accessOption = new ScheduleAccessOption(ScheduleAccessOptionEnum.inviteRequired)
+              break
+            }
+          case "pending":
+            accessOption = new ScheduleAccessOption(ScheduleAccessOptionEnum.invitePending)
+            break
+          case "rejected":
+            accessOption = new ScheduleAccessOption(ScheduleAccessOptionEnum.inviteRequired)
+            break
+        }
+      } else {
+        accessOption = new ScheduleAccessOption(ScheduleAccessOptionEnum.inviteRequired)
+      }
+    } else {
+      accessOption = new ScheduleAccessOption(ScheduleAccessOptionEnum.unknown)
+    }
+  }
+
+  const showScheduleCta: string | undefined = accessOption.scheduleCta(scheduleMember)
 
   let vm: ShowScheduleViewModel = {
     scheduleTitle: schedule.title,
@@ -149,9 +188,9 @@ export function createShowScheduleViewModel(
     ownerDisplayName: schedule.ownerDisplayName || null,
     premiumPriceTitle: premiumPriceTitle,
     links: links.sort((x, y) => x.order - y.order),
-    joinSchedulePaidCta: joinSchedulePaidCta,
-    joinScheduleFreeCta: joinScheduleFreeCta,
-    canSignUp: joinSchedulePaidCta != null || joinScheduleFreeCta != null,
+    showScheduleCta: showScheduleCta,
+    accessOption: accessOption,
+    canSignUp: canUpgradeToPaidMember || canJoinAsFreeMember,
     userIsScheduleMember: scheduleMember != undefined || false,
     userIsPaidMember: userIsPaidMember,
     scheduleId: scheduleId,
@@ -243,40 +282,39 @@ export function createShowActivityViewModel(
   }
 
   var accessOptions: AccessOptionViewModel[] = data.accessOptions
-  .filter((option)=> {
-    // Edge case: if schedule is invite only, do no show members only cta.
-    // We should be porting cta logic from iOS to web.
-    const scheduleInviteRequired = data.schedule.signupType == ScheduleSignUpType.inviteOnly
-    const userIsScheduleMember = data.scheduleMember
+    .filter((option) => {
+      // Edge case: if schedule is invite only, do no show members only cta.
+      // We should be porting cta logic from iOS to web.
+      const scheduleInviteRequired = data.schedule.signupType == ScheduleSignUpType.inviteOnly
+      const userIsScheduleMember = data.scheduleMember
 
-    if (option == AccessLevel.members && !userIsScheduleMember && scheduleInviteRequired) {
-      return false
-    }
-    return true
-  })
-  .map(
-    (option) => {
-      let cta: string;
-      switch (option) {
-        case AccessLevel.members:
-          cta = "Join Free";
-          break;
-        case AccessLevel.paidMembers:
-          cta = "Unlock Premium Membership";
-          break;
-        case AccessLevel.oneTimePurchase:
-          cta = `${activityActionWord(data.activity.type)} ${
-            data.activity.signupConfig.priceAmount / 100
-          } ${data.activity.signupConfig.priceCurrency.toUpperCase()}`;
-          break;
+      if (option == AccessLevel.members && !userIsScheduleMember && scheduleInviteRequired) {
+        return false
       }
-      let vm: AccessOptionViewModel = {
-        option: AccessLevel[option],
-        cta: cta,
-      };
-      return vm;
-    }
-  );
+      return true
+    })
+    .map(
+      (option) => {
+        let cta: string;
+        switch (option) {
+          case AccessLevel.members:
+            cta = "Join Free";
+            break;
+          case AccessLevel.paidMembers:
+            cta = "Unlock Premium Membership";
+            break;
+          case AccessLevel.oneTimePurchase:
+            cta = `${activityActionWord(data.activity.type)} ${data.activity.signupConfig.priceAmount / 100
+              } ${data.activity.signupConfig.priceCurrency.toUpperCase()}`;
+            break;
+        }
+        let vm: AccessOptionViewModel = {
+          option: AccessLevel[option],
+          cta: cta,
+        };
+        return vm;
+      }
+    );
 
   const isTipEnabled =
     data.activity.tipConfig?.tipEnabled == true &&
@@ -481,4 +519,59 @@ enum ActivityType {
   event = "event",
   workout = "workout",
   meeting = "meeting",
+}
+
+
+
+export enum ScheduleAccessOptionEnum {
+  inviteRequired = "inviteRequired",
+  invitePending = "invitePending",
+  joinFree = "joinFree",
+  joinPaid = "joinPaid",
+  alreadyMember = "alreadyMember",
+  invitedMustPay = "invitedMustPay",
+  unknown = "unknown" // redirect to website
+}
+
+class ScheduleAccessOption {
+  readonly option: ScheduleAccessOptionEnum
+
+  constructor(option: ScheduleAccessOptionEnum) {
+    this.option = option
+  }
+
+  isCta(): boolean | undefined {
+    switch (this.option) {
+      case "inviteRequired":
+        return true
+      case "joinFree":
+        return true
+      case "joinPaid":
+        return true
+      case "invitedMustPay":
+        return true
+      default:
+        return false
+    }
+  }
+
+  scheduleCta(member?: FIRScheduleMember): string | undefined {
+
+    switch (this.option) {
+      case "inviteRequired":
+        return "Request Invite"
+      case "invitePending":
+        return "Request Pending"
+      case "joinFree":
+        return "Join for Free"
+      case "joinPaid":
+        return "Upgrade to Premium"
+      case "alreadyMember":
+        return null
+      case "invitedMustPay":
+        return "You're Invited"
+      case "unknown":
+        return null
+    }
+  }
 }
