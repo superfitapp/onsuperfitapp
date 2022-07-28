@@ -12,7 +12,7 @@ import firebase from "@/lib/firebase";
 
 // https://github.com/auth0/nextjs-auth0/issues/383
 // Set to VERCEL_URL or override with AUTH0_BASE_URL 
-process.env.AUTH0_BASE_URL = process.env.AUTH0_BASE_URL || process.env.VERCEL_URL;
+// process.env.AUTH0_BASE_URL = process.env.AUTH0_BASE_URL || process.env.VERCEL_URL;
 
 const afterCallback = async (req, res, session: Session, state) => {
   try {
