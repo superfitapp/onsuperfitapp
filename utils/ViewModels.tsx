@@ -46,6 +46,7 @@ export interface ShowScheduleViewModel {
   ownerDisplayName?: string;
   linksBackgroundColor: string;
   links: WebLink[];
+  accessOption: ScheduleAccessOption,
   showScheduleCta?: string;
   oneTimePurchaseCta?: string;
   premiumPriceTitle?: string;
@@ -149,15 +150,19 @@ export function createShowScheduleViewModel(
           case "accepted":
             if (schedule.payToJoin ?? false) {
               accessOption = new ScheduleAccessOption(ScheduleAccessOptionEnum.invitedMustPay)
+              break
             } else {
               // weird state: accepted but not member
               // either server problem or kicked out of schedule.
               accessOption = new ScheduleAccessOption(ScheduleAccessOptionEnum.inviteRequired)
+              break
             }
           case "pending":
             accessOption = new ScheduleAccessOption(ScheduleAccessOptionEnum.invitePending)
+            break
           case "rejected":
             accessOption = new ScheduleAccessOption(ScheduleAccessOptionEnum.inviteRequired)
+            break
         }
       } else {
         accessOption = new ScheduleAccessOption(ScheduleAccessOptionEnum.inviteRequired)
@@ -184,6 +189,7 @@ export function createShowScheduleViewModel(
     premiumPriceTitle: premiumPriceTitle,
     links: links.sort((x, y) => x.order - y.order),
     showScheduleCta: showScheduleCta,
+    accessOption: accessOption,
     canSignUp: canUpgradeToPaidMember || canJoinAsFreeMember,
     userIsScheduleMember: scheduleMember != undefined || false,
     userIsPaidMember: userIsPaidMember,
@@ -517,7 +523,7 @@ enum ActivityType {
 
 
 
-enum ScheduleAccessOptionEnum {
+export enum ScheduleAccessOptionEnum {
   inviteRequired = "inviteRequired",
   invitePending = "invitePending",
   joinFree = "joinFree",
@@ -550,8 +556,6 @@ class ScheduleAccessOption {
   }
 
   scheduleCta(member?: FIRScheduleMember): string | undefined {
-    const userIsScheduleMember = member != undefined;
-    const userIsPaidMember = userIsScheduleMember ? isPayingMember(member) : false
 
     switch (this.option) {
       case "inviteRequired":
@@ -563,18 +567,7 @@ class ScheduleAccessOption {
       case "joinPaid":
         return "Upgrade to Premium"
       case "alreadyMember":
-        if (!member) {
-          return null
-        }
-
-        switch (member.memberRole) {
-          case "member":
-            return `View ${userIsPaidMember ? 'Premium' : 'Free'} Membership`
-          case "owner":
-            return "View Settings"
-          case "guest":
-            return "Join SuperFit Free"
-        }
+        return null
       case "invitedMustPay":
         return "You're Invited"
       case "unknown":

@@ -215,7 +215,7 @@ function ScheduleActivity(props: ScheduledActivityProps, notFound: boolean) {
         }}
       />
       <ScheduleLayout
-        canJoin={scheduleViewModel?.showScheduleCta != undefined}
+        canJoin={!scheduleViewModel?.accessOption.isCta()}
         scheduleId={activityViewModel?.scheduleId}
         scheduleMember={activityData?.scheduleMember}
         userTheme={userTheme}

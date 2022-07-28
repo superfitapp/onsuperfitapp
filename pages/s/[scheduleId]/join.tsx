@@ -124,7 +124,7 @@ function JoinSchedule(props: JoinScheduleProps, notFound: boolean) {
   return (
     <>
       <Layout
-        canJoin={vm?.showScheduleCta != undefined}
+        canJoin={!vm?.accessOption.isCta()}
         scheduleId={null}
         hideHeaderMobile={true}
         userTheme={userTheme}

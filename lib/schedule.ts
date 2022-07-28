@@ -1,16 +1,37 @@
 import { db } from "@/lib/firebase-admin";
-import { getSession } from "@auth0/nextjs-auth0";
+import * as admin from "firebase-admin";
 import {
   ActivityStatus,
   FIRActivity,
   FIRSchedule,
+  FIRScheduleInvite,
   FIRScheduleMember,
-  FIRUser,
+  ScheduleInviteType,
   ShowFIRSchedule,
   VisibilityStatus,
 } from "@superfitapp/superfitjs";
 import { scheduleMemberSnap } from "./schedule-member";
 import { ShowFIRScheduleResponse } from "./db-public";
+
+export async function latestScheduleInviteRequestSnap(
+  scheduleId: string,
+  scheduleRequesterUserId: string
+): Promise<
+  FirebaseFirestore.DocumentSnapshot<FirebaseFirestore.DocumentData | undefined>
+> {
+
+  const matchingRequests = await admin
+    .firestore()
+    .collection("schedules")
+    .doc(scheduleId)
+    .collection("schedule_invites")
+    .orderBy("invitedAt", 'desc')
+    .where("type", "==", ScheduleInviteType.Request)
+    .where("senderId", "==", scheduleRequesterUserId)
+    .get()
+
+  return matchingRequests.docs[0];
+}
 
 export async function fetchShowSchedule({
   scheduleId,
@@ -41,14 +62,23 @@ export async function fetchShowSchedule({
   let showSchedule: ShowFIRSchedule = createShowSchedule(currentSchedule);
 
   var scheduleMember: FIRScheduleMember | undefined = null;
+  var latestInviteRequest: FIRScheduleInvite | undefined = null;
 
   if (userId) {
     try {
-      const snap = await scheduleMemberSnap(userId, scheduleId);
-      if (snap && snap.data()) {
-        scheduleMember = snap.data() as FIRScheduleMember;
+      const memberSnap = await scheduleMemberSnap(userId, scheduleId);
+      if (memberSnap && memberSnap.data()) {
+        scheduleMember = memberSnap.data() as FIRScheduleMember;
       }
-    } catch { }
+
+      const latestInviteSnap = await latestScheduleInviteRequestSnap(scheduleId, userId)
+      
+      if (latestInviteSnap && latestInviteSnap.data()) {
+        latestInviteRequest = latestInviteSnap.data() as FIRScheduleInvite;
+      }
+    } catch (error) {
+      console.error(error)
+    }
   }
 
   if (currentSchedule.visibilityStatus != VisibilityStatus.Public) {
@@ -56,6 +86,7 @@ export async function fetchShowSchedule({
       schedule: showSchedule,
       activities: [],
       scheduleMember: scheduleMember,
+      latestInviteRequest: latestInviteRequest
     };
   }
 
@@ -81,6 +112,7 @@ export async function fetchShowSchedule({
     schedule: showSchedule,
     activities: activities,
     scheduleMember: scheduleMember,
+    latestInviteRequest: latestInviteRequest
   };
 
   let string = JSON.stringify(data);
