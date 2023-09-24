@@ -3,6 +3,8 @@
 // Extended from Bootstrap
 //
 
+@use 'sass:math';
+
 .navbar {
   transition: $transition-base;
   transition-property: background-color, color;
@@ -40,8 +42,8 @@
 
 .navbar > .container,
 .navbar > .container-fluid {
-  padding-left: $grid-gutter-width / 2 !important;
-  padding-right: $grid-gutter-width / 2 !important;
+  padding-left: math.div($grid-gutter-width, 2) !important;
+  padding-right: math.div($grid-gutter-width, 2) !important;
 }
 
 
